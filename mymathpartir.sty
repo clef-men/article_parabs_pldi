@@ -1,0 +1,29 @@
+\RequirePackage{mathpartir}
+
+%----------------------------------------
+
+\let\TirName\textsc
+
+\newcommand{\TirNameExpand}[1]{%
+  \@ifundefined{TirPrefix}{}{\TirPrefix}%
+  #1%
+}
+
+\newcommand{\TirNameStyleGlobal}[1]{%
+  \hypertarget{#1}{\TirName{#1}}%
+}
+\renewcommand{\TirNameStyle}[1]{%
+  \TirNameStyleGlobal{\TirNameExpand{#1}}%
+}
+
+\newcommand{\refTirNameGlobal}[1]{%
+  \hyperlink{#1}{\TirName{#1}}\xspace%
+}
+\newcommand{\refTirName}[1]{%
+  \refTirNameGlobal{\TirNameExpand{#1}}%
+}
+
+\newenvironment{tirPrefix}[1]{%
+  \def\TirPrefix{#1}%
+}{%
+}

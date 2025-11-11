@@ -1,0 +1,63 @@
+\documentclass[acmsmall,screen,review,anonymous,nonacm]{acmart}
+
+%----------------------------------------
+
+\input{setup}
+
+%----------------------------------------
+%----------------------------------------
+
+\begin{document}
+
+%----------------------------------------
+
+\title{A verified parallel scheduler for \OCamlFive}
+
+\author{Clément Allain}
+\affiliation{
+  \institution{INRIA}
+  \city{Paris}
+  \country{France}
+}
+\orcid{0009-0005-2972-5181}
+\email{clement.allain@inria.fr}
+
+\author{Gabriel Scherer}
+\affiliation{
+  \institution{INRIA}
+  \city{Paris}
+  \country{France}
+}
+\orcid{0000-0003-1758-3938}
+\email{gabriel.scherer@inria.fr}
+
+\begin{abstract}
+  \input{abstract}
+\end{abstract}
+
+\maketitle
+
+%----------------------------------------
+
+\input{introduction}
+
+\input{iris}
+
+\input{prophecy}
+
+\input{ws_deque}
+
+\input{parabs}
+
+\input{benchmarks}
+
+\input{related_work}
+
+\input{conclusion}
+
+%----------------------------------------
+
+\hbadness=10000
+\bibliography{main}
+
+\end{document}

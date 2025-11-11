@@ -1,0 +1,364 @@
+\newcommand{\zooBool}{%
+  \v{b}%
+}
+
+\newcommand{\zooInt}{%
+  \v{n}%
+}
+
+\newcommand{\zooLoc}{%
+  \loc%
+}
+
+\newcommand{\zooProph}{%
+  \v{pid}%
+}
+
+\newcommand{\zooBlock}{%
+  \v{bid}%
+}
+
+\newcommand{\zooTag}{%
+  \v{tag}%
+}
+
+\newcommand{\zooIndex}{%
+  \v{i}%
+}
+
+\newcommand{\zooIdent}{%
+  \v{x}%
+}
+
+\newcommand{\zooBinder}{%
+  \v{bdr}%
+}
+\newcommand{\zooBinderFun}{%
+  \v{f}%
+}
+\newcommand{\zooBinderAnon}{%
+  \constr{BinderAnon}%
+}
+\newcommand{\zooBinderNamed}[1]{%
+  \constr{BinderNamed}\ #1%
+}
+
+\newcommand{\zooOp}{%
+  \v{op}%
+}
+
+\newcommand{\zooUnop}{%
+  \v{unop}%
+}
+\newcommand{\zooUnopNeg}{%
+  \constr{UnopNeg}%
+}
+\newcommand{\zooUnopMinus}{%
+  \constr{UnopMinus}%
+}
+\newcommand{\zooUnopIsImmediate}{%
+  \constr{UnopIsImmediate}%
+}
+
+\newcommand{\zooBinop}{%
+  \v{binop}%
+}
+\newcommand{\zooBinopPlus}{%
+  \constr{BinopPlus}%
+}
+\newcommand{\zooBinopMinus}{%
+  \constr{BinopMinus}%
+}
+\newcommand{\zooBinopMult}{%
+  \constr{BinopMult}%
+}
+\newcommand{\zooBinopQuot}{%
+  \constr{BinopQuot}%
+}
+\newcommand{\zooBinopRem}{%
+  \constr{BinopRem}%
+}
+\newcommand{\zooBinopLand}{%
+  \constr{BinopLand}%
+}
+\newcommand{\zooBinopLor}{%
+  \constr{BinopLor}%
+}
+\newcommand{\zooBinopLsl}{%
+  \constr{BinopLsl}%
+}
+\newcommand{\zooBinopLsr}{%
+  \constr{BinopLsr}%
+}
+\newcommand{\zooBinopLe}{%
+  \constr{BinopLe}%
+}
+\newcommand{\zooBinopLt}{%
+  \constr{BinopLt}%
+}
+\newcommand{\zooBinopGe}{%
+  \constr{BinopGe}%
+}
+\newcommand{\zooBinopGt}{%
+  \constr{BinopGt}%
+}
+
+\newcommand{\zooMutability}{%
+  \v{mut}%
+}
+\newcommand{\zooMutable}{%
+  \constr{Mutable}%
+}
+\newcommand{\zooImmutableNongenerative}{%
+  \constr{ImmutableNongenerative}%
+}
+\newcommand{\zooImmutableGenerativeWeak}{%
+  \constr{ImmutableGenerativeWeak}%
+}
+\newcommand{\zooImmutableGenerativeStrong}{%
+  \constr{ImmutableGenerativeStrong}%
+}
+
+\newcommand{\zooGenerativity}{%
+  \v{gen}%
+}
+\newcommand{\zooGenerative}[1]{%
+  \constr{Generative}\ #1%
+}
+\newcommand{\zooNongenerative}{%
+  \constr{Nongenerative}%
+}
+
+\newcommand{\zooLit}{%
+  \v{lit}%
+}
+\newcommand{\zooLitBool}[1]{%
+  \constr{LitBool}%
+  \ifx #1\empty \else%
+    \ #1%
+  \fi%
+}
+\newcommand{\zooLitInt}[1]{%
+  \constr{LitInt}%
+  \ifx #1\empty \else%
+    \ #1%
+  \fi%
+}
+\newcommand{\zooLitLoc}[1]{%
+  \constr{LitLoc}%
+  \ifx #1\empty \else%
+    \ #1%
+  \fi%
+}
+\newcommand{\zooLitProph}[1]{%
+  \constr{LitProph}%
+  \ifx #1\empty \else%
+    \ #1%
+  \fi%
+}
+\newcommand{\zooLitPoison}{%
+  \constr{LitPoison}%
+}
+
+\newcommand{\zooVal}{%
+  \v{v}%
+}
+\newcommand{\zooValTwo}{%
+  \v{w}%
+}
+\newcommand{\zooVals}{%
+  \v{vs}%
+}
+\newcommand{\zooValsTwo}{%
+  \v{ws}%
+}
+\newcommand{\zooValss}{%
+  \v{vss}%
+}
+\newcommand{\zooValssTwo}{%
+  \v{wss}%
+}
+\newcommand{\zooValLit}[1]{%
+  \constr{ValLit}%
+  \ifx #1\empty \else%
+    \ #1%
+  \fi%
+}
+\newcommand{\zooValRecs}[2]{%
+  \constr{ValRecs}\ #1\ #2%
+}
+\newcommand{\zooValFun}[2]{%
+  \constr{ValFun}\ #1\ #2%
+}
+\newcommand{\zooValBlock}[3]{%
+  \constr{ValBlock}\ #1\ #2\ #3%
+}
+\newcommand{\zooValTuple}[1]{%
+  \constr{ValTuple}\ #1%
+}
+\newcommand{\zooValUnit}{%
+  \constr{ValUnit}%
+}
+
+\newcommand{\zooExpr}{%
+  \v{e}%
+}
+\newcommand{\zooExprs}{%
+  \v{es}%
+}
+\newcommand{\zooExprVal}[1]{%
+  \constr{Val}%
+  \ifx #1\empty \else%
+    \ #1%
+  \fi%
+}
+\newcommand{\zooExprVar}[1]{%
+  \constr{Var}%
+  \ifx #1\empty \else%
+    \ #1%
+  \fi%
+}
+\newcommand{\zooExprRec}[3]{%
+  \constr{Rec}\ #1\ #2\ #3%
+}
+\newcommand{\zooExprFun}[2]{%
+  \constr{Fun}\ #1\ #2%
+}
+\newcommand{\zooExprApp}[2]{%
+  \constr{App}\ #1\ #2%
+}
+\newcommand{\zooExprLet}[3]{%
+  \constr{Let}\ #1\ #2\ #3%
+}
+\newcommand{\zooExprSeq}[2]{%
+  \constr{Seq}\ #1\ #2%
+}
+\newcommand{\zooExprUnop}[2]{%
+  \constr{Unop}\ #1\ #2%
+}
+\newcommand{\zooExprBinop}[3]{%
+  \constr{Binop}\ #1\ #2\ #3%
+}
+\newcommand{\zooExprEqual}[2]{%
+  \constr{Equal}\ #1\ #2%
+}
+\newcommand{\zooExprIf}[3]{%
+  \constr{If}\ #1\ #2\ #3%
+}
+\newcommand{\zooExprFor}[3]{%
+  \constr{For}\ #1\ #2\ #3%
+}
+\newcommand{\zooExprAlloc}[2]{%
+  \constr{Alloc}\ #1\ #2%
+}
+\newcommand{\zooExprBlock}[3]{%
+  \constr{Block}\ #1\ #2\ #3%
+}
+\newcommand{\zooExprTuple}[1]{%
+  \constr{Tuple}\ #1%
+}
+\newcommand{\zooExprMatch}[4]{%
+  \constr{Match}\ #1\ #2\ #3\ #4%
+}
+\newcommand{\zooExprGetTag}[1]{%
+  \constr{GetTag}\ #1%
+}
+\newcommand{\zooExprGetSize}[1]{%
+  \constr{GetSize}\ #1%
+}
+\newcommand{\zooExprLoad}[2]{%
+  \constr{Load}\ #1\ #2%
+}
+\newcommand{\zooExprProj}[2]{%
+  \constr{Proj}_{#1}\ #2%
+}
+\newcommand{\zooExprStore}[3]{%
+  \constr{Store}\ #1\ #2\ #3%
+}
+\newcommand{\zooExprXchg}[2]{%
+  \constr{Xchg}\ #1\ #2%
+}
+\newcommand{\zooExprCAS}[3]{%
+  \constr{CAS}\ #1\ #2\ #3%
+}
+\newcommand{\zooExprFAA}[2]{%
+  \constr{FAA}\ #1\ #2%
+}
+\newcommand{\zooExprFork}[1]{%
+  \constr{Fork}\ #1%
+}
+\newcommand{\zooExprGetLocal}{%
+  \constr{GetLocal}%
+}
+\newcommand{\zooExprSetLocal}[1]{%
+  \constr{SetLocal}\ #1%
+}
+\newcommand{\zooExprProph}{%
+  \constr{Proph}%
+}
+\newcommand{\zooExprResolve}[3]{%
+  \constr{Resolve}\ #1\ #2\ #3%
+}
+
+\newcommand{\zooPattern}{%
+  \v{pat}%
+}
+
+\newcommand{\zooBranch}{%
+  \v{br}%
+}
+
+\newcommand{\zooRec}{%
+  \v{rec}%
+}
+\newcommand{\zooRecs}{%
+  \v{recs}%
+}
+
+\newcommand{\zooSubjectLoc}[1]{%
+  \constr{SubjectLoc}\ #1%
+}
+\newcommand{\zooSubjectBlock}[2]{%
+  \constr{SubjectBlock}\ #1\ #2%
+}
+
+\newcommand{\zooHeader}{%
+  \v{hdr}%
+}
+
+\newcommand{\zooConstr}{%
+  C%
+}
+
+\newcommand{\zooProj}{%
+  \v{proj}%
+}
+
+\newcommand{\zooField}{%
+  \v{fld}%
+}
+
+\newcommand{\zooHeap}{%
+  \v{h}%
+}
+\newcommand{\zooState}{%
+  \ensureMath{\sigma}%
+}
+
+\newcommand{\zooThread}{%
+  \v{tid}%
+}
+
+\newcommand{\zooObservation}{%
+  \kappa%
+}
+
+\newcommand{\zooHole}{%
+  \square%
+}
+\newcommand{\zooFrame}{%
+  \v{k}%
+}
+\newcommand{\zooCtx}{%
+  \v{K}%
+}

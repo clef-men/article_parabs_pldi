@@ -1,0 +1,35 @@
+\RequirePackage{minted}
+
+%----------------------------------------
+
+\DeclareUnicodeCharacter{3B9}{$\iota$}
+\DeclareUnicodeCharacter{2200}{$\forall$}
+\DeclareUnicodeCharacter{2203}{$\exists$}
+\DeclareUnicodeCharacter{2260}{$\not{\kern-0.3ex\texttt{=}}$}
+\DeclareUnicodeCharacter{3A3}{$\Sigma$}
+\DeclareUnicodeCharacter{2217}{$\ast$}
+\DeclareUnicodeCharacter{231C}{$\ulcorner$}
+\DeclareUnicodeCharacter{231D}{$\urcorner$}
+\DeclareUnicodeCharacter{2248}{$\approx$}
+\DeclareUnicodeCharacter{2249}{$\not\approx$}
+
+\newcommand{\@fakeLgeq}[1]{%
+  \texttt{%
+    \vbox{%
+      \offinterlineskip%
+      \ialign{%
+        ##\cr#1\cr\noalign{\kern-0.3ex}-\cr\noalign{\kern-0.7ex}%
+      }%
+    }%
+  }%
+}
+\DeclareUnicodeCharacter{2264}{\@fakeLgeq{<}}
+\DeclareUnicodeCharacter{2265}{\@fakeLgeq{>}}
+
+%----------------------------------------
+
+\newminted{ocaml}{}
+\newmintinline{ocaml}{}
+
+\newminted{coq}{}
+\newmintinline{coq}{}

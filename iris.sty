@@ -1,0 +1,398 @@
+\RequirePackage{amsmath}
+
+\RequirePackage{ifthen}
+
+\RequirePackage{keyval}
+
+\RequirePackage{scalerel}
+
+\RequirePackage{stmaryrd}
+
+\RequirePackage{tensor}
+
+\RequirePackage{tikz}
+\usetikzlibrary{calc}
+
+\RequirePackage{xparse}
+
+%----------------------------------------
+
+\newcommand{\iGname}{%
+  \ensureMath{\gamma}%
+}
+
+\newcommand{\iIname}{%
+  \ensureMath{\iota}%
+}
+
+\newcommand{\iMask}{%
+  \ensureMath{\mathcal{E}}%
+}
+\newcommand{\iMaskEmpty}{%
+  \ensureMath{\emptyset}%
+}
+\newcommand{\iMaskFull}{%
+  \ensureMath{\top}%
+}
+
+\newcommand{\Prop}{%
+  \l{Prop}%
+}
+
+\newcommand{\iEntails}{%
+  \vdash%
+}
+
+\newcommand{\iProp}[1][\@nil]{%
+  \def\@tmp{#1}%
+  \ifx\@tmp\@nnil%
+    \ensureMath{P}%
+  \else%
+    \l{iProp}%
+  \fi%
+}
+\newcommand{\iPropTwo}{%
+  \ensureMath{Q}%
+}
+\newcommand{\iPropThree}{%
+  \ensureMath{R}%
+}
+
+\newcommand{\iPred}{%
+  \ensureMath{\Phi}%
+}
+\newcommand{\iPredTwo}{%
+  \ensureMath{\Psi}%
+}
+\newcommand{\iPredThree}{%
+  \ensureMath{\Chi}%
+}
+\newcommand{\iPredFour}{%
+  \ensureMath{\Xi}%
+}
+\newcommand{\iPredFive}{%
+  \ensureMath{\Omega}%
+}
+
+\newcommand{\iType}{%
+  \ensureMath{\tau}%
+}
+
+\let\iTrue\logTrue
+\let\iFalse\logFalse
+
+\let\iAnd\logAnd
+\let\iOr\logOr
+
+\newcommand{\iSep}{%
+  \mathrel{\ast}%
+}
+\DeclareMathOperator*{\iBigSep}{%
+  \scalerel*{\iSep}{\displaystyle\sum}%
+}
+
+\newcommand{\iWand}{%
+  \mathrel{-\!\!\ast}%
+}
+
+\newcommand{\iPersistently}{%
+  \mathop{\boxempty}%
+}
+
+\newcommand{\iLater}[1][]{%
+  \mathop{\triangleright^{#1}}%
+}
+
+\newcommand{\iCredit}[1]{%
+  \text{\textsterling} \hskip0.2em #1%
+}
+
+\newcommand{\@iUpd}{%
+  \mid\kern-0.5ex\Rrightarrow\kern-0.25ex%
+}
+
+\newcommand{\displacedDot}[2][.2ex]{%
+  \dot{\raisebox{0pt}[\dimexpr\height+#1][\depth]{$#2$}}%
+}
+\newcommand{\iBupd}{%
+  \mathop{%
+    \displacedDot[-0.2ex]{%
+      \@iUpd%
+    }%
+  }%
+  \kern0.2ex%
+}
+
+\NewDocumentCommand\iFupd{O{} o}{%
+  \mathop{%
+    \IfNoValueTF{#2}{%
+      {\@iUpd}_{#1}%
+    }{%
+      \kern-0.8ex%
+      \tensor*[^{#1}]{\@iUpd}{^{#2}}%
+    }%
+  }%
+  \kern0.2ex%
+}
+
+\newcommand{\iWandFupd}{%
+  \Rrightarrow%
+}
+
+\newcommand{\@iInv}[2]{%
+  \tikz[baseline=(m.base)]{
+    \node[rectangle, inner sep=0.8pt, outer sep=0.2pt, anchor=base] (m) {${\,#2\,}\mathstrut$} ;
+    \draw[sharp corners, line width=0.2pt] ($(m.south west) + (0, 0.65pt)$) rectangle ($(m.north east) + (0, 0.7pt)$) ;
+  }%
+  \IfNoValueF{#1}{^{\,#1}}%
+}
+\newcommand{\iInv}[2][]{%
+  \@iInv{#1}{%
+    \begin{inbox}
+      #2
+    \end{inbox}%
+  }%
+}
+
+\newcommand{\iPointsto}[1][]{%
+  \xmapsto{%
+    \smash{%
+      \raisebox{-.15ex}{%
+        \ensuremath{%
+          \scriptstyle #1%
+        }%
+      }%
+    }%
+  }%
+}
+
+\newcommand{\iPointstoTwo}{%
+  \rightarrowtail%
+}
+
+\newcommand{\iHeader}{%
+  \iPointsto_{\l{h}}%
+}
+
+\newcommand{\iLocal}[1][]{%
+  \iPointsto[#1]_{\l{l}}%
+}
+
+\newcommand{\iView}[1][]{% 
+  \ensureMath{\mathcal{V}}
+}
+\newcommand{\iViewTwo}{%
+  \ensureMath{\mathcal{W}}%
+}
+\newcommand{\iViewJoin}[2]{%
+  #1 \sqcup #2%
+}
+\newcommand{\iViewLb}[1]{%
+  \sqsupseteq #1%
+}
+
+\newcommand{\iAtomic}[1]{%
+  \l{atomic}\ #1%
+}
+\newcommand{\iPersistent}[1]{%
+  \l{persistent}\ #1%
+}
+
+\newcommand{\@iSeparator}{%
+  \,\fatsemi\,%
+}
+
+\define@key{iArgs}{lab}[]{%
+  \def\iArgs@lab{#1}%
+}
+\define@key{iArgs}{mask}[]{%
+  \def\iArgs@mask{#1}%
+}
+\define@key{iArgs}{tid}[]{%
+  \def\iArgs@tid{#1}%
+}
+\newcommand{\@iArgs}[1]{%
+  \setkeys{iArgs}{lab,mask,tid,#1}%
+}
+
+\NewDocumentCommand\iTriple{m m o m}{%
+  \left\{ \,%
+  #1%
+  \, \right\} \,%
+  #2%
+  \, \left\{ \,%
+  \IfValueT{#3}{%
+    \Return #3.%
+  }%
+  #4%
+  \, \right\}%
+}
+
+\NewDocumentCommand\iWp{O{} m o m}{%
+  \@iArgs{#1}%
+  \l{wp}_{\iArgs@mask}%
+  \:%
+  #2%
+  \ifx\iArgs@tid\empty \else%
+    \@iSeparator \iArgs@tid%
+  \fi%
+  \, \left\{ \,%
+  \IfValueTF{#3}{%
+    \begin{array}{@{}l@{\ }l@{}}
+      \Return #3. &
+      \begin{array}[t]{@{}l@{}}
+        #4
+      \end{array}
+    \end{array}%
+  }{%
+    \begin{array}{@{}l@{}}
+      #4
+    \end{array}%
+  }%
+  \, \right\}%
+}
+
+\newcommand{\@iSpec}[6]{%
+  \begin{array}{@{}c@{}}
+      \begin{array}{l}
+        #1
+      \end{array}
+    \\ \hline
+      #2%
+      \ifx#3\empty \else%
+        \@iSeparator #3%
+      \fi%
+      \ifx#4\empty \else%
+        \@iSeparator #4%
+      \fi%
+    \\ \hline
+      \IfValueTF{#5}{
+        \begin{array}{l@{\ }l}
+          \Return #5. &
+          \begin{array}[t]{@{}l@{}}
+            #6
+          \end{array}
+        \end{array}
+      }{
+        \begin{array}{l}
+          #6
+        \end{array}
+      }
+  \end{array}%
+}
+\NewDocumentCommand\iSpec{O{} m m o m}{%
+  \@iArgs{#1}%
+  \ifx\iArgs@lab\empty%
+    \@iSpec{#2}{#3}{\iArgs@tid}{\iArgs@mask}{#4}{#5}%
+  \else%
+    \infer[\iArgs@lab]{}{{{%
+      \@iSpec{#2}{#3}{\iArgs@tid}{\iArgs@mask}{#4}{#5}%
+    }}}%
+  \fi%
+}
+
+\NewDocumentCommand\iAu{D<>{} o m o m m}{%
+  \@iArgs{#1}%
+  \left\langle \,%
+  \IfValueT{#2}{%
+    \Return #2.%
+  }%
+  #3%
+  \mid%
+  \IfValueT{#4}{%
+    \Return #4.%
+  }%
+  #5%
+  \iWandFupd%
+  #6%
+  \, \right\rangle_{\iArgs@mask}%
+}
+
+\NewDocumentCommand\iAtriple{O{} m o m m o m o m}{%
+  \@iArgs{#1}%
+  \left\{ \,%
+  #2%
+  \, \right\} \left\langle \,%
+  \IfValueT{#3}{%
+    \Return #3.%
+  }%
+  #4%
+  \, \right\rangle \,%
+  #5%
+  \ifx\iArgs@mask\empty \else%
+    \@iSeparator \iArgs@mask%
+  \fi%
+  \, \left\langle \,%
+  \IfValueT{#6}{%
+    \Return #6.%
+  }%
+  #7%
+  \, \right\rangle \left\{ \,%
+  \IfValueT{#8}{%
+    \Return #8.%
+  }%
+  #9%
+  \, \right\}%
+}
+
+\newcommand{\@iAspec}[9]{%
+  \begin{array}{@{}c@{}}
+      \begin{array}{l}
+        #1
+      \end{array}
+    \\ \hdashline
+      \IfValueTF{#2}{
+        \begin{array}{l@{\ }l}
+          \Return #2. &
+          \begin{array}[t]{@{}l@{}}
+            #3
+          \end{array}
+        \end{array}
+      }{
+        \begin{array}{l}
+          #3
+        \end{array}
+      }
+    \\ \hline
+      #4%
+      \ifx#5\empty \else%
+        \@iSeparator #5%
+      \fi%
+    \\ \hline
+      \IfValueTF{#6}{
+        \begin{array}{l@{\ }l}
+          \Return #6. &
+          \begin{array}[t]{@{}l@{}}
+            #7
+          \end{array}
+        \end{array}
+      }{
+        \begin{array}{l}
+          #7
+        \end{array}
+      }
+    \\ \hdashline
+      \IfValueTF{#8}{
+        \begin{array}{l@{\ }l}
+          \Return #8. &
+          \begin{array}[t]{@{}l@{}}
+            #9
+          \end{array}
+        \end{array}
+      }{
+        \begin{array}{l}
+          #9
+        \end{array}
+      }
+  \end{array}%
+}
+\NewDocumentCommand\iAspec{O{} m o m m o m o m}{%
+  \@iArgs{#1}%
+  \ifx\iArgs@lab\empty%
+    \@iAspec{#2}{#3}{#4}{#5}{\iArgs@mask}{#6}{#7}{#8}{#9}%
+  \else%
+    \infer[\iArgs@lab]{}{{{%
+      \@iAspec{#2}{#3}{#4}{#5}{\iArgs@mask}{#6}{#7}{#8}{#9}%
+    }}}%
+  \fi%
+}

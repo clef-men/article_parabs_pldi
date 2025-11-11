@@ -1,0 +1,804 @@
+\RequirePackage{graphicx}
+
+\RequirePackage{mathtools}
+
+\RequirePackage{stmaryrd}
+
+\RequirePackage[dvipsnames]{xcolor}
+
+\RequirePackage{xparse}
+
+\RequirePackage{xspace}
+
+%----------------------------------------
+
+% https://tex.stackexchange.com/questions/214474/is-it-possible-to-use-beamers-overlay-specifications-in-other-documentclasses
+
+\newcommand{\onlySet}[1]{%
+  \def\@only{#1}%
+}
+
+\newcounter{only@begin}
+\newcounter{only@end}
+
+\def\@only@hyphen{%
+  -%
+}
+
+\def\only<#1>#2{%
+  \bgroup
+    \def\only@test{#1}%
+    \ifx\only@test\@only@hyphen
+      \c@only@begin=-100\relax
+      \c@only@end=100\relax
+    \else
+      \parseonlybegin\only@relax#1-\endparseonly
+      \parseonlyend\only@relax#1-\endparseonly
+    \fi
+    \advance\c@only@begin by -1\relax
+    \advance\c@only@end by 1\relax
+    \ifnum\c@only@begin<\@only\relax
+      \ifnum\c@only@end>\@only\relax
+        #2\relax
+      \fi
+    \fi
+  \egroup%
+}
+
+\def\@only@relax{%
+  \only@relax%
+}
+\def\only@striponetoken#1{%
+}
+\def\only@gobblehyphen#1-{%
+  #1%
+}
+\def\parseonlybegin#1-#2\endparseonly{%
+  \def\only@test{#1}%
+  \ifx\only@test\@only@relax
+    \setcounter{only@begin}{-100}%
+  \else
+    \expandafter\c@only@begin\only@striponetoken#1\relax%
+  \fi%
+}
+\def\parseonlyend#1-#2\endparseonly{%
+  \def\only@test{#2}%
+  \ifx\only@test\@empty
+    % No hyphen in original.
+    \c@only@end=\c@only@begin%
+  \else
+    \ifx\only@test\@only@hyphen
+      % \only<a->
+      \setcounter{only@end}{100}%
+    \else
+      % \only<a-b> or \only<-b>; #2 contains 'b-'
+      \expandafter\c@only@end\only@gobblehyphen#2\relax%
+    \fi
+  \fi%
+}
+
+%----------------------------------------
+
+\newcommand{\ensureMath}[1]{%
+  \TextOrMath{%
+    $#1$\xspace%
+  }{%
+    #1%
+  }%
+}
+
+%----------------------------------------
+
+\def\v#1{%
+  \ensureMath{\mathit{#1}}%
+}
+
+\def\l#1{%
+  \ensureMath{\textsf{\upshape #1}}%
+}
+
+\let\cedilla\c
+\let\c\texttt
+
+%----------------------------------------
+
+\DeclareRobustCommand\onedot{\futurelet\@let@token\@onedot}
+\def\@onedot{\ifx\@let@token.\else.\null\fi\xspace}
+
+\def\eg{\emph{e.g}\onedot}
+\def\ie{\emph{i.e}\onedot}
+\def\etc{\emph{etc}\onedot}
+
+%----------------------------------------
+
+\newenvironment{inbox}[1][]{
+  \begin{array}[#1]{@{}l@{}}
+}{
+  \end{array}
+}
+
+\newenvironment{inboxIndent}[1][]{
+  \begin{array}[#1]{@{\hskip1em}l@{}}
+}{
+  \end{array}
+}
+
+%----------------------------------------
+
+\newcommand{\mathhyphen}{%
+    {\hbox{-}}%
+}
+
+%----------------------------------------
+
+\newcommand{\hl}[2][yellow]{%
+  \TextOrMath{%
+    \colorbox{#1}{#2}%
+  }{%
+    \colorbox{#1}{$#2$}%
+  }%
+}
+
+%----------------------------------------
+
+\newcommand{\Chi}{%
+  \mathrm{X}%
+}
+
+%----------------------------------------
+
+\newcommand{\eqdef}{%
+  \triangleq%
+}
+
+\newcommand{\eqbnf}{%
+  \vcentcolon\vcentcolon=%
+}
+
+%----------------------------------------
+
+\newcommand{\logTrue}{%
+  \l{True}%
+}
+\newcommand{\logFalse}{%
+  \l{False}%
+}
+
+\newcommand{\logAnd}{%
+  \mathrel{\wedge}%
+}
+\newcommand{\logOr}{%
+  \mathrel{\vee}%
+}
+
+\newenvironment{bigLogAnd}{%
+  \bigwedge \left[%
+  \begin{array}{l}%
+}{%
+  \end{array}%
+  \right]%
+}
+\newenvironment{bigLogOr}{%
+  \bigvee \left[%
+  \begin{array}{l}%
+}{%
+  \end{array}%
+  \right]%
+}
+
+\newcommand{\logImp}{%
+  \rightarrow%
+}
+
+%----------------------------------------
+
+\def\Forall #1.{%
+  \forall\ #1 \ldotp%
+}
+\def\Exists #1.{%
+  \exists\ #1 \ldotp%
+}
+\def\Return #1.{%
+  #1 \ldotp%
+}
+\def\Lambda #1.{%
+  \operatorname{\lambda} #1 \ldotp%
+}
+
+%----------------------------------------
+
+\newcommand{\decide}[1]{%
+  \l{decide}\ #1%
+}
+\newcommand{\decideEq}[2]{%
+  \decide{\left( #1 = #2 \right)}%
+}
+
+\newcommand{\dom}[1]{%
+  \l{dom}\ #1%
+}
+
+\newcommand{\finmap}{%
+  \xrightharpoonup{%
+    \smash{%
+      \raisebox{-.15ex}{%
+        \ensuremath{%
+          \scriptstyle \l{fin}%
+        }%
+      }%
+    }%
+  }%
+}
+
+%----------------------------------------
+
+\newcommand{\seq}[1]{%
+  \overline{#1}%
+}
+
+\let\constr\l
+
+\newcommand{\mykeyword}[1]{%
+  \l{\textbf{#1}}%
+}
+
+\newcommand{\boolTrue}{%
+  \constr{true}%
+}
+\newcommand{\boolFalse}{%
+  \constr{false}%
+}
+
+\newcommand{\None}{%
+  \constr{None}%
+}
+\newcommand{\Some}[1]{%
+  \constr{Some}\ #1%
+}
+
+\newcommand{\nil}{%
+  []%
+}
+\newcommand{\cons}[2]{%
+  #1 :: #2
+}
+
+\newcommand{\dplus}{%
+  \mathbin{+\mkern-10mu+}%
+}
+
+\newcommand{\fmap}{%
+  \mathrel{\langle\$\rangle}%
+}
+
+\newcommand{\loc}{%
+  \ensureMath{\ell}%
+}
+
+\newcommand{\fraction}{%
+  \ensureMath{q}%
+}
+
+\newcommand{\DfracDiscarded}{%
+  \boxempty%
+}
+\newcommand{\DfracOwn}[1]{%
+  #1%
+}
+
+\newcommand{\proj}[1]{%
+  \mathop{\pi_{#1}}%
+}
+
+%----------------------------------------
+
+\newcommand{\myifOneline}[3]{%
+  \mykeyword{if}\ #1\ \mykeyword{then}\ #2\ \mykeyword{else}\ #3%
+}
+\newcommand{\myif}[3]{%
+  \begin{array}[t]{@{}l@{}}
+      \mykeyword{if}\ #1\ \mykeyword{then}
+    \\
+      \begin{array}{@{\kern1em}l@{}}
+        #2
+      \end{array}
+    \\
+      \mykeyword{else}
+    \\
+      \begin{array}{@{\kern1em}l@{}}
+        #3
+      \end{array}
+  \end{array}%
+}
+
+%----------------------------------------
+
+\newcommand{\matchBegin}[1]{%
+  \begin{array}[t]{@{}l@{}}
+      \mykeyword{match}\ #1\ \mykeyword{with}
+    \\
+}
+\NewDocumentCommand\matchBranch{m o m}{
+      |\ \constr{#1}
+      \IfValueT{#2}{
+        \ #2
+      }
+      \Rightarrow
+    \\
+      \begin{array}{@{\kern1em}l@{}}
+        #3
+      \end{array}
+    \\
+}
+\newcommand{\matchEnd}{
+      \mykeyword{end}
+  \end{array}%
+}
+
+\NewDocumentCommand\matchTwo{m m o m m o m}{%
+  \matchBegin{#1}
+    \matchBranch{#2}[#3]{#4}
+    \matchBranch{#5}[#6]{#7}
+  \matchEnd%
+}
+
+\newcommand{\matchOption}[4]{%
+  \matchTwo{#1}{None}{#2}{Some}[#3]{#4}%
+}
+
+%----------------------------------------
+
+\newcommand{\mapEmpty}{%
+  \emptyset%
+}
+\newcommand{\mapLookup}[2]{%
+  #1 \left[ #2 \right]%
+}
+\newcommand{\mapSingleton}[2]{%
+  \left\{ #1 \mapsto #2 \right\}%
+}
+\newcommand{\mapInsert}[3]{%
+  #3 \left[ #1 \mapsto #2 \right]%
+}
+\newcommand{\mapAlter}[3]{%
+  \l{alter}\ #1\ #2\ #3%
+}
+\newcommand{\mapDelete}[2]{%
+  \l{delete}\ {#1}\ {#2}%
+}
+
+%----------------------------------------
+
+\newcommand{\@recordBegin}{%
+  \left\{\,%
+}
+\newcommand{\@recordEnd}{%
+  \,\right\}%
+}
+\newcommand{\@recordField}[2]{%
+  \l{#1} \kern-0.25em : #2%
+}
+\newcommand{\@recordSep}{%
+  ;\,%
+}
+\newcommand{\recordOne}[2]{%
+  \@recordBegin%
+  \@recordField{#1}{#2}%
+  \@recordEnd%
+}
+\newcommand{\recordTwo}[4]{%
+  \@recordBegin%
+  \@recordField{#1}{#2}%
+  \@recordSep%
+  \@recordField{#3}{#4}%
+  \@recordEnd%
+}
+\newcommand{\recordThree}[6]{%
+  \@recordBegin%
+  \@recordField{#1}{#2}%
+  \@recordSep%
+  \@recordField{#3}{#4}%
+  \@recordSep%
+  \@recordField{#5}{#6}%
+  \@recordEnd%
+}
+\newcommand{\recordFour}[8]{%
+  \@recordBegin%
+  \@recordField{#1}{#2}%
+  \@recordSep%
+  \@recordField{#3}{#4}%
+  \@recordSep%
+  \@recordField{#5}{#6}%
+  \@recordSep%
+  \@recordField{#7}{#8}%
+  \@recordEnd%
+}
+
+\newcommand{\recordGet}[2]{%
+  #1.\l{#2}%
+}
+
+\newcommand{\recordSet}[3]{%
+  \mapInsert{\l{#1}}{#2}{#3}%
+}
+
+%----------------------------------------
+
+\newcommand{\mystackrel}[2]{%
+  \stackrel{%
+    \smash{%
+      \raisebox{-.15ex}{%
+        \ensuremath{%
+          \scriptstyle \l{#1}%
+        }%
+      }%
+    }%
+  }{%
+    #2%
+  }%
+}
+
+\newcommand{\similar}[1][]{%
+  \mystackrel{#1}{\approx}%
+}
+
+\newcommand{\nonsimilar}[1][]{%
+  \mystackrel{#1}{\not\approx}%
+}
+
+%----------------------------------------
+
+\newcommand{\permutation}[2]{%
+  #1 \equiv_{\l{p}} #2%
+}
+
+%----------------------------------------
+
+\newcommand{\interval}[2][0]{%
+  \llbracket #1 ; #2 )%
+}
+
+%----------------------------------------
+
+\newcommand{\interp}[1]{%
+  \llbracket #1 \rrbracket%
+}
+
+%----------------------------------------
+
+\newcommand{\syntaxOption}[1]{%
+  #1^?%
+}
+
+%----------------------------------------
+
+\newcommand{\step}[2][]{%
+  \xrightarrow[%
+    \smash{%
+      \raisebox{.5ex}{%
+        \ensuremath{%
+          \scriptstyle #1%
+        }%
+      }%
+    }%
+  ]{%
+    \smash{%
+      \raisebox{-.15ex}{%
+        \ensuremath{%
+          \scriptstyle \l{#2}%
+        }%
+      }%
+    }%
+  }%
+}
+
+\newcommand{\stepPure}{%
+  \step{pure}%
+}
+
+\newcommand{\stepBase}{%
+  \step{base}%
+}
+
+\newcommand{\stepHead}[1]{%
+  \step[#1]{head}%
+}
+
+\newcommand{\stepTp}{%
+  \step{tp}%
+}
+
+%----------------------------------------
+
+\newcommand{\transition}{%
+  \rightsquigarrow%
+}
+\newcommand{\transitionRtc}{%
+  \transition^{*}%
+}
+
+%----------------------------------------
+
+\newcommand{\AltErgo}{%
+  Alt-Ergo\xspace%
+}
+
+\newcommand{\C}{%
+  C\xspace%
+}
+
+\newcommand{\Cameleer}{%
+  Cameleer\xspace%
+}
+
+\newcommand{\CFML}{%
+  CFML\xspace%
+}
+
+\newcommand{\Cilk}{%
+  Cilk\xspace%
+}
+
+\newcommand{\Cpp}{%
+  C\texttt{++}\xspace%
+}
+
+\newcommand{\Coq}{%
+  Coq\xspace%
+}
+
+\newcommand{\Cosmo}{%
+  Cosmo\xspace%
+}
+
+\newcommand{\DataLang}{%
+  DataLang\xspace%
+}
+
+\newcommand{\Diaframe}{%
+  Diaframe\xspace%
+}
+
+\newcommand{\DRFCaml}{%
+  DRFCaml\xspace%
+}
+
+\newcommand{\Dune}{%
+  Dune\xspace%
+}
+
+\newcommand{\Flambda}{%
+  Flambda\xspace%
+}
+
+\newcommand{\Gallina}{%
+  Gallina\xspace%
+}
+
+\newcommand{\Go}{%
+  Go\xspace%
+}
+
+\newcommand{\Gospel}{%
+  Gospel\xspace%
+}
+
+\newcommand{\Hacspec}{%
+  Hacspec\xspace%
+}
+
+\newcommand{\Haskell}{%
+  Haskell\xspace%
+}
+
+\newcommand{\HeapLang}{%
+  HeapLang\xspace%
+}
+
+\newcommand{\Iris}{%
+  Iris\xspace%
+}
+
+\newcommand{\Java}{%
+  Java\xspace%
+}
+
+\newcommand{\Lean}{%
+  Lean\xspace%
+}
+
+\newcommand{\MulticoreOCaml}{%
+  Multicore OCaml\xspace%
+}
+
+\newcommand{\OCaml}{%
+  OCaml\xspace%
+}
+\newcommand{\OCamlFour}{%
+  \OCaml~4\xspace%
+}
+\newcommand{\OCamlFive}{%
+  \OCaml~5\xspace%
+}
+
+\newcommand{\OpenMP}{%
+  OpenMP\xspace%
+}
+
+\newcommand{\Osiris}{%
+  Osiris\xspace%
+}
+
+\newcommand{\Perennial}{%
+  Perennial\xspace%
+}
+
+\newcommand{\Rocq}{%
+  Rocq\xspace%
+}
+
+\newcommand{\Rust}{%
+  Rust\xspace%
+}
+\newcommand{\RustBelt}{%
+  RustBelt\xspace%
+}
+
+\newcommand{\Simuliris}{%
+  Simuliris\xspace%
+}
+
+\newcommand{\TBB}{%
+  TBB\xspace%
+}
+
+\newcommand{\VeriFast}{%
+  VeriFast\xspace%
+}
+
+\newcommand{\WhyThree}{%
+  Why3\xspace%
+}
+
+\newcommand{\Zoo}{%
+  Zoo\xspace%
+}
+\newcommand{\ZooLang}{%
+  ZooLang\xspace%
+}
+
+%----------------------------------------
+
+\newcommand{\Backoff}{%
+  \texttt{Backoff}\xspace%
+}
+
+\newcommand{\coqOfOcaml}{%
+  \texttt{coq\_of\_ocaml}\xspace%
+}
+
+\newcommand{\Domainslib}{%
+  \texttt{Domainslib}\xspace%
+}
+
+\newcommand{\Eigen}{%
+  \texttt{Eigen}\xspace%
+}
+
+\newcommand{\Eio}{%
+  \texttt{Eio}\xspace%
+}
+
+\newcommand{\Folly}{%
+  \texttt{Folly}\xspace%
+}
+
+\newcommand{\Inferno}{%
+  \texttt{Inferno}\xspace%
+}
+
+\newcommand{\Kcas}{%
+  \texttt{Kcas}\xspace%
+}
+
+\newcommand{\Miou}{%
+  \texttt{Miou}\xspace%
+}
+
+\newcommand{\Monolith}{%
+  \texttt{Monolith}\xspace%
+}
+
+\newcommand{\Moonpool}{%
+  \texttt{Moonpool}\xspace%
+}
+
+\newcommand{\ocamlToZoo}{%
+  \texttt{ocaml2zoo}\xspace%
+}
+
+\newcommand{\Parabs}{%
+  \texttt{Parabs}\xspace%
+}
+
+\newcommand{\Picos}{%
+  \texttt{Picos}\xspace%
+}
+
+\newcommand{\Rcfd}{%
+  \texttt{Rcfd}\xspace%
+}
+
+\newcommand{\Riot}{%
+  \texttt{Riot}\xspace%
+}
+
+\newcommand{\Saturn}{%
+  \texttt{Saturn}\xspace%
+}
+
+\newcommand{\Store}{%
+  \texttt{Store}\xspace%
+}
+
+\newcommand{\Taskflow}{%
+  \texttt{Taskflow}\xspace%
+}
+
+\newcommand{\Tokio}{%
+  \texttt{Tokio}\xspace%
+}
+
+%----------------------------------------
+
+\newlength\@inlinegraphicsHeight
+\newlength\@inlinegraphicsDepth
+\newcommand{\inlinegraphics}[2][1]{%
+  \settototalheight\@inlinegraphicsHeight{Xygp}%
+  \settodepth\@inlinegraphicsDepth{Xygp}%
+  \raisebox{-#1\@inlinegraphicsDepth}{\includegraphics[height=\@inlinegraphicsHeight]{#2}}%
+}
+
+%----------------------------------------
+
+\newcommand{\refLib}[1]{%
+  \href{%
+    https://github.com/clef-men/zoo/tree/phd/lib/\detokenize{#1}%
+  }{%
+    \inlinegraphics[.5]{images/ocaml.png}%
+  }%
+}
+
+\newcommand{\refTheories}[1]{%
+  \ifx \relax#1\relax%
+    \href{%
+      https://github.com/clef-men/zoo/tree/phd/theories/%
+    }{%
+      \inlinegraphics{images/rocq.png}%
+    }%
+  \else%
+    \href{%
+      https://github.com/clef-men/zoo/tree/phd/theories/\string#1%
+    }{%
+      \inlinegraphics{images/rocq.png}%
+    }%
+  \fi%
+}
+
+\NewDocumentCommand\refLibTheories{O{} O{} m}{%
+  \refLib{#3#1}~\refTheories{#3#2}%
+}
+\newcommand{\refLibTheoriesFile}[1]{%
+  \refLibTheories[.ml][.v]{#1}%
+}
+
+%----------------------------------------
+
+\colorlet{color1}{blue}
+\colorlet{color2}{Green}
+\colorlet{color3}{orange}
+\colorlet{color4}{RubineRed}
+\colorlet{color5}{cyan}
+\colorlet{color6}{red}
+\colorlet{color7}{Plum}
+\colorlet{color8}{brown}
