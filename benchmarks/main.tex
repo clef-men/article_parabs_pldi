@@ -1,0 +1,143 @@
+\section{Benchmarks}
+\label{app:benchmarks}
+
+In this section, we present simple benchmarks to assess the performance of \Parabs relatively to \Domainslib and \Moonpool on simple workloads. Benchmarking concurrent schedulers is subtle and difficult; we have not tried here to validate and study experimentally all our implementation choices, or to cover the wide range of concurrent workloads, but to validate a simple qualitative claim:
+
+\begin{quotation}
+  For CPU-bound tasks, \Parabs has comparable throughput to \Domainslib, a state-of-the-art scheduler used in production in the \OCamlFive library ecosystem.
+\end{quotation}
+
+In fact our results validate a stronger qualitative claim: the performance of \Parabs are equal or better than \Domainslib, with a 10\% speedup in some cases.
+
+\subsection{Setting}
+
+\subsubsection{Machine}
+
+The benchmark results were produced on a 12-core AMD Ryzen 5 7640U machine, set at a fixed frequency of 2GHz.
+
+\subsubsection{Parameters}
+
+For each benchmark, we pick an input parameter that gives long-enough computation times on our test machine, typically between 200ms and 2s.
+We use the \c{hyperfine} tool and run each benchmark ten time.
+All benchmark were run with two parameters varying:
+\begin{itemize}
+  \item
+    \c{DOMAINS}, the number of domains  used for computation;
+  \item
+    \c{CUTOFF}, representing an input size or chunk size below which a sequential baseline is used.
+\end{itemize}
+
+For each benchmark, we show:
+\begin{itemize}
+  \item
+    per-cutoff results with a fixed value $\c{DOMAINS} = 6$, which should be enough to experience scaling issues while not suffering from CPU contention;
+  \item
+    per-domain results with a \c{CUTOFF} value that is chosen to work well for all implementations for this benchmark.
+\end{itemize}
+
+\subsubsection{Scheduler implementations}
+
+Each benchmark is written on top of a simple scheduler interface, for which the following implementations are provided:
+
+\begin{itemize}
+  \item
+    \c{domainslib} uses the \Domainslib library;
+  \item
+    \c{parabs} uses our \Parabs library;
+  \item
+    \c{moonpool-fifo} uses the \Moonpool scheduler  with a global FIFO queue of task;
+  \item
+    \c{moonpool-ws} uses the \Moonpool scheduler with a work-stealing pool of tasks,
+    which is described as better for throughput
+  \item
+    \c{sequential} is a baseline implementation with no parallelism, all tasks run sequentially on a single domain.
+\end{itemize}
+
+We used the latest software versions currently available: \Domainslib 0.5.2, and \Moonpool 0.9.
+
+\subsubsection{Benchmarks}
+
+\paragraph{\c{fibonacci}.}
+
+The concurrent implementation of Fibonacci of \cref{fig:ocaml5_fibonacci_domainslib}, extended with a sequential cutoff: below the cutoff value, a sequential implementation is used.
+
+\paragraph{\c{iota}.}
+
+This benchmark uses a parallel-for to write a default value in each cell of an array.
+We expect significant variations due to the \c{CUTOFF} parameter.
+
+\paragraph{\c{for\_irregular}.}
+
+This benchmark uses a parallel-for loop with irregular per-element workload: as a first approximation, the $i$-th iteration computes $\l{fibonacci}\ i$; this cost grows exponentially in $i$, so the majority of computation work is concentrated on the largest loop indices.
+
+\paragraph{\c{lu}.}
+
+This benchmark performs the LU factorization of a random matrix of floating-point values.
+It consists in $O(N)$ repetitions of a parallel-for loop of $O(N)$ iterations, where each iteration performs $O(N)$ sequential work.
+
+\paragraph{\c{matmul}.}
+
+This benchmark computes matrix multiplication with a very simple parallelization strategy --- only the outer loop is parallelized.
+In other word, there is a parallel-for loop with $O(N)$ iterations, where each iteration performs $O(N^2)$ sequential work work.
+
+\subsection{Results}
+
+\subsubsection{Pre-benchmarking expectations}
+
+Our expectation before running the benchmarks is that \Parabs has the same performance as \Domainslib, and that they are both more efficient than \Moonpool (which uses a central pool of jobs instead of per-domain deques).
+
+Because \Moonpool has a less optimized scheduler, we expect scheduling overhead to be an issue for small \c{CUTOFF} values.
+
+On all schedulers, the performance for larger \c{CUTOFF} values should be good if the benchmark has homogeneous/regular tasks, and it should be worse if the benchmark has heterogeneous/irregular tasks.
+
+\subsubsection{Per-benchmark results}
+
+\input{benchmarks/figures/results}
+
+\cref{fig:parabs_benchmarks_1} and \cref{fig:parabs_benchmarks_2} contain the full results, with per-cutoff and per-domain plots for each benchmarks.
+
+\paragraph{\c{fibonacci}.}
+
+In the per-cutoff results (logarithmic scale), we see that all schedulers start to behave badly when the \c{CUTOFF} becomes small enough, with exponentially-decreasing performance after a certain drop point.
+For \Moonpool, performance drops around $\c{CUTOFF} = 20$. The FIFO and work-stealing variants have similar profiles, with work-stealing performing noticeably better.
+For \Parabs and \Domainslib, performance drops around $\c{CUTOFF} = 12$. \Parabs performs noticeably better for small-enough cutoff values.
+In fact, even for the sequential scheduler we observe a small performance drop: the task-using version creates closures and performs indirect calls, so it is noticeably slower (by a constant factor) than the version used below the sequential cutoff.
+
+Note: we observe very large memory usage with \Moonpool at smaller cutoff values --- when computing $\l{fibonacci}\ 40$, attempting to run the benchmark with $\c{CUTOFF} = 5$ fails with out-of-memory errors on a machine with 32Gio of RAM.
+This seems to come from the FIFO architecture which runs the oldest and thus biggest task first, and thus stores an exponential number of smaller tasks in the queue.
+
+Per-domain results (linear scale): we studied per-domain performance on a $\c{CUTOFF}=25$ point where all implementations behave well. For this value we see that \c{parabs} and \c{domainslib} perform similarly, and both \c{moonpool} implementations are measurably slower.
+Performance becomes very close for larger number of domains ($\c{DOMAINS} \geq 7$).
+
+\paragraph{\c{for\_irregular}.}
+
+This benchmark is designed to behave poorly with large \c{CUTOFF} values.
+We indeed observe better noticeably performance with $\c{CUTOFF} = 1$ than with larger values, across all schedulers --- for example \c{domainslib} is 50\% slower with $\c{CUTOFF} = 8$.
+
+In the per-cutoff results we observe that \c{parabs} performs best on this benchmark, then \c{domainslib}, then \c{moonpool}.
+
+In the per-domain results (with \c{CUTOFF}=1) we see that \c{parabs} performs noticeably better than the other implementations for relatively low domain counts, and they become comparable around $\c{DOMAINS} \geq 7$.
+
+\paragraph{\c{iota}.}
+
+Each iteration of parallel-for in \c{iota} is immediate, so as expected we observe a large sensitivity to the choice of \c{CUTOFF}, with \c{parabs} and \c{domainslib} performing much better than \c{moonpool} on smaller \c{CUTOFF} values.
+
+In the per-domains result we see that \c{domainslib} and \c{parabs} have similar performance, noticeably better than the \c{moonpool} implementations.
+
+\paragraph{\c{lu}.}
+
+The performance is relatively stable over most choices of \c{CUTOFF}.
+The per-domain results are similar across all benchmarks after controlling for the one-domain shift of \Moonpool.
+After $\c{DOMAINS} \geq 12$, we see that \Moonpool behaves much better under CPU contention.
+
+\paragraph{\c{matmul}.}
+
+The performance is stable across a wide range of \c{CUTOFF} values.
+The parallel-loop performs 500 iterations, so \c{CUTOFF} values closer to 500 prevent parallelization and bring performance closer to the sequential scheduler.
+
+The per-domain performance is remarkably similar under all schedulers: our implementation of matrix multiplication has a coarse-grained parallelization strategy where the choice of scheduler makes no difference.
+
+\subsubsection{Result summary}
+
+Overall, \Parabs has the same qualitative performance as \Domainslib.
+In fact it performs measurably better (around 10\% better for some domain values) on the benchmarks \c{fibonacci} and \c{for\_irregular}, which have irregular tasks; and it has qualitatively the same performance otherwise.

@@ -1,0 +1,37 @@
+\def\scale{.45}
+\def\myfigure#1{
+  \begin{subfigure}[t]{.48\textwidth}
+    \centering
+    \includegraphics[scale=\scale]{benchmarks/data/#1-plot_cutoff.data.svg.pdf}
+    \caption{\ocamlinline{#1}: varying \c{CUTOFF}}
+    \label{fig:parabs_benchmarks_#1_cutoff}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{.48\textwidth}
+    \centering
+    \includegraphics[scale=\scale]{benchmarks/data/#1-plot_domains.data.svg.pdf}
+    \caption{\ocamlinline{#1}: varying \c{DOMAINS}}
+    \label{fig:parabs_benchmarks_#1_domains}
+  \end{subfigure}
+}
+
+\begin{figure}
+\centering
+\myfigure{fibonacci}
+\par\bigskip
+\myfigure{for_irregular}
+\par\bigskip
+\myfigure{iota}
+\caption{Benchmarks (1/2)}
+\label{fig:parabs_benchmarks}
+\end{figure}
+
+\begin{figure}
+\ContinuedFloat
+\centering
+\myfigure{lu}
+\par\bigskip
+\myfigure{matmul}
+\caption{Benchmarks (2/2)}
+\label{fig:parabs_benchmarks}
+\end{figure}
