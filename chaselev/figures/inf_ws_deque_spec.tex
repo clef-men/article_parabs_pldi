@@ -1,0 +1,166 @@
+\begin{figure}
+\begin{mathparpagebreakable}
+    \iPersistent{(\inv\ t\ \iIname)}
+  \\
+    \infer[model-exclusive]{
+        \model\ t\ \zooVals_1
+      \\
+        \model\ t\ \zooVals_2
+    }{
+      \iFalse
+    }
+  \and
+    \infer[owner-exclusive]{
+        \owner\ t\ \zooValsTwo_1
+      \\
+        \owner\ t\ \zooValsTwo_2
+    }{
+      \iFalse
+    }
+  \and
+    \infer[owner-model]{
+        \owner\ t\ \zooValsTwo
+      \\
+        \model\ t\ \zooVals
+    }{
+      \l{suffix}\ \zooVals\ \zooValsTwo
+    }
+  \\
+    \iSpec[
+      lab=create-spec
+    ]{
+      \iTrue
+    }{
+      \c{create}\ \c{()}
+    }[
+      t
+    ]{
+      \inv\ t\ \iIname \iSep \\
+      \model\ t\ \nil \iSep \\
+      \owner\ t\ \nil
+    }
+  \and
+    \iAspec[
+      lab=size-spec,
+      mask=\iIname
+    ]{
+      \inv\ t\ \iIname \iSep \\
+      \owner\ t\ \zooValsTwo
+    }[
+      \zooVals
+    ]{
+      \model\ t\ \zooVals
+    }{
+      \c{size}\ t
+    }{
+      \l{suffix}\ \zooVals\ \zooValsTwo \iSep \\
+      \model\ t\ \zooVals
+    }[
+      \v{res}
+    ]{
+      \v{res} = \l{length}\ \zooVals \iSep \\
+      \owner\ t\ \zooVals
+    }
+  \and
+    \iAspec[
+      lab=is-empty-spec,
+      mask=\iIname
+    ]{
+      \inv\ t\ \iIname \iSep \\
+      \owner\ t\ \zooValsTwo
+    }[
+      \zooVals
+    ]{
+      \model\ t\ \zooVals
+    }{
+      \c{is\_empty}\ t
+    }{
+      \l{suffix}\ \zooVals\ \zooValsTwo \iSep \\
+      \model\ t\ \zooVals
+    }[
+      \v{res}
+    ]{
+      \v{res} = \decideEq{\zooVals}{\nil} \iSep \\
+      \owner\ t\ \zooVals
+    }
+  \and
+    \iAspec[
+      lab=push-spec,
+      mask=\iIname
+    ]{
+      \inv\ t\ \iIname \iSep \\
+      \owner\ t\ \zooValsTwo
+    }[
+      \zooVals
+    ]{
+      \model\ t\ \zooVals
+    }{
+      \c{push}\ t\ \zooVal
+    }{
+      \l{suffix}\ \zooVals\ \zooValsTwo \iSep \\
+      \model\ t\ (\zooVals \dplus [\zooVal])
+    }[
+      \c{()}
+    ]{
+      \owner\ t\ (\zooVals \dplus [\zooVal])
+    }
+  \and
+    \iAspec[
+      lab=steal-spec,
+      mask=\iIname
+    ]{
+      \inv\ t\ \iIname
+    }[
+      \zooVals
+    ]{
+      \model\ t\ \zooVals
+    }{
+      \c{steal}\ t
+    }{
+      \model\ t\ (\l{tail}\ \zooVals)
+    }[
+      \v{res}
+    ]{
+      \v{res} = \l{head}\ \zooVals
+    }
+  \and
+    \iAspec[
+      lab=pop-spec,
+      mask=\iIname
+    ]{
+      \inv\ t\ \iIname \iSep \\
+      \owner\ t\ \zooValsTwo
+    }[
+      \zooVals
+    ]{
+      \model\ t\ \zooVals
+    }{
+      \c{pop}\ t
+    }[
+      o\ \zooValsTwo'
+    ]{
+      \l{suffix}\ \zooVals\ \zooValsTwo \iSep \\
+      \matchOption{
+        o
+      }{
+        \zooVals = \nil \iSep
+        \zooValsTwo' = \nil \iSep \\
+        \model\ t\ \nil
+      }{
+        \zooVal
+      }{
+        \Exists \zooVals'. \\
+        \zooVals = \zooVals' \dplus [\zooVal] \iSep
+        \zooValsTwo' = \zooVals' \iSep \\
+        \model\ t\ \zooVals'
+      }
+    }[
+      \v{res}
+    ]{
+      \v{res} = o \iSep \\
+      \owner\ t\ \zooValsTwo'
+    }
+\end{mathparpagebreakable}
+\caption{\ocamlinline{Inf_ws_deque}: Specification}
+\label{fig:chaselev_inf_ws_deque_spec}
+\end{figure}

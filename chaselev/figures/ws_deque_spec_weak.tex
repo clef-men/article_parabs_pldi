@@ -1,0 +1,105 @@
+\begin{figure}
+\begin{mathpar}
+%    \iPersistent{(\inv\ t\ \iIname)}
+%  \\
+%    \iSpec[
+%      lab=create-spec-weak
+%    ]{
+%      \iTrue
+%    }{
+%      \c{create}\ \c{()}
+%    }[
+%      t
+%    ]{
+%      \inv\ t\ \iIname \iSep \\
+%      \model\ t\ \nil \iSep \\
+%      \owner\ t
+%    }
+%  \and
+%    \iAspec[
+%      lab=push-spec-weak,
+%      mask=\iIname
+%    ]{
+%      \inv\ t\ \iIname \iSep \\
+%      \owner\ t
+%    }[
+%      \zooVals
+%    ]{
+%      \model\ t\ \zooVals
+%    }{
+%      \c{push}\ t\ \zooVal
+%    }{
+%      \model\ t\ (\zooVals \dplus [\zooVal])
+%    }[
+%      \c{()}
+%    ]{
+%      \owner\ t
+%    }
+%  \and
+    \iAspec[
+      lab=steal-spec-weak,
+      mask=\iIname
+    ]{
+      \inv\ t\ \iIname
+    }[
+      \zooVals
+    ]{
+      \model\ t\ \zooVals
+    }{
+      \c{steal}\ t
+    }[
+      o
+    ]{
+      \matchOption{
+        o
+      }{
+        \model\ t\ \zooVals
+      }{
+        \zooVal
+      }{
+        \Exists \zooVals'. \\
+        \zooVals = \cons{\zooVal}{\zooVals'} \iSep \\
+        \model\ t\ \zooVals'
+      }
+    }[
+      \v{res}
+    ]{
+      \v{res} = o
+    }
+  \and
+    \iAspec[
+      lab=pop-spec-weak,
+      mask=\iIname
+    ]{
+      \inv\ t\ \iIname \iSep \\
+      \owner\ t
+    }[
+      \zooVals
+    ]{
+      \model\ t\ \zooVals
+    }{
+      \c{pop}\ t
+    }[
+      o
+    ]{
+      \matchOption{
+        o
+      }{
+        \model\ t\ \zooVals
+      }{
+        \zooVal
+      }{
+        \Exists \zooVals'. \\
+        \zooVals = \zooVals' \dplus [\zooVal] \iSep \\
+        \model\ t\ \zooVals'
+      }
+    }[
+      \v{res}
+    ]{
+      \v{res} = o \iSep \\
+      \owner\ t
+    }
+\end{mathpar}
+\caption{\ocamlinline{Ws_deque}: Weak specification (excerpt)}
+\label{fig:chaselev_ws_deque_spec_weak}
+\end{figure}

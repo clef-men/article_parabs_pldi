@@ -1,0 +1,24 @@
+\subsection{Wise prophet}
+\label{sec:prophecy_wise}
+
+\begin{tirPrefix}{wise-prophet-}
+
+\input{prophecy/figures/wise}
+
+The third layer consists of \emph{wise prophets}~\refTheories{zoo/program_logic/wise_prophet.v}.
+These prophets \emph{remember} past prophecies.
+The corresponding reasoning rules are given in \cref{fig:prophecy_wise}.
+
+The exclusive assertion $\model\ \zooProph\ \iGname\ \v{past}\ \v{prophs}$ represents the ownership of the prophet with identifier \zooProph; \iGname is the logical name of the prophet; \v{past} is the list of prophecies resolved so far; \v{prophs} is the list of prophecies that must still be resolved.
+
+The persistent assertion $\full\ \iGname\ \v{prophs}$ represents the list of all (resolved or not) prophecies associated to the prophet with name \iGname, as stated by \refTirName{full-valid}.
+
+The persistent aassertion $\snapshot\ \iGname\ \v{past}\ \v{prophs}$ represents a snapshot of the state of the prophet with name \iGname at some point in the past.
+\refTirName{snapshot-valid} allows to relate the current state of \model to the past state of \snapshot.
+
+The persistent assertion $\lb\ \iGname\ \v{lb}$ represents a lower bound on the non-resolved prophecies of the prophet with name \iGname.
+In particular, as stated by \refTirName{lb-valid}, the list of currently non-resolved prophecies carried by \model is always a suffix of \v{lb}.
+
+\refTirName{resolve-spec} is the same as before, except we also update the list of resolved prophecies after resolution.
+
+\end{tirPrefix}

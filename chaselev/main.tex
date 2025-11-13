@@ -1,0 +1,31 @@
+\input{chaselev/macros}
+
+\section{Chase-Lev work-stealing deque}
+\label{sec:chaselev}
+
+\input{chaselev/figures/work_stealing}
+
+\paragraph{Work-stealing.}
+
+Randomized \emph{work stealing}~\citep{DBLP:journals/jacm/BlumofeL99} is the standard strategy for parallel task scheduling.
+It has been implemented in many libraries, including \Cilk~\citep{DBLP:journals/jpdc/BlumofeJKLRZ96,DBLP:conf/pldi/FrigoLR98}, \TBB, \OpenMP, \Taskflow~\citep{DBLP:journals/tpds/HuangLLL22}, \Tokio and \Domainslib~\citep{domainslib}.
+
+The idea of work-stealing, illustrated in \cref{fig:chaselev_work_stealing}, is the following.
+Each domain owns a deque-like data structure, called \emph{work-stealing deque}, to store its tasks.
+Locally, each domain treats its deque as a stack, operating at the back end.
+When a domain runs out of tasks, it becomes a thief: it tries to steal a task from the deque of another randomly selected ``victim'' domain, operating at the front end.
+Multiple thieves may concurrently attempt to steal tasks from a single deque.
+
+\paragraph{Work-stealing deque.}
+
+The most popular work-stealing deque algorithm is the Chase-Lev deque~\citep{DBLP:conf/spaa/ChaseL05,DBLP:conf/ppopp/LePCN13}; it is lock-free and unbounded.
+We verified the implementation from the \Saturn library~\citep{saturn}~\refLibTheoriesFile{zoo_saturn/ws_deque_1} along with two other variants: a bounded variant~\refLibTheoriesFile{zoo_saturn/ws_bdeque_1}, used in the \Moonpool~\citep{moonpool} and \Taskflow~\citep{DBLP:journals/tpds/HuangLLL22} libraries, and an idealized infinite-array-based variant~\refLibTheoriesFile{zoo_saturn/inf_ws_deque_1}.
+
+Remarkably, the three variants essentially share the same logical states.
+In particular, although they do not behave exactly the same way, the original and the idealized versions follow a similar concurrent protocol, involving external and future-dependent linearization.
+
+\input{chaselev/inf_ws_deque}
+
+\input{chaselev/ws_bdeque}
+
+\input{chaselev/ws_deque}

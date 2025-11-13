@@ -1,0 +1,16 @@
+\subsection{Typed prophet}
+\label{sec:prophecy_typed}
+
+\begin{tirPrefix}{typed-prophet-}
+
+\input{prophecy/figures/typed}
+
+The second layer consists of \emph{typed prophets}~\refTheories{zoo/program_logic/typed_prophet.v}.
+They are very similar to primitive prophets except prophecies are now typed.
+The corresponding reasoning rules, given in \cref{fig:prophecy_typed}, are essentially the same as before.
+The prophet must provide a type $\tau$ along with two functions \l{of-val} and \l{to-val}.
+\l{to-val} converts an inhabitant of $\tau$ to a value; \refTirName{resolve-spec} relies on it to enforce that the prophecies are well-typed.
+\l{of-val} attempts to convert a value to $\tau$; it is used internally.
+\l{of-val} and \l{to-val} must be compatible: $\l{of-val}\ (\l{to-val}\ \v{proph}) = \Some{\v{proph}}$.
+
+\end{tirPrefix}

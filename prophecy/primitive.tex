@@ -1,0 +1,13 @@
+\subsection{Primitive prophet}
+\label{sec:prophecy_primitive}
+
+\input{prophecy/figures/primitive}
+
+The first layer consists of \emph{primitive prophets}~\refTheories{zoo/program_logic/wp.v}.
+These prophets are primitive in the sense that they simply reflect the semantics of \c{Proph} and \c{Resolve} in the program logic.
+The corresponding reasoning rules are given in \cref{fig:prophecy_primitive}.
+
+The assertion $\model\ \zooProph\ \v{prophs}$ represents the exclusive ownership of the prophet with identifier \zooProph; \v{prophs} is the list of prophecies that must still be resolved.
+
+\refTirName{wp-proph} says that \c{Proph} allocates a new prophet with some unknown prophecies to be resolved.
+\refTirName{wp-resolve} says that $\c{Resolve}\ \zooExpr\ \zooProph\ \zooVal$ \emph{atomically} resolves the next prophecy of prophet \zooProph: we learn that the prophecies before resolution \v{prophs} is non-empty and its head is the pair $(\v{res}, \zooVal)$ where \v{res} is the evaluation of \zooExpr.

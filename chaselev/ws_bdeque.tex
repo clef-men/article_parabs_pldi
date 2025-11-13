@@ -1,0 +1,8 @@
+\subsection{Bounded work-stealing deque}
+
+In the bounded variant, the infinite array is replaced with a finite circular array.
+As a consequence, the convenient infinite representation goes away and tedious reasoning about circular array slices is required.
+However, the logical states and transitions as well as the prophecy mechanism are essentially the same.
+
+It is an open question whether we could factorize part of the verification through a well-chosen abstraction that could be instantiated both with infinite and circular arrays.
+One certainty is that this is not possible without slightly altering the implementation of the infinite variant: in \c{steal}, the front cell is read after performing the update in the infinite variant, which would be incorrect in the finite variant since the owner is allowed to overwrite the value.

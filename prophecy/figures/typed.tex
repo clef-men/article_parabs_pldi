@@ -1,0 +1,57 @@
+\begin{figure}
+\begin{mathpar}
+    \infer[model-exclusive]{
+        \model\ \zooProph\ \v{prophs1}
+      \\
+        \model\ \zooProph\ \v{prophs2}
+    }{
+      \iFalse
+    }
+  \and
+    \iSpec[
+      lab=proph-spec
+    ]{
+      \iTrue
+    }{
+      \zooExprProph
+    }[
+      \zooProph
+    ]{
+      \Exists \v{prophs}.
+      \model\ \zooProph\ \v{prophs}
+    }
+  \and
+    \infer[resolve-spec]{
+        \iAtomic{\zooExpr}
+      \\
+        \l{to-val}\ \zooExpr = \None
+      \\
+        \zooVal = \recordGet{\v{prophet}}{to-val}\ \v{proph}
+      \\
+        \model\ \zooProph\ \v{prophs}
+      \\
+        \iWp[
+          mask=\iMask
+        ]{
+          \zooExpr
+        }[
+          \zooValTwo
+        ]{
+          \Forall \v{prophs'}. \\
+          \v{prophs} = \cons{\v{proph}}{\v{prophs'}} \iWand \\
+          \model\ \zooProph\ \v{prophs'} \iWand \\
+          \iPred\ \zooValTwo
+        }
+    }{
+      \iWp[
+        mask=\iMask
+      ]{
+        \zooExprResolve{\zooExpr}{\zooProph}{\zooVal}
+      }{
+        \iPred
+      }
+    }
+\end{mathpar}
+\caption{Reasoning rules for typed prophets}
+\label{fig:prophecy_typed}
+\end{figure}

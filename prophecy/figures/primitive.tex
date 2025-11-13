@@ -1,0 +1,56 @@
+\begin{figure}
+\begin{mathpar}
+    \infer[prophet-model-exclusive]{
+        \model\ \zooProph\ \v{prophs}_1
+      \\
+        \model\ \zooProph\ \v{prophs}_2
+    }{
+      \iFalse
+    }
+  \and
+    \iSpec[
+      lab=wp-proph,
+      mask=\iMask
+    ]{
+      \iTrue
+    }{
+      \zooExprProph
+    }[
+      \zooProph
+    ]{
+      \Exists \v{prophs}.
+      \model\ \zooProph\ \v{prophs}
+    }
+  \and
+    \infer[wp-resolve]{
+        \iAtomic{\zooExpr}
+      \\
+        \l{to-val}\ \zooExpr = \None
+      \\
+        \model\ \zooProph\ \v{prophs}
+      \\
+        \iWp[
+          mask=\iMask
+        ]{
+          \zooExpr
+        }[
+          \v{res}
+        ]{
+          \Forall \v{prophs'}. \\
+          \v{prophs} = \cons{(\v{res}, \zooVal)}{\v{prophs'}} \iWand \\
+          \model\ \zooProph\ \v{prophs'} \iWand \\
+          \iPred\ \v{res}
+        }
+    }{
+      \iWp[
+        mask=\iMask
+      ]{
+        \zooExprResolve{\zooExpr}{\zooProph}{\zooVal}
+      }{
+        \iPred
+      }
+    }
+\end{mathpar}
+\caption{Reasoning rules for primitive prophets}
+\label{fig:prophecy_primitive}
+\end{figure}

@@ -1,0 +1,117 @@
+\begin{figure}
+\begin{mathpar}
+    \iPersistent{(\full\ \iGname\ \v{prophs})}
+  \and
+    \iPersistent{(\snapshot\ \iGname\ \v{past}\ \v{prophs})}
+  \and
+    \iPersistent{(\lb\ \iGname\ \v{lb})}
+  \\
+    \infer[model-exclusive]{
+        \model\ \zooProph\ \iGname_1\ \v{past}_1\ \v{prophs1}
+      \\
+        \model\ \zooProph\ \iGname_2\ \v{past}_2\ \v{prophs2}
+    }{
+      \iFalse
+    }
+  \and
+    \infer[full-get]{
+      \model\ \zooProph\ \iGname\ \v{past}\ \v{prophs}
+    }{
+      \full\ \iGname\ (\v{past} \dplus \v{prophs})
+    }
+  \and
+    \infer[full-valid]{
+        \model\ \zooProph\ \iGname\ \v{past}\ \v{prophs}_1
+      \\
+        \full\ \iGname\ \v{prophs}_2
+    }{
+      \v{prophs}_2 = \v{past} \dplus \v{prophs}_1
+    }
+  \and
+    \infer[full-agree]{
+        \full\ \iGname\ \v{prophs}_1
+      \\
+        \full\ \iGname\ \v{prophs}_2
+    }{
+      \v{prophs}_1 = \v{prophs}_2
+    }
+  \and
+    \infer[snapshot-get]{
+      \model\ \zooProph\ \iGname\ \v{past}\ \v{prophs}
+    }{
+      \snapshot\ \iGname\ \v{past}\ \v{prophs}
+    }
+  \and
+    \infer[snapshot-valid]{
+        \model\ \zooProph\ \iGname\ \v{past}_1\ \v{prophs}_1
+      \\
+        \snapshot\ \iGname\ \v{past}_2\ \v{prophs}_2
+    }{
+      \Exists \v{past}_3.
+      \v{past}_1 = \v{past}_2 \dplus \v{past}_3 \iSep
+      \v{prophs}_2 = \v{past}_3 \dplus \v{prophs}_1
+    }
+  \and
+    \infer[lb-get]{
+      \model\ \zooProph\ \iGname\ \v{past}\ \v{prophs}
+    }{
+      \lb\ \iGname\ \v{prophs}
+    }
+  \and
+    \infer[lb-valid]{
+      \model\ \zooProph\ \iGname\ \v{past}\ \v{prophs}
+      \\
+        \lb\ \iGname\ \v{lb}
+    }{
+      \Exists \v{past}_1\ \v{past}_2.
+      \v{past} = \v{past}_1 \dplus \v{past}_2 \iSep
+      \v{lb} = \v{past}_2 \dplus \v{prophs}
+    }
+  \\
+    \iSpec[
+      lab=proph-spec
+    ]{
+      \iTrue
+    }{
+      \zooExprProph
+    }[
+      \zooProph
+    ]{
+      \Exists \iGname\ \v{prophs}.
+      \model\ \zooProph\ \iGname\ \nil\ \v{prophs}
+    }
+  \and
+    \infer[resolve-spec]{
+        \iAtomic{\zooExpr}
+      \\
+        \l{to-val}\ \zooExpr = \None
+      \\
+        \zooVal = \recordGet{\v{prophet}}{to-val}\ \v{proph}
+      \\
+        \model\ \zooProph\ \iGname\ \v{past}\ \v{prophs}
+      \\
+        \iWp[
+          mask=\iMask
+        ]{
+          \zooExpr
+        }[
+          \zooValTwo
+        ]{
+          \Forall \v{prophs'}. \\
+          \v{prophs} = \cons{\v{proph}}{\v{prophs'}} \iWand \\
+          \model\ \zooProph\ \iGname\ (\v{past} \dplus [\v{proph}])\ \v{prophs'} \iWand \\
+          \iPred\ \zooValTwo
+        }
+    }{
+      \iWp[
+        mask=\iMask
+      ]{
+        \zooExprResolve{\zooExpr}{\zooProph}{\zooVal}
+      }{
+        \iPred
+      }
+    }
+\end{mathpar}
+\caption{Reasoning rules for wise prophets}
+\label{fig:prophecy_wise}
+\end{figure}

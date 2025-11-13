@@ -1,0 +1,91 @@
+\subsection{Infinite work-stealing deque}
+
+\begin{tirPrefix}{inf-ws-deque-}
+
+\subsubsection{Specification}
+
+\input{chaselev/figures/inf_ws_deque_spec}
+
+The specification of the infinite-array-based version is given in \cref{fig:chaselev_inf_ws_deque_spec}.
+It features three predicates: \inv, \model and \owner.
+
+The persistent assertion $\inv\ t\ \iIname$ represents the knowledge that $t$ is a valid deque.
+It is returned by \c{create} (\refTirName{create-spec}) and required by all operations.
+
+The exclusive assertion $\model\ t\ \zooVals$ represents the ownership of the content of the deque \zooVals.
+It it returned by \c{create} and accessed atomically by all operations.
+
+The exclusive assertion $\owner\ t\ \zooValsTwo$ represents the owner of the deque; \zooValsTwo is an upper bound on the current content of the deque (\refTirName{owner-model}).
+It is returned by \c{create} and used by all private operation: \c{size} (\refTirName{size-spec}), \c{is\_empty} (\refTirName{is-empty-spec}), \c{push} (\refTirName{push-spec}) and \c{pop} (\refTirName{pop-spec}).
+The only public operation is \c{steal} (\refTirName{steal-spec}), which does not require \owner.
+
+Note that the public postconditions of the private operations are quite verbose.
+This is due to the fact that \owner is passed to the operation and therefore cannot be combined with \model through \refTirName{owner-model} to get information about the content of the deque; instead, we provide such information in the public postcondition.
+We need this expressivity in practice to verify a wrapper~\refLibTheoriesFile{zoo_saturn/inf_ws_deque_2} with better liveness properties.
+
+\subsubsection{Weak specification.}
+
+\begin{tirPrefix}{ws-deque-}
+
+\input{chaselev/figures/ws_deque_spec_weak}
+
+\Citet{DBLP:journals/pacmpl/JungLCKPK23}%
+\footnote{
+See also the master thesis of \citet{DBLP:journals/corr/abs-2309-03642}.
+}
+also worked on the verification of the Chase-Lev work-stealing deque.
+However, we argue that the specification they prove, given in \cref{fig:chaselev_ws_deque_spec_weak}, is unsatisfactory.
+Indeed, contrary to our specification, \refTirName{steal-spec-weak} and \refTirName{pop-spec-weak} say nothing about the observed content of the deque when the operation fails.
+
+In practice, these weaker specifications, especially that of \c{pop}, are not sufficient to reason about the \emph{termination} of a work-stealing scheduler.
+In \cref{sec:parabs}, we show how our strong specifications are lifted all the way up to the scheduler.
+
+Another point we would like to make is that weakening the specification does make the verification simpler, but one may argue that the most subtle and interesting part of it is lost.
+
+\end{tirPrefix}
+
+\subsubsection{Implementation}
+
+\input{chaselev/figures/inf_ws_deque_physical_state}
+
+The implementation relies on
+(1) an infinite array,
+(2) a \emph{monotonic} front index for the thieves, and
+(3) a back index reserved to the owner of the deque.
+
+In general, we can divide the infinite array as in \cref{fig:chaselev_inf_ws_deque_physical_state}.
+The first part, between 0 and the front index, corresponds to the \emph{persistent} history of stolen values.
+The second part, between the two indices, corresponds to the logical content of the deque, as represented by \model.
+The last part, beyond the back index, corresponds to the private section of the array, reserved to the owner.
+
+Given this representation, the algorithm proceeds as follows.
+$\c{push}\ t\ \zooVal$ writes \zooVal into the first private cell and atomically increments the back index, thereby publishing the value.
+Symmetrically, $\c{pop}\ t$ atomically decrements the back index and returns the value of the cell it just privatized.
+$\c{steal}\ t$ is much more careful:
+(1) it reads the front and the back indices;
+(2) if the deque looks empty, it fails;
+(3) otherwise, it attempts to advance the front index;
+(4) if the update succeeds, the value at the front index is returned;
+(5) otherwise, it starts over.
+
+The above description overlooked one crucial aspect: what happens at the limit, when \c{pop} and \c{steal} compete for the last value in the deque?
+In that case, the deque must be \emph{stabilized}: \c{pop} also attempts to advance the front index before incrementing the back index --- whether it wins the update or not --- thereby equalizing the two indices.
+
+\subsubsection{Logical states}
+
+\input{chaselev/figures/inf_ws_deque_logical_state}
+
+\Cref{fig:chaselev_inf_ws_deque_logical_state} tells the same story as above in terms of four \emph{logical states}:
+(1) in the stable ``empty'' state, the deque is indeed empty, as indicated by the two equal indices;
+(2) in the stable ``non-empty'' state, the \model is non-empty, meaning thieves may compete for the first value;
+(3) in the unstable ``emptyish'' state, the thieves and the owner compete for the same value;
+(4) in the unstable ``super-empty'' state, some operation won the value and the deque is waiting to be stabilized by the owner.
+
+Let us now focus on the ``emptyish'' state.
+In this physical configuration, it makes sense to say that the \model of the deque should be empty.
+In fact, is has to be empty: if a \c{steal} operation observed this state, it would conclude that the deque is empty --- except under a weak specification.
+But then, if the \model should be empty, which operation was linearized during the transition to the ``emptyish'' state?
+We have no choice: it should be the winner of the front update, \ie the operation which triggers the transition to the ``super-empty'' state.
+In conclusion, we have to predict the winner at each index using a multiplexed prophecy variable (see \cref{sec:prophecy}).
+
+\end{tirPrefix}

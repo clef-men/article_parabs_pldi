@@ -1,0 +1,31 @@
+\section{Future work}
+\label{sec:future_work}
+
+\paragraph{Relaxed memory model.}
+
+The main limitation of our work is inherited from \Zoo: it relies on a sequentially consistent memory model whereas \OCamlFive has a relaxed memory model~\citep{DBLP:conf/pldi/DolanSM18}.
+This simplification endangers the soundness of our specifications.
+Transitioning to relaxed memory by merging \Zoo with \Cosmo~\citep{DBLP:journals/pacmpl/MevelJP20,DBLP:journals/pacmpl/MevelJ21} involves introducing memory views, which complicates specifications and invariants.
+
+\paragraph{Language features.}
+
+\Parabs suffers from the lack of a number of language features unsupported by \Zoo.
+If functors were supported, we could make the \Parabs library completely modular.
+If exceptions were supported, we could catch and re-raise exceptions in \ocamlinline{Pool} and \ocamlinline{Vertex}.
+If algebraic effects were supported, we could get rid of evaluation contexts in \ocamlinline{Pool} and implement continuation-stealing.
+
+\paragraph{Extensions.}
+
+In the future, we would like to extend the library in several directions:
+(1) develop the interface of futures, similarly to \Moonpool%
+\footnote{
+https://github.com/c-cube/moonpool/blob/main/src/core/fut.mli
+}%
+;
+(2) support the different task types of \Taskflow, aiming at a more practical \ocamlinline{Vertex} interface.
+
+\paragraph{Other designs.}
+
+We could experiment other designs.
+For instance, one of the two designs of \Moonpool relies on a bounded work-stealing deque combined with a master queue.
+In the literature, many other scheduling strategies were proposed: continuation-stealing~\citep{DBLP:conf/ipps/SchmausPSHN21,DBLP:journals/tpds/WilliamsE25}, steal-half work-stealing~\citep{DBLP:conf/podc/HendlerS02}, split work-stealing~\citep{DBLP:conf/sc/DinanLSKN09,DBLP:journals/scheduling/RitoP22,DBLP:conf/europar/DijkP14,DBLP:conf/spaa/CustodioPR23,DBLP:conf/icpp/CartierDL21}, idempotent work-stealing~\citep{DBLP:conf/ppopp/MichaelVS09}.

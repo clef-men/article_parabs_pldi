@@ -264,7 +264,7 @@
 }
 
 \newcommand{\dplus}{%
-  \mathbin{+\mkern-10mu+}%
+  \mathbin{+\mkern-7mu+}%
 }
 
 \newcommand{\fmap}{%
@@ -539,6 +539,10 @@
   Cilk\xspace%
 }
 
+\newcommand{\CIVL}{%
+  CIVL\xspace%
+}
+
 \newcommand{\Cpp}{%
   C\texttt{++}\xspace%
 }
@@ -763,7 +767,7 @@
 
 \newcommand{\refLib}[1]{%
   \href{%
-    https://github.com/clef-men/zoo/tree/phd/lib/\detokenize{#1}%
+    https://github.com/clef-men/zoo/tree/main/lib/\detokenize{#1}%
   }{%
     \inlinegraphics[.5]{images/ocaml.png}%
   }%
@@ -772,13 +776,13 @@
 \newcommand{\refTheories}[1]{%
   \ifx \relax#1\relax%
     \href{%
-      https://github.com/clef-men/zoo/tree/phd/theories/%
+      https://github.com/clef-men/zoo/tree/main/theories/%
     }{%
       \inlinegraphics{images/rocq.png}%
     }%
   \else%
     \href{%
-      https://github.com/clef-men/zoo/tree/phd/theories/\string#1%
+      https://github.com/clef-men/zoo/tree/main/theories/\string#1%
     }{%
       \inlinegraphics{images/rocq.png}%
     }%

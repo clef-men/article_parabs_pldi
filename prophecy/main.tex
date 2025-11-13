@@ -1,0 +1,20 @@
+\input{prophecy/macros.sty}
+
+\section{Prophecy variables}
+\label{sec:prophecy}
+
+In \citeyear{DBLP:journals/pacmpl/JungLPRTDJ20}, \citeauthor{DBLP:journals/pacmpl/JungLPRTDJ20} introduced \emph{prophecy variables} in \Iris.
+Essentially, prophecy variables --- or \emph{prophets}, as we will call them in this section --- can be used to predict the future of the program execution and reason about it.
+They are key to handle \emph{future-dependent linearization points}~\citep{DBLP:journals/corr/DongolD14}: linearization points that may or may not occur at a given location in the code depending on a future observation.
+
+In the program, prophecies take the form of two primitives: \c{Proph} and \c{Resolve}.
+To reason about them in the logic, \citet{DBLP:journals/pacmpl/JungLPRTDJ20} proposed two abstraction layers, which we recall in \cref{sec:prophecy_primitive,sec:prophecy_typed}.
+To verify the Chase-Lev work-stealing deque (see \cref{sec:chaselev}), we need to introduce two additional layers, presented in \cref{sec:prophecy_wise,sec:prophecy_multiplexed}.
+
+\input{prophecy/primitive}
+
+\input{prophecy/typed}
+
+\input{prophecy/wise}
+
+\input{prophecy/multiplexed}

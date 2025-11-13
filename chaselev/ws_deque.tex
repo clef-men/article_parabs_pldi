@@ -1,0 +1,7 @@
+\subsection{Dynamic work-stealing deque}
+
+In the original algorithm, the owner may dynamically resize the circular array.
+More precisely, it can change the array at will provided that the public part (between the two indices) is preserved.
+Thus, while only one array is stored in the deque, there can be many different circular arrays alive at the same time, \ie accessible by thieves.
+
+While the invariant of \citet{DBLP:journals/corr/abs-2309-03642} requires additional ghost state to keep track of the arrays and maintain their compatibility, the precision of our notion of logical state allows to only maintain compatibility between the current array and the array read by the next winner (if any).

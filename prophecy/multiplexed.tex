@@ -1,0 +1,22 @@
+\subsection{Multiplexed prophet}
+\label{sec:prophecy_multiplexed}
+
+\begin{tirPrefix}{wise-prophets-}
+
+\input{prophecy/figures/multiplexed}
+
+The fourth layer consists of \emph{multiplexed prophets}~\refTheories{zoo/program_logic/wise_prophets.v}.
+Essentially, they allow to combine different prophets, each operating at a fixed index.
+They were made to handle the case when a single prophet is used to make independent predictions, as in \cref{sec:chaselev}.
+The corresponding reasoning rules are given in \cref{fig:prophecy_multiplexed}.
+
+The predicates and rules are basically the same as before, except that (1) \model now carries sequences of lists of prophecies --- one past and one future per index --- and (2) \full, \snapshot and \lb are parameterized with an index.
+
+Importantly, the third argument provided to \c{Resolve} in \refTirName{resolve-spec} must be a pair of an index and a prophecy value.
+Resolution happens only at the given index, meaning the prophecies at other indices are unchanged.
+
+Note that we could generalize this abstraction to non-integer keys.
+In other words, we could replace sequences with functions of type $X \rightarrow \tau$, where $\tau$ is the prophecy type, and indices with inhabitants of $X$.
+In practice, however, we never needed such generalization.
+
+\end{tirPrefix}
