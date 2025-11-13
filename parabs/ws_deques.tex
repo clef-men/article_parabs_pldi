@@ -1,0 +1,31 @@
+\section{Work-stealing deques}
+
+At the first level, \ocamlinline{Ws_deques}~\refLib{zoo_parabs/ws_deques.ml} provides a generic interface for a set of work-stealing deques, abstracting over the underlying scheduling strategy.
+It currently has two realizations: \ocamlinline{Ws_deques_public} (\cref{sec:parabs_ws_deques_public}) and \ocamlinline{Ws_deques_private} (\cref{sec:parabs_ws_deques_private}).
+
+\subsection{Public deques}
+\label{sec:parabs_ws_deques_public}
+
+The first realization, \ocamlinline{Ws_deques_public}~\refLibTheoriesFile{zoo_parabs/ws_deques_public}, implements the standard work-stealing strategy with \emph{public deques}.
+More precisely, it simply relies on a shared array of Chase-Lev work-stealing deques, as implemented in \Saturn (see \cref{sec:chaselev}).
+These deques are public in the sense that both their owner and the thieves can access it directly --- which requires synchronization.
+
+\subsection{Private deques}
+\label{sec:parabs_ws_deques_private}
+
+The second realization, \ocamlinline{Ws_deques_private}~\refLibTheoriesFile{zoo_parabs/ws_deques_private}, implements the \emph{receiver-initiated} work-stealing algorithm proposed by \citet{DBLP:conf/ppopp/AcarCR13}%
+\footnote{
+They also propose a \emph{sender-initiated} algorithm that we have not implemented.
+}%
+.
+Their idea is to reduce synchronization costs in the fast path of local (owner-only) operations by essentially introducing an indirection.
+They show that this work-stealing strategy performs well for \emph{fine-grained} parallel programs, \ie when task sizes are small, especially irregular graph computations.
+
+Instead of stealing directly from public deques, thieves follow a protocol:
+(1) having selected a victim, a thief attempts to send a request by atomically updating the \emph{request cell} of the victim;
+(2) if the update fails, the thief starts over with another victim, otherwise it awaits a response by repeatedly checking its \emph{response cell};
+(3) if the response is negative, the thief starts over, otherwise it returns the task transferred by the victim.
+
+Symmetrically, busy domains regularly poll their request cell and respond accordingly through response cells.
+Crucially, tasks are stored in private, non-concurrent deques that are only accessed by their owner.
+In addition, each domain has a \emph{status cell} indicating whether it is (1) blocked, meaning it has no task to share, or (2) non-blocked, meaning it may have tasks to share; before sending a request, thieves check that their victim is non-blocked.

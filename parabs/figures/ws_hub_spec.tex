@@ -1,0 +1,333 @@
+\begin{figure}
+\begin{mathparpagebreakable}
+    \iPersistent{(\inv\ t\ \v{sz})}
+  \\
+    \infer[inv-agree]{
+        \inv\ t\ \v{sz}_1
+      \\\\
+        \inv\ t\ \v{sz}_2
+    }{
+      \v{sz}_1 = \v{sz}_2
+    }
+  \and
+    \infer[owner-exclusive]{
+        \owner\ t\ i\ \v{status}_1\ \v{empty}_1
+      \\\\
+        \owner\ t\ i\ \v{status}_2\ \v{empty}_2
+    }{
+      \iFalse
+    }
+  \and
+    \infer[model-empty]{
+        \inv\ t\ \v{sz}
+      \\\\
+        \model\ t\ \zooVals
+      \\\\
+        \iBigSep_{i \in \interval{\v{sz}}}
+          \owner\ t\ i\ \v{status}\ \constr{Empty}
+    }{
+      \zooVals = \emptyset
+    }
+  \\
+    \iSpec[
+      lab=create-spec
+    ]{
+      0 \leq \v{sz}
+    }{
+      \c{create}\ \v{sz}
+    }[
+      t
+    ]{
+      \inv\ t\ \v{sz} \iSep \\
+      \model\ t\ \emptyset \iSep \\
+      \iBigSep_{i \in \interval{\v{sz}}}
+        \owner\ t\ i\ \constr{Nonblocked}\ \constr{Empty}
+    }
+  \and
+    \iSpec[
+      lab=size-spec
+    ]{
+      \inv\ t\ \v{sz}
+    }{
+      \c{size}\ t
+    }[
+      \v{res}
+    ]{
+      \v{res} = \v{sz}
+    }
+  \and
+    \iSpec[
+      lab=block-spec
+    ]{
+      \inv\ t\ \v{sz} \iSep \\
+      \owner\ t\ i\ \constr{Nonblocked}\ \v{empty}
+    }{
+      \c{block}\ t\ i
+    }[
+      \c{()}
+    ]{
+      \owner\ t\ i\ \constr{Blocked}\ \v{empty}
+    }
+  \and
+    \iSpec[
+      lab=unblock-spec
+    ]{
+      \inv\ t\ \v{sz} \iSep \\
+      \owner\ t\ i\ \constr{Blocked}\ \v{empty}
+    }{
+      \c{unblock}\ t\ i
+    }[
+      \c{()}
+    ]{
+      \owner\ t\ i\ \constr{Nonblocked}\ \v{empty}
+    }
+  \and
+    \iSpec[
+      lab=killed-spec
+    ]{
+      \inv\ t\ \v{sz}
+    }{
+      \c{killed}\ t
+    }[
+      \zooBool
+    ]{
+      \iTrue
+    }
+  \and
+    \iSpec[
+      lab=kill-spec
+    ]{
+      \inv\ t\ \v{sz}
+    }{
+      \c{kill}\ t
+    }[
+      \c{()}
+    ]{
+      \iTrue
+    }
+  \and
+    \iAspec[
+      lab=push-spec
+    ]{
+      \inv\ t\ \v{sz} \iSep \\
+      \owner\ t\ i\ \constr{Nonblocked}\ \v{empty}
+    }[
+      \zooVals
+    ]{
+      \model\ t\ \zooVals
+    }{
+      \c{push}\ t\ i\ \zooVal
+    }{
+      \model\ t\ (\{ \zooVal \} \uplus \zooVals)
+    }[
+      \c{()}
+    ]{
+      \owner\ t\ i\ \constr{Nonblocked}\ \constr{Nonempty}
+    }
+  \and
+    \iAspec[
+      lab=pop-spec
+    ]{
+      \inv\ t\ \v{sz} \iSep \\
+      \owner\ t\ i\ \constr{Nonblocked}\ \v{empty}
+    }[
+      \zooVals
+    ]{
+      \model\ t\ \zooVals
+    }{
+      \c{pop}\ t\ i
+    }[
+      o
+    ]{
+      \matchOption{
+        o
+      }{
+        \model\ t\ \zooVals
+      }{
+        \zooVal
+      }{
+        \Exists \zooVals'. \\
+        \zooVals = \{ \zooVal \} \uplus \zooVals' \iSep \\
+        \model\ t\ \zooVals'
+      }
+    }[
+      \v{res}
+    ]{
+      \v{res} = o \iSep \\
+      \owner\ t\ i\ \constr{Nonblocked}\ (\myifOneline{o}{\v{empty}}{\constr{Empty}})
+    }
+\end{mathparpagebreakable}
+\caption{\ocamlinline{Ws_hub}: Specification (1/3)}
+\label{fig:parabs_ws_hub_spec}
+\end{figure}
+
+\begin{figure}
+\ContinuedFloat
+\begin{mathpar}
+    \iAspec[
+      lab=steal-until-spec
+    ]{
+      0 \leq \v{max \mathhyphen round \mathhyphen noyield} \iSep \\
+      \inv\ t\ \v{sz} \iSep \\
+      \owner\ t\ i\ \constr{Nonblocked}\ \v{empty} \iSep \\
+      \iTriple{
+        \iTrue
+      }{
+        \v{pred}\ \c{()}
+      }[
+        \zooBool
+      ]{
+        \myifOneline{\zooBool}{\iProp}{\iTrue}
+      }
+    }[
+      \zooVals
+    ]{
+      \model\ t\ \zooVals
+    }{
+      \c{steal\_until}\ t\ i\ \v{max \mathhyphen round \mathhyphen noyield}\ \v{pred}
+    }[
+      o
+    ]{
+      \matchOption{
+        o
+      }{
+        \model\ t\ \zooVals
+      }{
+        \zooVal
+      }{
+        \Exists \zooVals'. \\
+        \zooVals = \{ \zooVal \} \uplus \zooVals' \iSep \\
+        \model\ t\ \zooVals'
+      }
+    }[
+      \v{res}
+    ]{
+      \v{res} = o \iSep \\
+      \owner\ t\ i\ \constr{Nonblocked}\ \v{empty} \iSep \\
+      \myifOneline{o}{\iTrue}{\iProp}
+    }
+  \and
+    \iAspec[
+      lab=pop-steal-until-spec
+    ]{
+      0 \leq \v{max \mathhyphen round \mathhyphen noyield} \iSep \\
+      \inv\ t\ \v{sz} \iSep \\
+      \owner\ t\ i\ \constr{Nonblocked}\ \v{empty} \iSep \\
+      \iTriple{
+        \iTrue
+      }{
+        \v{pred}\ \c{()}
+      }[
+        \zooBool
+      ]{
+        \myifOneline{\zooBool}{\iProp}{\iTrue}
+      }
+    }[
+      \zooVals
+    ]{
+      \model\ t\ \zooVals
+    }{
+      \c{pop\_steal\_until}\ t\ i\ \v{max \mathhyphen round \mathhyphen noyield}\ \v{pred}
+    }[
+      o
+    ]{
+      \matchOption{
+        o
+      }{
+        \model\ t\ \zooVals
+      }{
+        \zooVal
+      }{
+        \Exists \zooVals'. \\
+        \zooVals = \{ \zooVal \} \uplus \zooVals' \iSep \\
+        \model\ t\ \zooVals'
+      }
+    }[
+      \v{res}
+    ]{
+      \Exists \v{empty}. \\
+      \v{res} = o \iSep \\
+      \owner\ t\ i\ \constr{Nonblocked}\ \v{empty} \iSep \\
+      \myifOneline{o}{\iTrue}{\v{empty} = \constr{Empty} \iSep \iProp}
+    }
+\end{mathpar}
+\caption{\ocamlinline{Ws_hub}: Specification (2/3)}
+\label{fig:parabs_ws_hub_spec}
+\end{figure}
+
+\begin{figure}
+\ContinuedFloat
+\begin{mathpar}
+    \iAspec[
+      lab=steal-spec
+    ]{
+      0 \leq \v{max \mathhyphen round \mathhyphen noyield} \iSep \\
+      0 \leq \v{max \mathhyphen round \mathhyphen yield} \iSep \\
+      \inv\ t\ \v{sz} \iSep \\
+      \owner\ t\ i\ \constr{Nonblocked}\ \v{empty}
+    }[
+      \zooVals
+    ]{
+      \model\ t\ \zooVals
+    }{
+      \c{steal}\ t\ i\ \v{max \mathhyphen round \mathhyphen noyield}\ \v{max \mathhyphen round \mathhyphen yield}
+    }[
+      o
+    ]{
+      \matchOption{
+        o
+      }{
+        \model\ t\ \zooVals
+      }{
+        \zooVal
+      }{
+        \Exists \zooVals'. \\
+        \zooVals = \{ \zooVal \} \uplus \zooVals' \iSep \\
+        \model\ t\ \zooVals'
+      }
+    }[
+      \v{res}
+    ]{
+      \v{res} = o \iSep \\
+      \owner\ t\ i\ \constr{Nonblocked}\ \v{empty}
+    }
+  \and
+    \iAspec[
+      lab=pop-steal-spec
+    ]{
+      0 \leq \v{max \mathhyphen round \mathhyphen noyield} \iSep \\
+      0 \leq \v{max \mathhyphen round \mathhyphen yield} \iSep \\
+      \inv\ t\ \v{sz} \iSep \\
+      \owner\ t\ i\ \constr{Nonblocked}\ \v{empty}
+    }[
+      \zooVals
+    ]{
+      \model\ t\ \zooVals
+    }{
+      \c{pop\_steal}\ t\ i\ \v{max \mathhyphen round \mathhyphen noyield}\ \v{max \mathhyphen round \mathhyphen yield}
+    }[
+      o
+    ]{
+      \matchOption{
+        o
+      }{
+        \model\ t\ \zooVals
+      }{
+        \zooVal
+      }{
+        \Exists \zooVals'. \\
+        \zooVals = \{ \zooVal \} \uplus \zooVals' \iSep \\
+        \model\ t\ \zooVals'
+      }
+    }[
+      \v{res}
+    ]{
+      \Exists \v{empty}. \\
+      \v{res} = o \iSep \\
+      \owner\ t\ i\ \constr{Nonblocked}\ \v{empty} \iSep \\
+      \myifOneline{o}{\iTrue}{\v{empty} = \constr{Empty}}
+    }
+\end{mathpar}
+\caption{\ocamlinline{Ws_hub}: Specification (3/3)}
+\label{fig:parabs_ws_hub_spec}
+\end{figure}

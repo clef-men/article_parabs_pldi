@@ -1,0 +1,141 @@
+\begin{figure}
+\begin{mathparpagebreakable}
+    \iPersistent{(\inv\ t\ \iProp\ \iPropThree)}
+  \and
+    \iPersistent{(\running\ \v{iter})}
+  \and
+    \iPersistent{(\finished\ t)}
+  \and
+    \iPersistent{(\predecessor\ t\ \v{iter})}
+  \\
+    \infer[model-exclusive]{
+        \model\ t\ \v{task}_1\ \v{iter}_1
+      \\\\
+        \model\ t\ \v{task}_2\ \v{iter}_2
+    }{
+      \iFalse
+    }
+  \and
+    \infer[model-finished]{
+        \model\ t\ \v{task}\ \v{iter}
+      \\\\
+        \finished\ t
+    }{
+      \iFalse
+    }
+  \and
+    \infer[output-divide]{
+        \inv\ t\ \iProp\ \iPropThree
+      \\\\
+        \output\ t\ \iPropTwo
+      \\\\
+        \iPropTwo \iWand
+        \iBigSep_{\iPropTwo \in \iPropTwo{}s}
+          \iPropTwo
+    }{
+      \iFupd
+      \iBigSep_{\iPropTwo \in \iPropTwo{}s}
+        \output\ t\ \iPropTwo
+    }
+  \and
+    \infer[predecessor-finished]{
+        \predecessor\ t\ \v{iter}
+      \\\\
+        \running\ \v{iter}
+    }{
+      \finished\ t
+    }
+  \and
+    \infer[inv-finished]{
+        \inv\ t\ \iProp\ \iPropThree
+      \\\\
+        \finished\ t
+    }{
+      \iFupd
+      \iLater \iPersistently \iPropThree
+    }
+  \and
+    \infer[inv-finished-output]{
+        \inv\ t\ \iProp\ \iPropThree
+      \\\\
+        \finished\ t
+      \\\\
+        \output\ t\ \iPropTwo
+    }{
+      \iFupd
+      \iLater[2] \iPropTwo
+    }
+  \\
+    \iSpec[
+      lab=create-spec
+    ]{
+      \iTrue
+    }{
+      \c{create}\ \v{task}
+    }[
+      t
+    ]{
+      \Exists \v{iter}. \\
+      \inv\ t\ \iProp\ \iPropThree \iSep \\
+      \model\ t\ (\l{option.get}\ (\c{fun: <> => false})\ \v{task})\ \v{iter} \iSep \\
+      \output\ t\ \iProp
+    }
+  \\
+    \iSpec[
+      lab=task-spec
+    ]{
+      \model\ t\ \v{task}\ \v{iter}
+    }{
+      \c{task}\ t
+    }[
+      \v{res}
+    ]{
+      \v{res} = \v{task} \iSep \\
+      \model\ t\ \v{task}\ \v{iter}
+    }
+  \and
+    \iSpec[
+      lab=set-task-spec
+    ]{
+      \model\ t\ \v{task}_1\ \v{iter}
+    }{
+      \c{set\_task}\ t\ \v{task}_2
+    }[
+      \c{()}
+    ]{
+      \model\ t\ \v{task}_2\ \v{iter}
+    }
+  \\
+    \iSpec[
+      lab=precede-spec
+    ]{
+      \inv\ t_1\ \iProp_1\ \iPropThree_1 \iSep \\
+      \inv\ t_2\ \iProp_2\ \iPropThree_2 \iSep \\
+      \model\ t_2\ \v{task}\ \v{iter}
+    }{
+      \c{precede}\ t_1\ t_2
+    }[
+      \c{()}
+    ]{
+      \model\ t_2\ \v{task}\ \v{iter} \iSep \\
+      \predecessor\ t_1\ \v{iter}
+    }
+  \and
+    \iSpec[
+      lab=release-spec
+    ]{
+      \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
+      \inv\ t\ \iProp\ \iPropThree \iSep \\
+      \model\ t\ \v{task}\ \v{iter} \iSep \\
+      \wp\ t\ \iProp\ \iPropThree\ \v{task}\ \v{iter}
+    }{
+      \c{release}\ \v{ctx}\ t
+    }[
+      \c{()}
+    ]{
+      \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope}
+    }
+\end{mathparpagebreakable}
+\caption{\ocamlinline{Vertex}: Specification}
+\label{fig:parabs_vertex_spec}
+\end{figure}

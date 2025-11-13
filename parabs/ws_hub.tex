@@ -1,0 +1,32 @@
+\section{Work-stealing hub}
+
+At the second level, \ocamlinline{Ws_hub}~\refLib{zoo_parabs/ws_hub.ml} provides a generic interface for a set of tasks supporting work-stealing operations --- a so-called ``work-stealing hub''.
+It currently has two realizations: \ocamlinline{Ws_hub_std} (\cref{sec:parabs_ws_hub_std}) and \ocamlinline{Ws_hub_fifo} (\cref{sec:parabs_ws_hub_fifo}).
+
+\subsection{Work-stealing strategy}
+\label{sec:parabs_ws_hub_std}
+
+The first realization, \ocamlinline{Ws_hub_std}~\refLibTheoriesFile{zoo_parabs/ws_hub_std}, implements the standard randomized work-stealing strategy.
+Under the hood, any work-stealing algorithm may be used, provided that it fits into the \ocamlinline{Ws_hub} interface; in particular, it can instantiated with both realization of \ocamlinline{Ws_deques}.
+
+\subsection{FIFO strategy}
+\label{sec:parabs_ws_hub_fifo}
+
+The second realization, \ocamlinline{Ws_hub_fifo}~\refLibTheoriesFile{zoo_parabs/ws_hub_fifo}, implements a simple ``first-in first-out'' scheduling strategy.
+All workers push and pop tasks from a shared concurrent queue taken from \Saturn; thieves also attempts to pop from the queue.
+\Moonpool adopted a similar strategy%
+\footnote{
+\url{https://github.com/c-cube/moonpool/blob/main/src/core/fifo_pool.ml}
+}%
+.
+
+As explained by \citeauthor{moonpool}%
+\footnote{
+\url{https://github.com/c-cube/moonpool/blob/main/src/core/fifo_pool.mli}
+}%
+, the point of this strategy is to provide better \emph{latency} than work-stealing --- as demanded by certain applications like network servers --- at the cost of a lower throughput.
+Indeed, contrary to work-stealing, older tasks have priority over younger tasks.
+
+However, this strategy may also have undesirable consequences.
+For example, in divide-and-conquer algorithms, this strategy corresponds to \emph{breadth-first} search, whereas work-stealing corresponds to \emph{depth-first} search.
+On large problems, the former may be unsustainable; on some benchmarks (see \cref{sec:benchmarks}), especially for small cutoffs, \Moonpool saturates the memory.

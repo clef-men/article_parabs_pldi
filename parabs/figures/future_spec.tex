@@ -1,0 +1,158 @@
+\begin{figure}
+\begin{mathparpagebreakable}
+    \iPersistent{(\inv\ \v{fut}\ \iPredTwo\ \iPredFour)}
+  \and
+    \iPersistent{(\result\ \v{fut}\ \zooVal)}
+  \\
+    \infer[consumer-divide]{
+        \inv\ \v{fut}\ \iPredTwo\ \iPredFour
+      \\\\
+        \consumer\ \v{fut}\ \iPredThree
+      \\\\
+        \Forall \zooVal.
+        \iPredThree\ \zooVal \iWand
+        \iBigSep_{\iPredThree \in \iPredThree{}s}
+          \iPredThree\ \zooVal
+    }{
+      \iFupd
+      \iBigSep_{\iPredThree \in \iPredThree{}s}
+        \consumer\ \v{fut}\ \iPredThree
+    }
+  \and
+    \infer[result-agree]{
+        \result\ \v{fut}\ \zooVal_1
+      \\\\
+        \result\ \v{fut}\ \zooVal_2
+    }{
+      \zooVal_1 = \zooVal_2
+    }
+  \and
+    \infer[inv-result]{
+        \inv\ \v{fut}\ \iPredTwo\ \iPredFour
+      \\\\
+        \result\ \v{fut}\ \zooVal
+    }{
+      \iFupd
+      \iLater \iPersistently \iPredFour\ \zooVal
+    }
+  \and
+    \infer[inv-result-consumer]{
+        \inv\ \v{fut}\ \iPredTwo\ \iPredFour
+      \\\\
+        \result\ \v{fut}\ \zooVal
+      \\\\
+        \consumer\ \v{fut}\ \iPredThree
+    }{
+      \iFupd
+      \iLater[2] \iPredThree\ \zooVal
+    }
+  \and
+    \infer[finished-result]{
+        \finished\ t
+      \\\\
+        \inv\ \v{fut}\ \iPredTwo\ \iPredFour
+    }{
+      \Exists \zooVal.
+      \result\ \v{fut}\ \zooVal
+    }
+  \\
+    \iSpec[
+      lab=async-spec
+    ]{
+      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+      \begin{inboxIndent}
+        \Forall \v{ctx}\ \v{scope}. \\
+        \context\ t\ \v{ctx}\ \v{scope} \iWand \\
+        \iWp{
+          \v{task}\ \v{ctx}
+        }[
+          \zooVal
+        ]{
+          \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+          \iLater \iPredTwo\ \zooVal \iSep \\
+          \iLater \iPersistently \iPredFour\ \zooVal
+        }
+      \end{inboxIndent}
+    }{
+      \c{async}\ \v{ctx}\ \v{task}
+    }[
+      \v{fut}
+    ]{
+      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+      \inv\ \v{fut}\ \iPredTwo\ \iPredFour \iSep \\
+      \consumer\ \v{fut}\ \iPredTwo \iSep \\
+      \obligation\ t\ (\Exists \zooVal. \result\ \v{fut}\ \zooVal)
+    }
+  \and
+    \iSpec[
+      lab=wait-spec
+    ]{
+      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+      \inv\ \v{fut}\ \iPredTwo\ \iPredFour
+    }{
+      \c{wait}\ \v{ctx}\ \v{fut}
+    }[
+      \zooVal
+    ]{
+      \iCredit{2} \iSep \\
+      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+      \result\ \v{fut}\ \zooVal
+    }
+  \and
+    \iSpec[
+      lab=iter-spec
+    ]{
+      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+      \inv\ \v{fut}\ \iPredTwo\ \iPredFour \iSep \\
+      \begin{inboxIndent}
+        \Forall \v{ctx}\ \v{scope}\ \zooVal. \\
+        \context\ t\ \v{ctx}\ \v{scope} \iWand \\
+        \result\ \v{fut}\ \zooVal \iWand \\
+        \iWp{
+          \v{fn}\ \v{ctx}\ \zooVal
+        }[
+          \c{()}
+        ]{
+          \context\ t\ \v{ctx}\ \v{scope}
+        }
+      \end{inboxIndent}
+    }{
+      \c{iter}\ \v{ctx}\ \v{fut}\ \v{fn}
+    }[
+      \c{()}
+    ]{
+      \context\ t\ \v{ctx}\ \v{scope}
+    }
+  \and
+    \iSpec[
+      lab=map-spec
+    ]{
+      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+      \inv\ \v{fut}_1\ \iPredTwo_1\ \iPredFour_1 \iSep \\
+      \begin{inboxIndent}
+        \Forall \v{ctx}\ \v{scope}\ \zooVal_1. \\
+        \context\ t\ \v{ctx}\ \v{scope} \iWand \\
+        \result\ \v{fut}_1\ \zooVal_1 \iWand \\
+        \iWp{
+          \v{fn}\ \v{ctx}\ \zooVal_1
+        }[
+          \zooVal_2
+        ]{
+          \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+          \iLater \iPredTwo_2\ \zooVal_2 \iSep \\
+          \iLater \iPersistently \iPredFour_2\ \zooVal_2
+        }
+      \end{inboxIndent}
+    }{
+      \c{map}\ \v{ctx}\ \v{fut}_1\ \v{fn}
+    }[
+      \v{fut}_2
+    ]{
+      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+      \inv\ \v{fut}_2\ \iPredTwo_2\ \iPredFour_2 \iSep \\
+      \consumer\ \v{fut}_2\ \iPredTwo_2
+    }
+\end{mathparpagebreakable}
+\caption{\ocamlinline{Future}: Specification}
+\label{fig:parabs_future_spec}
+\end{figure}

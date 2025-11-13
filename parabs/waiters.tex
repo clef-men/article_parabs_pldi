@@ -1,0 +1,17 @@
+\section{Waiters}
+\label{sec:parabs_waiters}
+
+In the realizations of the second level, described in the next section, we use a \emph{sleep-based mechanism} to adapt the number of active thieves.
+The idea is to put to sleep desperate thieves who do not find work after a number of failed steal attempts.
+In practice, doing so can improve the overall system performance, especially when tasks are scarce.
+
+To manage sleeping thieves, we use the \ocamlinline{Waiters} module~\refLibTheoriesFile{zoo_parabs/waiters}.
+Following the design of \Taskflow~\citep{DBLP:journals/tpds/HuangLLL22}, it implements a \emph{two-phase commit protocol}%
+\footnote{
+\url{https://www.1024cores.net/home/lock-free-algorithms/eventcounts}
+}
+--- \Domainslib%
+\footnote{
+\url{https://github.com/ocaml-multicore/domainslib/blob/main/lib/multi_channel.ml}
+}
+relies on a similar mechanism, although it is not as clear-cut.

@@ -1,0 +1,70 @@
+\section{Vertex}
+\label{sec:parabs_vertex}
+
+\begin{tirPrefix}{vertex-}
+
+At the fourth level, \ocamlinline{Vertex}~\refLibTheoriesFile{zoo_parabs/vertex} implements \emph{DAG-calculus}~\citep{DBLP:conf/icfp/AcarCRS16}, \ie a task graph abstraction.
+\Taskflow offers similar, although much more developed, abstractions.
+The longer term goal is to support the more practical \Taskflow interface, including static, dynamic, module and condition tasks.
+
+The raison d'être of these works is to represent more interesting dependency relations than is possible using standard parallel primitives (\c{fork}/\c{join}, futures, \etc) in order to express irregular parallel computations, \eg those for graph problems.
+
+Concretely, this takes the form of a simple and elegant programming model: a parallel computation is seen as a graph where vertices represent basic sequential computations and edges represent dependencies between vertices.
+A vertex can be executed only when its predecessors, \ie dependencies, are finished.
+Crucially, the structure of the graph is not static: while executing, a vertex may create new vertices and edges.
+Naturally, with great expressivity comes great responsibility: care must be taken not to introduce cycles in the graph, although the model does allow looping on a vertex.
+
+\subsection{Specification}
+
+\input{parabs/figures/vertex_spec}
+\input{parabs/figures/vertex_wp}
+
+The specification is given in \cref{fig:parabs_vertex_spec}.
+It features no less than six predicates: \inv, \model, \running, \output, \finished and \predecessor.
+
+The persistent assertion $\inv\ t\ \iProp\ \iPropThree$ represents the knowledge that $t$ is a valid vertex; \iProp is the \emph{non-persistent} output while \iPropThree is the \emph{persistent} output.
+It is returned by \c{create} (\refTirName{create-spec}) and required by most operations.
+
+The exclusive assertion $\model\ t\ \v{task}\ \v{iter}$ represents the ownership of vertex $t$.
+It is returned by \c{create} (\refTirName{create-spec}).
+\v{task} is the current computation attached to $t$; it can accessed using \c{task} (\refTirName{task-spec}) and \c{set\_task} (\refTirName{set-task-spec}).
+\v{iter} is the current \emph{logical iteration} of $t$.
+Indeed, a vertex may be executed several times; more precisely, a vertex task returns a boolean indicating whether the vertex should be re-executed.
+
+The persistent assertion $\running\ \v{iter}$ represents the knowledge that the iteration identified by \v{iter} has started --- it may be finished and obsoleted by subsequent iterations.
+
+The assertion $\output\ t\ \iPropTwo$ represents the right to consume \iPropTwo from the non-persistent output of $t$ once the latter has finished executing.
+It is returned by \c{create} (\refTirName{create-spec}) with the full non-persistent output and can then be divided using \refTirName{output-divide}.
+
+The persistent assertion $\finished\ t$ represents the knowledge that vertex $t$ has finished executing.
+It allows retrieving both the persistent (\refTirName{inv-finished}) and non-persistent (\refTirName{inv-finished-output}) output of $t$.
+
+The persistent assertion $\predecessor\ t\ \v{iter}$ represents the knowledge that iteration \v{iter} has predecessor $t$, \ie \v{iter} can only run once vertex $t$ has finished (\refTirName{predecessor-finished}).
+It can be obtained through \c{precede} (\refTirName{precede-spec}), including while the target vertex is executing; in other words, a vertex may add dependencies to itself so that its next iteration only starts when the new dependencies have finished.
+
+The most important operation is \c{release} (\refTirName{release-spec}), which declares a vertex ready for execution, provided that its dependencies (more precisely, those of the corresponding iteration) have finished.
+It requires a \emph{vertex weakest precondition} $\wp\ t\ \iProp\ \iPropThree\ \v{task}\ \v{iter}$, whose definition is given in \cref{fig:parabs_vertex_wp}.
+Intuitively, \wp is the counterpart of the standard weakest precondition for vertices: in any execution context, given the possession of vertex $t$, \v{task} executes safely; if it returns \boolFalse, it yields the two outputs; otherwise, we must show \wp again for the new task at the next iteration.
+Crucially, for the execution of \v{task}, we learn that iteration \v{iter} has indeed started and therefore its predecessors have finished thanks to \refTirName{predecessor-finished}.
+
+\bigskip
+
+This interface is slightly different from that of \citet{DBLP:conf/icfp/AcarCRS16}.
+Indeed, in the original DAG-calculus, vertex re-execution is performed using the \c{yield} operation, which behaves the same as returning \boolTrue in our interface except the computation is resumed at the same point.
+This is more convenient than returning a boolean and possibly going through mutable state to resume the computation properly.
+Unfortunately again, this mechanism requires capturing the continuation of the computation using algebraic effects, which are not supported by \ZooLang.
+
+\subsection{Implementation}
+
+Our implementation is very close to that of \citet{DBLP:conf/icfp/AcarCRS16}.
+The representation of a vertex consists of:
+(1) the current task,
+(2) an atomic counter corresponding to the number of unfinished predecessors,
+(3) a closable concurrent stack from \Saturn corresponding to the successors.
+When creating a new edge through \c{precede}, the target is added to the successors of the source and the counter of the target is incremented.
+After executing, a vertex atomically closes its successors and decrements their counter, releasing those with zero remaining predecessors.
+
+Actually, a vertex counter does not exactly correspond to the number of predecessors.
+Before the vertex is released for the first time and during its execution, there is one phantom predecessor preventing premature release; it is removed by \c{release}.
+
+\end{tirPrefix}

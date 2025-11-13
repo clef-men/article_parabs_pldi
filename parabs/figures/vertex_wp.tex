@@ -1,0 +1,39 @@
+\begin{figure}
+\[
+  \begin{array}{lcl}
+      \wp\ t\ \iProp\ \iPropThree\ \v{task}\ \v{iter}
+      & \eqdef &
+      \Forall \v{pool}\ \v{ctx}\ \v{scope}\ \v{iter}'.
+    \\
+      &&
+      \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iWand
+    \\
+      &&
+      \running\ \v{iter} \iWand
+    \\
+      &&
+      \model\ t\ \v{task}\ \v{iter}' \iWand
+    \\
+      &&
+      \iWp{
+        \v{task}\ \v{ctx}
+      }[
+        \zooBool
+      ]{
+        \Exists \v{task}. \\
+        \iLater \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
+        \iLater \model\ t\ \v{task}\ \v{iter}' \iSep \\
+        \myif{
+          \zooBool
+        }{
+          \iLater \wp\ t\ \iProp\ \iPropThree\ \v{task}\ \v{iter}'
+        }{
+          \iLater \iProp \iSep \\
+          \iLater \iPersistently \iPropThree
+        }
+      }
+  \end{array}
+\]
+\caption{\ocamlinline{Vertex}: Weakest precondition}
+\label{fig:parabs_vertex_wp}
+\end{figure}

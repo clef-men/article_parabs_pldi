@@ -13,6 +13,15 @@ Once a persistent assertion holds, it holds forever; using it does not consume i
 This enables \emph{duplication} ($\iProp \iEntails \iProp \iSep \iProp$) and \emph{sharing}.
 In particular, pure (meta-level) assertions embedded into the logic are persistent.
 
+Formally, persistence is defined in terms of the \emph{persistence modality}:
+\[
+  \iPersistent{\iProp}
+  \eqdef
+  \iProp \iEntails \iPersistently \iProp
+\]
+Informally, $\iPersistently \iProp$ means \iProp holds without asserting any exclusive ownership; in other words, it only expresses knowledge.
+Naturally, $\iPersistently \iProp$ is persistent.
+
 \paragraph{Ghost state}
 
 One of the most important features of \Iris is its \emph{user-defined higher-order ghost state}, a very flexible form of ghost state.

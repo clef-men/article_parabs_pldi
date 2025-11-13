@@ -9,7 +9,7 @@
 The specification of the infinite-array-based version is given in \cref{fig:chaselev_inf_ws_deque_spec}.
 It features three predicates: \inv, \model and \owner.
 
-The persistent assertion $\inv\ t\ \iIname$ represents the knowledge that $t$ is a valid deque.
+The persistent assertion $\inv\ t$ represents the knowledge that $t$ is a valid deque.
 It is returned by \c{create} (\refTirName{create-spec}) and required by all operations.
 
 The exclusive assertion $\model\ t\ \zooVals$ represents the ownership of the content of the deque \zooVals.

@@ -1,0 +1,90 @@
+\begin{figure}
+\begin{mathpar}
+    \iPersistent{(\inv\ t)}
+  \\
+    \infer[waiter-exclusive]{
+        \waiter\ t_1\ \v{wt}
+      \\
+        \waiter\ t_2\ \v{wt}
+    }{
+      \iFalse
+    }
+  \\
+    \iSpec[
+      lab=create-spec
+    ]{
+      \iTrue
+    }{
+      \c{create}\ \c{()}
+    }[
+      t
+    ]{
+      \inv\ t
+    }
+  \and
+    \iSpec[
+      lab=prepare-wait-spec
+    ]{
+      \inv\ t
+    }{
+      \c{prepare\_wait}\ t
+    }[
+      \v{wt}
+    ]{
+      \waiter\ t\ \v{wt}
+    }
+  \and
+    \iSpec[
+      lab=cancel-wait-spec
+    ]{
+      \inv\ t \iSep \\
+      \waiter\ t\ \v{wt}
+    }{
+      \c{cancel\_wait}\ t\ \v{wt}
+    }[
+      \c{()}
+    ]{
+      \iTrue
+    }
+  \and
+    \iSpec[
+      lab=commit-wait-spec
+    ]{
+      \inv\ t \iSep \\
+      \waiter\ t\ \v{wt}
+    }{
+      \c{commit\_wait}\ t\ \v{wt}
+    }[
+      \c{()}
+    ]{
+      \iTrue
+    }
+  \and
+    \iSpec[
+      lab=notify-spec
+    ]{
+      \inv\ t
+    }{
+      \c{notify}\ t
+    }[
+      \c{()}
+    ]{
+      \iTrue
+    }
+  \and
+    \iSpec[
+      lab=notify-many-spec
+    ]{
+      0 \leq \zooInt \iSep \\
+      \inv\ t
+    }{
+      \c{notify\_many}\ t\ \zooInt
+    }[
+      \c{()}
+    ]{
+      \iTrue
+    }
+\end{mathpar}
+\caption{\ocamlinline{Waiters}: Specification}
+\label{fig:parabs_waiters_spec}
+\end{figure}

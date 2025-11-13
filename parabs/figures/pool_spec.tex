@@ -1,0 +1,138 @@
+\begin{figure}
+\begin{mathpar}
+    \iPersistent{(\inv\ t\ \v{sz})}
+  \and
+    \iPersistent{(\obligation\ t\ \iProp)}
+  \and
+    \iPersistent{(\finished\ t)}
+  \\
+    \infer[inv-agree]{
+        \inv\ t\ \v{sz}_1
+      \\\\
+        \inv\ t\ \v{sz}_2
+    }{
+      \v{sz}_1 = \v{sz}_2
+    }
+  \and
+    \infer[obligation-finished]{
+        \obligation\ t\ \iProp
+      \\\\
+        \finished\ t
+    }{
+      \iLater \iPersistently \iProp
+    }
+  \\
+    \iSpec[
+      lab=create-spec
+    ]{
+      0 \leq \v{sz}
+    }{
+      \c{create}\ \v{sz}
+    }[
+      t
+    ]{
+      \inv\ t\ \v{sz} \iSep \\
+      \model\ t
+    }
+  \and
+    \iSpec[
+      lab=run-spec
+    ]{
+      \model\ t \iSep \\
+      \begin{inboxIndent}
+        \Forall \v{ctx}\ \v{scope}. \\
+        \context\ t\ \v{ctx}\ \v{scope} \iWand \\
+        \iWp{
+          \v{task}\ \v{ctx}
+        }[
+          \zooVal
+        ]{
+          \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+          \iPredTwo\ \zooVal
+        }
+      \end{inboxIndent}
+    }{
+      \c{run}\ t\ \v{task}
+    }[
+      \zooVal
+    ]{
+      \model\ t \iSep \\
+      \iPredTwo\ \zooVal
+    }
+  \and
+    \iSpec[
+      lab=kill-spec
+    ]{
+      \model\ t
+    }{
+      \c{kill}\ t
+    }[
+      \c{()}
+    ]{
+      \finished\ t
+    }
+  \and
+    \iSpec[
+      lab=size-spec
+    ]{
+      \inv\ t\ \v{sz} \iSep \\
+      \context\ t\ \v{ctx}\ \v{scope}
+    }{
+      \c{size}\ \v{ctx}
+    }[
+      \v{res}
+    ]{
+      \v{res} = \v{sz} \iSep \\
+      \context\ t\ \v{ctx}\ \v{scope}
+    }
+  \and
+    \iSpec[
+      lab=async-spec
+    ]{
+      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+      \begin{inboxIndent}
+        \Forall \v{ctx}\ \v{scope}. \\
+        \context\ t\ \v{ctx}\ \v{scope} \iWand \\
+        \iWp{
+          \v{task}\ \v{ctx}
+        }[
+          \_
+        ]{
+          \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+          \iLater \iPersistently \iProp
+        }
+      \end{inboxIndent}
+    }{
+      \c{async}\ \v{ctx}\ \v{task}
+    }[
+      \c{()}
+    ]{
+      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+      \obligation\ t\ \iProp
+    }
+  \and
+    \iSpec[
+      lab=wait-until-spec
+    ]{
+      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+      \iTriple{
+        \iTrue
+      }{
+        \v{pred}\ \c{()}
+      }[
+        \zooBool
+      ]{
+        \myifOneline{\zooBool}{\iProp}{\iTrue}
+      }
+    }{
+      \c{wait\_until}\ \v{ctx}\ \v{pred}
+    }[
+      \c{()}
+    ]{
+      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+      \iProp
+    }
+\end{mathpar}
+\caption{\ocamlinline{Pool}: Specification}
+\label{fig:parabs_pool_spec}
+\end{figure}

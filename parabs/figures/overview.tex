@@ -1,0 +1,64 @@
+\begin{figure}
+\centering
+\scalebox{.5}{\begin{tikzpicture}[
+  yscale=-1,
+  parabs/.style={fill=color1!50},
+  saturn/.style={fill=color2!50},
+  std/.style={fill=color3!50}
+]
+  \def\vsep{1.5}
+  \def\hsep{1.5}
+
+  \node [parabs] (algo) at (0,-1*\vsep) {\c{Algo}} ;
+  \node [parabs] (future) at (0,0) {\c{Future}} ;
+  \node [std] (ivar) at (-2*\hsep,0) {\c{Ivar}} ;
+  \node [parabs] (vertex) at (2*\hsep,0) {\c{Vertex}} ;
+  \node [saturn] (mpmc_stack) at (2*\hsep,1*\vsep) {\c{Mpmc\_stack}} ;
+  \node [parabs] (pool) at (0,1*\vsep) {\c{Pool}} ;
+  \node [std] (domain) at (-2*\hsep,1*\vsep) {\c{Domain}} ;
+  \node [parabs] (ws_hub) at (0,2*\vsep) {\c{Ws\_hub}} ;
+  \node [parabs] (ws_hub_fifo) at (2*\hsep,3*\vsep) {\c{Ws\_hub\_fifo}} ;
+  \node [parabs] (ws_hub_std) at (-2*\hsep,3*\vsep) {\c{Ws\_hub\_std}} ;
+  \node [parabs] (waiters) at (0,4*\vsep) {\c{Waiters}} ;
+  \node [std] (mpsc_waiter) at (0,5*\vsep) {\c{Mpsc\_waiter}} ;
+  \node [saturn] (mpmc_queue) at (3,5*\vsep) {\c{Mpmc\_queue}} ;
+  \node [parabs] (ws_deques) at (-4*\hsep,4*\vsep) {\c{Ws\_deques}} ;
+  \node [std] (random_round) at (-6.5*\hsep,4*\vsep) {\c{Random\_round}} ;
+  \node [parabs] (ws_deques_public) at (-6*\hsep,6*\vsep) {\c{Ws\_deques\_public}} ;
+  \node [saturn] (ws_deque) at (-6*\hsep,7*\vsep) {\c{Ws\_deque}} ;
+  \node [parabs] (ws_deques_private) at (-2*\hsep,6*\vsep) {\c{Ws\_deques\_private}} ;
+  \node [std] (queue) at (-2*\hsep,7*\vsep) {\c{Queue}} ;
+
+  \graph {
+    (future) -> (algo) ;
+    (ivar) -> (future) ;
+    (pool) -> (future) ;
+    (mpmc_stack) -> (vertex) ;
+    (pool) -> (vertex) ;
+    (domain) -> (pool) ;
+    (ws_hub) -> (pool) ;
+    (ws_hub_std) -> [densely dashed] (ws_hub) ;
+    (ws_hub_fifo) -> [densely dashed] (ws_hub) ;
+    (waiters) -> (ws_hub_std) ;
+    (waiters) -> (ws_hub_fifo) ;
+    (mpsc_waiter) -> (waiters) ;
+    (mpmc_queue) -> (waiters) ;
+    (mpmc_queue) -> (ws_hub_fifo) ;
+    (ws_deques) -> (ws_hub_std) ;
+    (ws_deques_public) -> [densely dashed] (ws_deques) ;
+    (ws_deques_private) -> [densely dashed] (ws_deques) ;
+    (random_round) -> (ws_deques) ;
+    (ws_deque) -> (ws_deques_public) ;
+    (queue) -> (ws_deques_private) ;
+  } ;
+
+  \node [parabs] at (-7*\hsep,0) {\c{Parabs}} ;
+  \node [saturn] at (-7*\hsep,.5*\vsep) {\c{Saturn}} ;
+  \node [std] at (-7*\hsep,1*\vsep) {\c{Std}} ;
+
+  \draw [->] (-7.25*\hsep,1.5*\vsep) -- (-6.75*\hsep,1.5*\vsep) node [right] {dependency} ;
+  \draw [densely dashed, ->] (-7.25*\hsep,2*\vsep) -- (-6.75*\hsep,2*\vsep) node [right] {implementation} ;
+\end{tikzpicture}}
+\caption{Overview of the \Parabs library}
+\label{fig:parabs_overview}
+\end{figure}

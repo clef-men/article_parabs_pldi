@@ -1,0 +1,35 @@
+\section{Futures}
+\label{sec:parabs_future}
+
+\subsection{Specification}
+\label{sec:parabs_future_spec}
+
+\begin{tirPrefix}{future-}
+
+\input{parabs/figures/future_spec}
+
+The specification is given in \cref{fig:parabs_pool_spec}.
+
+\c{async} also allows submitting a task asynchronously while executing under a context (\refTirName{sync-spec}).
+Furthermore, it returns a \emph{future} representing the future result of the task.
+To actually get the result, one must call \c{wait} (\refTirName{wait-spec}).
+$\c{iter}\ \v{ctx}\ \v{fut}\ \v{fn}$ attaches callback \v{fn} to \v{fut} (\refTirName{iter-spec}) and $\c{map}\ \v{ctx}\ \v{fut}_1\ \v{fn}$ creates a new future to be resolved after $\v{fut}_1$ (\refTirName{map-spec}).
+
+Futures are specified using three predicates: \inv, \result and \consumer.
+Their behavior is exactly the same as in the specification of ivars (see \cref{sec:std_ivar}).
+In particular, $\consumer\ \v{fut}\ \iPredThree$ represents the right to consume \iPredThree once \v{fut} has been determined (\refTirName{inv-result-consumer}); it can be divided using \refTirName{consumer-divide}.
+
+\end{tirPrefix}
+
+\subsection{Implementation}
+\label{sec:parabs_future_impl}
+
+Futures are implemented as ivars (see \cref{sec:std_ivar}).
+\c{async} creates an ivar and calls \c{async\_silent} to resolve it asynchronously.
+\c{wait} calls \c{wait\_until} to wait \emph{actively} until the ivar is resolved and returns the resulting value.
+\c{wait\_until} runs a loop similar to that of the worker domains described above; the wait is \emph{active} in the sense that the domain participate in the execution of tasks.
+Consequently, \c{wait} and \c{wait\_until} can be nested.
+This can be a problem in practice because it increases the call stack size in an arbitrary way, potentially causing stack overflow.
+
+Instead, \Domainslib leverages algebraic effects: awaiting a future captures the continuation and stores it into the future; when the future is resolved, it resubmits all the waiting tasks.
+This avoids any stack issue and is probably more efficient, since no polling is necessary.
