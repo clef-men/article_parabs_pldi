@@ -1,13 +1,34 @@
 \begin{figure}
 \begin{mathparpagebreakable}
-    \iPersistent{(\inv\ \v{fut}\ \iPredTwo\ \iPredFour)}
+    \iPersistent{(\inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour)}
   \and
-    \iPersistent{(\result\ \v{fut}\ \zooVal)}
+    \iPersistent{(\obligation\ \v{pool}\ \v{depth}\ \iProp)}
+  \and
+    \iPersistent{(\result\ t\ \zooVal)}
   \\
-    \infer[consumer-divide]{
-        \inv\ \v{fut}\ \iPredTwo\ \iPredFour
+    \infer[inv-finished]{
+        \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
       \\\\
-        \consumer\ \v{fut}\ \iPredThree
+        \l{pool.finished}\ \v{pool}
+    }{
+      \iLater[2 \cdot \v{depth} + 1]
+      \Exists \zooVal.
+      \result\ t\ \zooVal
+    }
+  \and
+    \infer[obligation-finished]{
+        \obligation\ \v{pool}\ \v{depth}\ \iProp
+      \\\\
+        \l{pool.finished}\ \v{pool}
+    }{
+      \iLater[2 \cdot \v{depth} + 2]
+      \iPersistently \iProp
+    }
+  \and
+    \infer[consumer-divide]{
+        \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
+      \\\\
+        \consumer\ t\ \iPredThree
       \\\\
         \Forall \zooVal.
         \iPredThree\ \zooVal \iWand
@@ -16,59 +37,50 @@
     }{
       \iFupd
       \iBigSep_{\iPredThree \in \iPredThree{}s}
-        \consumer\ \v{fut}\ \iPredThree
+        \consumer\ t\ \iPredThree
     }
   \and
     \infer[result-agree]{
-        \result\ \v{fut}\ \zooVal_1
+        \result\ t\ \zooVal_1
       \\\\
-        \result\ \v{fut}\ \zooVal_2
+        \result\ t\ \zooVal_2
     }{
       \zooVal_1 = \zooVal_2
     }
   \and
     \infer[inv-result]{
-        \inv\ \v{fut}\ \iPredTwo\ \iPredFour
+        \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
       \\\\
-        \result\ \v{fut}\ \zooVal
+        \result\ t\ \zooVal
     }{
       \iFupd
       \iLater \iPersistently \iPredFour\ \zooVal
     }
   \and
     \infer[inv-result-consumer]{
-        \inv\ \v{fut}\ \iPredTwo\ \iPredFour
+        \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
       \\\\
-        \result\ \v{fut}\ \zooVal
+        \result\ t\ \zooVal
       \\\\
-        \consumer\ \v{fut}\ \iPredThree
+        \consumer\ t\ \iPredThree
     }{
       \iFupd
       \iLater[2] \iPredThree\ \zooVal
-    }
-  \and
-    \infer[finished-result]{
-        \finished\ t
-      \\\\
-        \inv\ \v{fut}\ \iPredTwo\ \iPredFour
-    }{
-      \Exists \zooVal.
-      \result\ \v{fut}\ \zooVal
     }
   \\
     \iSpec[
       lab=async-spec
     ]{
-      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+      \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
       \begin{inboxIndent}
         \Forall \v{ctx}\ \v{scope}. \\
-        \context\ t\ \v{ctx}\ \v{scope} \iWand \\
+        \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iWand \\
         \iWp{
           \v{task}\ \v{ctx}
         }[
           \zooVal
         ]{
-          \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+          \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
           \iLater \iPredTwo\ \zooVal \iSep \\
           \iLater \iPersistently \iPredFour\ \zooVal
         }
@@ -76,81 +88,82 @@
     }{
       \c{async}\ \v{ctx}\ \v{task}
     }[
-      \v{fut}
+      t
     ]{
-      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
-      \inv\ \v{fut}\ \iPredTwo\ \iPredFour \iSep \\
-      \consumer\ \v{fut}\ \iPredTwo \iSep \\
-      \obligation\ t\ (\Exists \zooVal. \result\ \v{fut}\ \zooVal)
+      \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
+      \inv\ \v{pool}\ t\ 0\ \iPredTwo\ \iPredFour \iSep \\
+      \consumer\ t\ \iPredTwo
     }
   \and
     \iSpec[
       lab=wait-spec
     ]{
-      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
-      \inv\ \v{fut}\ \iPredTwo\ \iPredFour
+      \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
+      \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
     }{
-      \c{wait}\ \v{ctx}\ \v{fut}
+      \c{wait}\ \v{ctx}\ t
     }[
       \zooVal
     ]{
       \iCredit{2} \iSep \\
-      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
-      \result\ \v{fut}\ \zooVal
+      \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
+      \result\ t\ \zooVal
     }
   \and
     \iSpec[
       lab=iter-spec
     ]{
-      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
-      \inv\ \v{fut}\ \iPredTwo\ \iPredFour \iSep \\
+      \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
+      \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour \iSep \\
       \begin{inboxIndent}
         \Forall \v{ctx}\ \v{scope}\ \zooVal. \\
-        \context\ t\ \v{ctx}\ \v{scope} \iWand \\
-        \result\ \v{fut}\ \zooVal \iWand \\
-        \iWp{
-          \v{fn}\ \v{ctx}\ \zooVal
+        \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iWand \\
+        \result\ t\ \zooVal \iWand \\
+        \iWpVertical{
+          \v{task}\ \v{ctx}\ \zooVal
         }[
           \c{()}
         ]{
-          \context\ t\ \v{ctx}\ \v{scope}
+          \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
+          \iLater \iPersistently \iProp
         }
       \end{inboxIndent}
     }{
-      \c{iter}\ \v{ctx}\ \v{fut}\ \v{fn}
+      \c{iter}\ \v{ctx}\ t\ \v{task}
     }[
       \c{()}
     ]{
-      \context\ t\ \v{ctx}\ \v{scope}
+      \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
+      \obligation\ \v{pool}\ \v{depth}\ \iProp
     }
   \and
     \iSpec[
       lab=map-spec
     ]{
-      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
-      \inv\ \v{fut}_1\ \iPredTwo_1\ \iPredFour_1 \iSep \\
+      \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
+      \inv\ \v{pool}\ t_1\ \v{depth}\ \iPredTwo_1\ \iPredFour_1 \iSep \\
       \begin{inboxIndent}
         \Forall \v{ctx}\ \v{scope}\ \zooVal_1. \\
-        \context\ t\ \v{ctx}\ \v{scope} \iWand \\
-        \result\ \v{fut}_1\ \zooVal_1 \iWand \\
-        \iWp{
-          \v{fn}\ \v{ctx}\ \zooVal_1
+        \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iWand \\
+        \result\ t_1\ \zooVal_1 \iWand \\
+        \iWpVertical{
+          \v{task}\ \v{ctx}\ \zooVal_1
         }[
           \zooVal_2
         ]{
-          \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+          \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
           \iLater \iPredTwo_2\ \zooVal_2 \iSep \\
           \iLater \iPersistently \iPredFour_2\ \zooVal_2
         }
       \end{inboxIndent}
     }{
-      \c{map}\ \v{ctx}\ \v{fut}_1\ \v{fn}
+      \c{map}\ \v{ctx}\ t_1\ \v{task}
     }[
-      \v{fut}_2
+      t_2
     ]{
-      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
-      \inv\ \v{fut}_2\ \iPredTwo_2\ \iPredFour_2 \iSep \\
-      \consumer\ \v{fut}_2\ \iPredTwo_2
+      \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
+      \inv\ \v{pool}\ t_2\ (\v{depth} + 1)\ \iPredTwo_2\ \iPredFour_2 \iSep \\
+      \consumer\ t_2\ \iPredTwo_2
     }
 \end{mathparpagebreakable}
 \caption{\ocamlinline{Future}: Specification}

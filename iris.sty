@@ -254,6 +254,33 @@
   \, \right\}%
 }
 
+\NewDocumentCommand\iWpVertical{O{} m o m}{%
+  \@iArgs{#1}%
+  \begin{inbox}%
+      \l{wp}_{\iArgs@mask}%
+      \:%
+      #2%
+      \ifx\iArgs@tid\empty \else%
+        \@iSeparator \iArgs@tid%
+      \fi%
+    \\%
+      \left\{ \,%
+      \IfValueTF{#3}{%
+        \begin{array}{@{}l@{\ }l@{}}
+          \Return #3. &
+          \begin{array}[t]{@{}l@{}}
+            #4
+          \end{array}
+        \end{array}%
+      }{%
+        \begin{array}{@{}l@{}}
+          #4
+        \end{array}%
+      }%
+      \, \right\}%
+  \end{inbox}%
+}
+
 \newcommand{\@iSpec}[6]{%
   \begin{array}{@{}c@{}}
       \begin{array}{l}
