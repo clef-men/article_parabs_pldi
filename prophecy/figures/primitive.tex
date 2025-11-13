@@ -9,8 +9,7 @@
     }
   \and
     \iSpec[
-      lab=wp-proph,
-      mask=\iMask
+      lab=wp-proph
     ]{
       \iTrue
     }{
@@ -29,9 +28,7 @@
       \\
         \model\ \zooProph\ \v{prophs}
       \\
-        \iWp[
-          mask=\iMask
-        ]{
+        \iWp{
           \zooExpr
         }[
           \v{res}
@@ -42,9 +39,7 @@
           \iPred\ \v{res}
         }
     }{
-      \iWp[
-        mask=\iMask
-      ]{
+      \iWp{
         \zooExprResolve{\zooExpr}{\zooProph}{\zooVal}
       }{
         \iPred

@@ -1,6 +1,6 @@
 \begin{figure}
 \begin{mathpar}
-%    \iPersistent{(\inv\ t\ \iIname)}
+%    \iPersistent{(\inv\ t)}
 %  \\
 %    \iSpec[
 %      lab=create-spec-weak
@@ -11,16 +11,15 @@
 %    }[
 %      t
 %    ]{
-%      \inv\ t\ \iIname \iSep \\
+%      \inv\ t \iSep \\
 %      \model\ t\ \nil \iSep \\
 %      \owner\ t
 %    }
 %  \and
 %    \iAspec[
-%      lab=push-spec-weak,
-%      mask=\iIname
+%      lab=push-spec-weak
 %    ]{
-%      \inv\ t\ \iIname \iSep \\
+%      \inv\ t \iSep \\
 %      \owner\ t
 %    }[
 %      \zooVals
@@ -37,10 +36,9 @@
 %    }
 %  \and
     \iAspec[
-      lab=steal-spec-weak,
-      mask=\iIname
+      lab=steal-spec-weak
     ]{
-      \inv\ t\ \iIname
+      \inv\ t
     }[
       \zooVals
     ]{
@@ -68,10 +66,9 @@
     }
   \and
     \iAspec[
-      lab=pop-spec-weak,
-      mask=\iIname
+      lab=pop-spec-weak
     ]{
-      \inv\ t\ \iIname \iSep \\
+      \inv\ t \iSep \\
       \owner\ t
     }[
       \zooVals

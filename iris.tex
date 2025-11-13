@@ -1,1 +1,99 @@
 \section{\Iris arsenal}
+
+\paragraph{Separation logic}
+
+\Iris is a concurrent separation logic~\citep{DBLP:conf/csl/OHearnRY01,DBLP:conf/lics/Reynolds02,DBLP:journals/tcs/OHearn07} fully mechanized in the \Rocq proof assistant~\citep{DBLP:journals/pacmpl/KrebbersJ0TKTCD18}.
+As such, it features basic connectives like separation conjunction $\iSep$ and separating implication $\iWand$.
+
+\paragraph{Persistent assertions}
+
+In \Iris, assertions are affine: using a resource consumes it, removes it from the proof context.
+Some assertions, however, are \emph{persistent}.
+Once a persistent assertion holds, it holds forever; using it does not consume it.
+This enables \emph{duplication} ($\iProp \iEntails \iProp \iSep \iProp$) and \emph{sharing}.
+In particular, pure (meta-level) assertions embedded into the logic are persistent.
+
+\paragraph{Ghost state}
+
+One of the most important features of \Iris is its \emph{user-defined higher-order ghost state}, a very flexible form of ghost state.
+Ghost updates, of the form $\iFupd \iProp$, allow updating the ghost state during the proof; they are purely logical, hence not visible in the program.
+
+\paragraph{Sequential specification}
+
+Sequential specifications take the form of Hoare triples:
+\begin{mathpar}
+    \iSpec{
+      \iProp
+    }{
+      \zooExpr
+    }{
+      \iPred
+    }
+  \and
+    \iSpec{
+      \l{stack-model}\ t\ \zooVals
+    }{
+      \c{stack\_push}\ t\ \zooVal
+    }[
+      \c{()}
+    ]{
+      \l{stack-model}\ t\ (\cons{\zooVal}{\zooVals})
+    }
+\end{mathpar}
+where $P$ is an \Iris assertion, $\zooExpr$ an expression and \iPred an \Iris predicate over values.
+
+Informally, this triple says: if the precondition \iProp holds, we can safely execute $\zooExpr$ and, if the execution terminates, the returned value satisfies the postcondition \iPred.
+It is a persistent resource, allowing executing $\zooExpr$ many times.
+
+\paragraph{Weakest precondition}
+
+Hoare triples are defined using the more primitive notion of \emph{weakest precondition} $\iWp{\zooExpr}{\iPred}$.
+Informally, it says that: once only, we can execute $\zooExpr$ and, if the execution terminates, the returned value satisfies the postcondition \iPred.
+Contrary to Hoare triples, it can depend on exclusive ownership and therefore is not persistent.
+
+\paragraph{Atomic specification}
+
+To specify concurrent operations, we use the notion of \emph{logical atomicity}~\citep{DBLP:conf/ecoop/PintoDG14}.
+An operation is said to be logically atomic if it appears to take effect atomically at some point during its execution; this point is called the \emph{linearization point} of the operation.
+\citeauthor{DBLP:journals/pacmpl/BirkedalDGJST21} showed that this notion implies \emph{linearizability}~\citep{DBLP:journals/toplas/HerlihyW90} in a sequentially consistent memory model.
+
+In \Iris, logical atomicity takes the form of \emph{atomic specifications}:
+\begin{mathpar}
+    \iAspec{
+      \iProp_\v{priv}
+    }[
+      \seq{x}
+    ]{
+      \iProp_\v{pub}
+    }{
+      \zooExpr
+    }[
+      \seq{y}
+    ]{
+      \iPropTwo
+    }{
+      \iPred
+    }
+  \and
+    \iAspec{
+      \l{stack-inv}\ t
+    }[
+      \zooVals
+    ]{
+      \l{stack-model}\ t\ \zooVals
+    }{
+      \c{stack\_push}\ t\ \zooVal
+    }{
+      \l{stack-model}\ t\ (\cons{\zooVal}{\zooVals})
+    }[
+      \c{()}
+    ]{
+      \iTrue
+    }
+\end{mathpar}
+$\iProp_\v{priv}$ and \iPred are standard \emph{private} pre- and postcondition for the user of the specification, similarly to Hoare triples.
+$\iProp_\v{pub}$ and \iPropTwo are \emph{public} pre- and postcondition; they specify the linearization point of the operation.
+Quantifiers $\seq{x}$ represent the \emph{demonic nature} of $\iProp_\v{pub}$: the exact state at the linearization point, given by $\iProp_\v{pub}$, is unknown until it happens.
+Quantifiers $\seq{y}$ represent the \emph{angelic nature} of \iPropTwo: at the linearization point, the operation can choose how to instantiate the new state \iPropTwo.
+
+In sum, the atomic specification says: if the private precondition $\iProp_\v{priv}$ holds, we can safely execute $\zooExpr$ and, if the execution terminates, (1) the returned value satisfies the private postcondition \iPred and (2) at some point during the execution, the state was atomically updated from $\iProp_\v{pub}$ to \iPropTwo.

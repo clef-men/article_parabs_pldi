@@ -1,6 +1,6 @@
 \begin{figure}
 \begin{mathparpagebreakable}
-    \iPersistent{(\inv\ t\ \iIname)}
+    \iPersistent{(\inv\ t)}
   \\
     \infer[model-exclusive]{
         \model\ t\ \zooVals_1
@@ -35,16 +35,15 @@
     }[
       t
     ]{
-      \inv\ t\ \iIname \iSep \\
+      \inv\ t \iSep \\
       \model\ t\ \nil \iSep \\
       \owner\ t\ \nil
     }
   \and
     \iAspec[
-      lab=size-spec,
-      mask=\iIname
+      lab=size-spec
     ]{
-      \inv\ t\ \iIname \iSep \\
+      \inv\ t \iSep \\
       \owner\ t\ \zooValsTwo
     }[
       \zooVals
@@ -63,10 +62,9 @@
     }
   \and
     \iAspec[
-      lab=is-empty-spec,
-      mask=\iIname
+      lab=is-empty-spec
     ]{
-      \inv\ t\ \iIname \iSep \\
+      \inv\ t \iSep \\
       \owner\ t\ \zooValsTwo
     }[
       \zooVals
@@ -85,10 +83,9 @@
     }
   \and
     \iAspec[
-      lab=push-spec,
-      mask=\iIname
+      lab=push-spec
     ]{
-      \inv\ t\ \iIname \iSep \\
+      \inv\ t \iSep \\
       \owner\ t\ \zooValsTwo
     }[
       \zooVals
@@ -106,10 +103,9 @@
     }
   \and
     \iAspec[
-      lab=steal-spec,
-      mask=\iIname
+      lab=steal-spec
     ]{
-      \inv\ t\ \iIname
+      \inv\ t
     }[
       \zooVals
     ]{
@@ -125,10 +121,9 @@
     }
   \and
     \iAspec[
-      lab=pop-spec,
-      mask=\iIname
+      lab=pop-spec
     ]{
-      \inv\ t\ \iIname \iSep \\
+      \inv\ t \iSep \\
       \owner\ t\ \zooValsTwo
     }[
       \zooVals
