@@ -131,7 +131,7 @@ In the per-domains result we see that \c{domainslib} and \c{parabs} have similar
 The performance is relatively stable over most choices of \c{CUTOFF}.
 The per-domain results are similar across all benchmarks after controlling for the one-domain shift of \Moonpool.
 
-One notable aspect of the result is that we observe a marked decline in performance, across all schedulers, when the number of domains becomes close to the number of available cores, around $\c{DOMAINS} \geq 10$. We believe that this comes from the high-allocation rate of this benchmark (10.2GiB/s) causing frequent minor collections, and thus stop-the-world pauses, with some domains temporarily suspended by the operating system. The allocations can be avoided in this benchmark by optimizing more agressively to eliminate float boxing, but this phenomenon is likely to occur for other high-allocation \OCaml programs so we chose to preserve it.
+Remark: we observe a marked decline in performance, across all schedulers, when the number of domains becomes close to the number of available cores, around $\c{DOMAINS} \geq 10$. We believe that this comes from the high-allocation rate of this benchmark (10.2GiB/s) causing frequent minor collections, and thus stop-the-world pauses, with some domains temporarily suspended by the operating system. In other words, the slowdown comes from the \OCaml runtime, not from the scheduler implementations. The allocations can be avoided in this benchmark by optimizing more agressively to eliminate float boxing, but this phenomenon is likely to occur for other high-allocation \OCaml programs so we chose to preserve it.
 
 \paragraph{\c{matmul}.}
 
