@@ -1,7 +1,8 @@
 \section{Benchmarks}
 \label{app:benchmarks}
 
-In this section, we present simple benchmarks to assess the performance of \Parabs relatively to \Domainslib~\citep{domainslib} and \Moonpool~\citep{moonpool} on simple workloads. Benchmarking concurrent schedulers is subtle and difficult; we have not tried here to validate and study experimentally all our implementation choices, or to cover the wide range of concurrent workloads, but to validate a simple qualitative claim:
+In this section, we present simple benchmarks to assess the performance of \Parabs relatively to \Domainslib~\citep{domainslib} and \Moonpool~\citep{moonpool} on simple workloads.
+Benchmarking parallel schedulers is subtle and difficult; we have not tried here to validate and study experimentally all our implementation choices, or to cover the wide range of parallel workloads, but to validate a simple qualitative claim:
 
 \begin{quotation}
   For CPU-bound tasks, \Parabs has comparable throughput to \Domainslib, a state-of-the-art scheduler used in production in the \OCamlFive library ecosystem.
@@ -38,7 +39,6 @@ For each benchmark, we show:
 \subsubsection{Scheduler implementations}
 
 Each benchmark is written on top of a simple scheduler interface, for which the following implementations are provided:
-
 \begin{itemize}
   \item
     \c{domainslib} uses the \Domainslib library;
@@ -59,7 +59,7 @@ We used the latest software versions currently available: \Domainslib 0.5.2, and
 
 \paragraph{\c{fibonacci} \refBench{fibonacci/run.ml}.}
 
-The concurrent implementation of Fibonacci of \cref{fig:ocaml5_fibonacci_domainslib}, extended with a sequential cutoff: below the cutoff value, a sequential implementation is used.
+A parallel implementation of Fibonacci extended with a sequential cutoff: below the cutoff value, a sequential implementation is used.
 
 \paragraph{\c{iota} \refBench{iota/run.ml}.}
 
@@ -94,7 +94,7 @@ On all schedulers, the performance for larger \c{CUTOFF} values should be good i
 
 \input{benchmarks/figures/results}
 
-\cref{fig:parabs_benchmarks_1} and \cref{fig:parabs_benchmarks_2} contain the full results, with per-cutoff and per-domain plots for each benchmarks.
+\cref{fig:benchmarks} contains the full results, with per-cutoff and per-domain plots for each benchmarks.
 
 \paragraph{\c{fibonacci}.}
 
@@ -116,7 +116,7 @@ We indeed observe better noticeably performance with $\c{CUTOFF} = 1$ than with 
 
 In the per-cutoff results we observe that \c{parabs} performs best on this benchmark, then \c{domainslib}, then \c{moonpool}.
 
-In the per-domain results (with \c{CUTOFF}=1) we see that \c{parabs} performs noticeably better than the other implementations for relatively low domain counts, and they become comparable around $\c{DOMAINS} \geq 7$.
+In the per-domain results (with $\c{CUTOFF} = 1$) we see that \c{parabs} performs noticeably better than the other implementations for relatively low domain counts, and they become comparable around $\c{DOMAINS} \geq 7$.
 
 \paragraph{\c{iota}.}
 
