@@ -36,6 +36,8 @@ For each benchmark, we show:
     per-domain results with a \c{CUTOFF} value that is chosen to work well for all implementations for this benchmark.
 \end{itemize}
 
+Remark: Large cutoff values tend to work well for benchmarks with homogeneous-enough tasks, as they effectively amortize the scheduling costs. The advantage of having schedulers that also perform well on small cutoffs are two-fold. First, this typically indicate that they will adapt to irregular tasks (but: our benchmarks do not perform an in-depth exploration of irregular workloads). Second, this can alleviate the burden of asking users to choose cutoff sizes (by widening the range of values that perform well), an activity which requires cumbersome hand-tuning and can limit performance portability.
+
 \subsubsection{Scheduler implementations}
 
 Each benchmark is written on top of a simple scheduler interface, for which the following implementations are provided:
@@ -94,7 +96,7 @@ On all schedulers, the performance for larger \c{CUTOFF} values should be good i
 
 \input{benchmarks/figures/results}
 
-\cref{fig:benchmarks_1} and \cref{fig:benchmarks_2} contain the full results, with per-cutoff and per-domain plots for each benchmarks.
+\cref{fig:benchmarks_1} and \cref{fig:benchmarks_2} contain the full results, with per-cutoff and per-domain plots for each benchmarks. Notice that while the per-domain plot always use linear axes, the per-cutoff plots often use logarithmic plot axes, to preserve readability when performance difference become very large for small cutoff values, and to express large ranges of possible cutoff choices.
 
 \paragraph{\c{fibonacci}.}
 
