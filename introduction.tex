@@ -1,58 +1,47 @@
 \section{Introduction}
 
-The \OCaml programming language migrated from a sequential to a multicore runtime in \OCamlFive, imported from the \MulticoreOCaml research project~\citep*{DBLP:journals/pacmpl/Sivaramakrishnan20} and first released as \OCaml 5.0 in 2022. The sequential runtime had a ``big runtime lock'' guaranteeing that at most one OCaml thread would run at any point in time. The multicore runtime supports ``domains'' (heavyweight threads) that can run \OCaml code in parallel, operating on a shared heap and cooperating for garbage collection. It is designed to offer a M:N threading model with M lightweight tasks (or threads, fibers) are mapped to N domains, with N no larger than the number of CPU cores%
+The \OCaml programming language migrated from a sequential to a multicore runtime in \OCamlFive, imported from the \MulticoreOCaml research project~\citep{DBLP:journals/pacmpl/Sivaramakrishnan20} and first released as \OCaml~5.0 in 2022.
+The sequential runtime had a ``big runtime lock'' guaranteeing that at most one OCaml thread would run at any point in time.
+The multicore runtime supports ``domains'' (heavyweight threads) that can run \OCaml code in parallel, operating on a shared heap and cooperating for garbage collection.
+It is designed to offer a M:N threading model with M lightweight tasks (or threads, fibers) are mapped to N domains, with N no larger than the number of CPU cores%
 \footnote{
 The multicore runtime of OCaml performs frequent stop-the-world pause in its garbage collector, to facilitate the migration of existing programs using the OCaml foreign function interface --- this design does not require adding a read barrier. A consequence of these stop-the-world events is that runtime performance declines sharply if a domain is paused by the operating system, so it is critical to limit the number of domains to available cores: domains are a heavier, less composable abstraction than ``kernel threads'' in typical M:N models. In consequence, they must be controlled by end-used applications, possibly via a concurrency framework that hides them entirely, and software libraries should not implicitly spawn new domains, they need to use a more lightweight task abstraction.
 }%
 .
 The implementation of lightweight tasks and their scheduler is left to be done in userland, as an OCaml library running on top of runtime-provided domains.
 
-The authors of the \MulticoreOCaml runtime implemented the \Domainslib library for CPU-bound tasks, initially to write benchmarks to test the scalability of the \OCaml runtime. It uses a work-stealing scheduler and is state-of-the-art in the \OCaml library ecosystem. Other lightweight task libraries include \Moonpool, which was implemented independently, and \Eio which focuses on efficient asynchronous I/O. All of those schedulers have been used in performance-sensitive scenarios, benchmarked and optimized, notably using lock-free data structures implemented in \OCamlFive.
+The authors of the \MulticoreOCaml runtime implemented the \Domainslib library for CPU-bound tasks, initially to write benchmarks to test the scalability of the \OCaml runtime.
+It uses a work-stealing scheduler and is state-of-the-art in the \OCaml library ecosystem.
+Other lightweight task libraries include \Moonpool, which was implemented independently, and \Eio which focuses on efficient asynchronous I/O.
+All of those schedulers have been used in performance-sensitive scenarios, benchmarked and optimized, notably using lock-free data structures implemented in \OCamlFive.
 
-In this work we present \Parabs, a verified implementation of a state-of-the-art scheduler for lightweight tasks, following the overall design of \Domainslib, with some implementation choices inspired by the \Taskflow \Cpp library~\citep*{DBLP:journals/tpds/HuangLLL22}. This verification builds on top of the \Zoo framework~\citep*{AllainS26}, which supports the formal verification of a subset of \OCamlFive in the \Iris program logic~\citep*{DBLP:journals/jfp/JungKJBBD18}, mechanized within the Rocq proof assistant. Our verification effort includes a new mechanized verification of the Chase-Lev work-stealing queue~\citep*{DBLP:conf/spaa/ChaseL05}, with stronger invariants than had previously appeared in the literature. Our scheduler supports two different scheduling strategies, one using standard randomized work-stealing~\citep*{DBLP:journals/jacm/BlumofeL99}, the other using work-stealing with \emph{private} deques~\citep*{DBLP:conf/ppopp/AcarCR13}. On top of the scheduler, we expose an API closely resembling \Domainslib, but also a \emph{task graph} abstraction which implements the DAG-calculus of \citet*{DBLP:conf/icfp/AcarCRS16}.
+In this work we present \Parabs, a verified implementation of a state-of-the-art scheduler for lightweight tasks, following the overall design of \Domainslib, with some implementation choices inspired by the \Taskflow \Cpp library~\citep{DBLP:journals/tpds/HuangLLL22}.
+This verification builds on top of the \Zoo framework~\citep{AllainS26}, which supports the formal verification of a subset of \OCamlFive in the \Iris program logic~\citep{DBLP:journals/jfp/JungKJBBD18}, mechanized within the Rocq proof assistant.
+Our verification effort includes a new mechanized verification of the Chase-Lev work-stealing queue~\citep{DBLP:conf/spaa/ChaseL05}, with stronger invariants than had previously appeared in the literature.
+Our scheduler supports two different scheduling strategies, one using standard randomized work-stealing~\citep{DBLP:journals/jacm/BlumofeL99}, the other using work-stealing with \emph{private} deques~\citep{DBLP:conf/ppopp/AcarCR13}.
+On top of the scheduler, we expose an API closely resembling \Domainslib, but also a \emph{task graph} abstraction which implements the DAG-calculus of \citet{DBLP:conf/icfp/AcarCRS16}.
 
-This work is focused on formal verification, but we did write and run relatively simple benchmarks to validate experimentally that the performance of our verified implementation, \Parabs, is comparable to \Domainslib; in our tests it is equal or faster.
+This work is focused on formal verification but we did write and run relatively simple benchmarks to validate experimentally that the performance of our verified implementation, \Parabs, is comparable to \Domainslib; in our tests it is equal or faster.
 
-\paragraph{Contributions} Our contributions include:
+\paragraph{Contributions}
+
+Our contributions include:
 \begin{enumerate}
-\item A new mechanized verification of the Chase-Lev work-stealing
-  queue~\citep*{DBLP:conf/spaa/ChaseL05}, with finer-grained
-  invariants than had previously appeared in the literature. In
-  particular, our invariant lets us reason about the failure case of
-  the \c{pop} operation, which was missing from earlier formalizations
-  and is essential to prove termination of the work-stealing scheduler
-  when all task queues are exhausted.
-\item A fully-verified implementation of a concurrent scheduler in
-  \OCamlFive, \Parabs, which provides a verified alternative to the
-  state-of-the-art \Domainslib library. To the best of our knowledge,
-  this is the first verified implementation of a concurrent task
-  scheduler (for any language) using realistic implementation
-  techniques. \Xgabriel{Is this true? We don't know of a verified
-    scheduler in Iris, but what about previous verification efforts?}
-  Our experimental evaluation on a set of simple benchmarks shows that
-  \Parabs has comparable or better performance than \Domainslib, and
-  better performance than \Moonpool.
-\item A verified implementation of the DAG-calculus interface for
-  parallel task graphs proposed by \citet*{DBLP:conf/ppopp/AcarCR13}.
-\item At the level of \Iris proof techniques, we developed extensions
-  of the ``prophecy variables'' techniques used in existing \Iris
-  developments. To reason about the linearization points of our
-  concurrent data structures we needed to introduce ``wise'' and
-  ``multiplexed'' prophecy variables, which are reusable building
-  blocks and could be useful for the verification of other concurrent
-  data structures, in any \Iris formalization of any programming
-  language.
+  \item
+    A new mechanized verification of the Chase-Lev work-stealing queue~\citep{DBLP:conf/spaa/ChaseL05}, with finer-grained invariants than had previously appeared in the literature.
+    In particular, our invariant lets us reason about the failure case of the \c{pop} operation, which was missing from earlier formalizations and is essential to prove termination of the work-stealing scheduler when all task queues are exhausted.
+  \item
+    A fully verified implementation of a parallel scheduler in \OCamlFive, \Parabs, which provides a verified alternative to the state-of-the-art \Domainslib library.
+    To the best of our knowledge, this is the first verified implementation of a parallel work-stealing task scheduler (for any language) using realistic implementation techniques.
+    Our experimental evaluation on a set of simple benchmarks shows that \Parabs has comparable or better performance than \Domainslib, and better performance than \Moonpool.
+  \item
+    A verified implementation of the DAG-calculus interface for parallel task graphs proposed by \citet{DBLP:conf/ppopp/AcarCR13}.
+  \item
+    At the level of \Iris proof techniques, we developed extensions of prophecy variables.
+    To reason about the linearization points of our concurrent data structures we needed to introduce ``wise'' and ``multiplexed'' prophecy variables, which are reusable building blocks and could be useful for the verification of other concurrent data structures, in any \Iris formalization of any programming language.
 \end{enumerate}
 
-\paragraph{Limitation} The main limitation of our work is the usage of
-a sequentially-consistent memory model inherited from the \Zoo
-framework, while \OCaml5 uses a more relaxed memory
-model~\citep*{DBLP:conf/pldi/DolanSM18} that can allow more behaviors,
-endangering our correctness results. To the best of our knowledge,
-there is no available verification framework for \OCaml5 program that
-supports both practical verification of concurrent programs and the
-\OCaml memory model; Cosmo~\citep*{DBLP:journals/pacmpl/MevelJP20}
-provides a building step, but lacks support for many \OCaml feature
-used in verified programs. The authors of \Zoo are reportedly planning
-to integrate its treatment of the memory model in \Zoo itself, which
-would allow us to re-verify our developments in a relaxed model.
+\paragraph{Limitation}
+
+The main limitation of our work is the usage of a sequentially consistent memory model inherited from the \Zoo framework, while \OCamlFive uses a more relaxed memory model~\citep{DBLP:conf/pldi/DolanSM18} allowing more behaviors, endangering our correctness results.
+To the best of our knowledge, there is no available verification framework for \OCamlFive that supports both practical verification of concurrent programs and the \OCaml memory model; Cosmo~\citep{DBLP:journals/pacmpl/MevelJP20} provides a building step, but lacks support for many \OCaml feature used in verified programs.
