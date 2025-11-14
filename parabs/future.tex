@@ -1,6 +1,13 @@
 \section{Futures}
 \label{sec:parabs_future}
 
+At the fourth level, \ocamlinline{Future}~\refLibTheoriesFile{zoo_parabs/future} implements futures%
+\footnote{
+Futures are called \emph{promises} in \Domainslib.
+In fact, the two notions are often used in conjunction to represent the two sides of the same object.
+}%
+, a standard abstraction for representing the future result of an asynchronous task.
+
 \subsection{Specification}
 \label{sec:parabs_future_spec}
 
@@ -9,22 +16,36 @@
 \input{parabs/figures/future_spec}
 
 The specification is given in \cref{fig:parabs_pool_spec}.
+It features four predicates: \inv, \result, \consumer and \obligation.
 
-\c{async} also allows submitting a task asynchronously while executing under a context (\refTirName{sync-spec}).
-Furthermore, it returns a \emph{future} representing the future result of the task.
+\c{async} also allows submitting a task asynchronously while executing under a context (\refTirName{sync-spec}), returning a \emph{future} representing the result of the task.
 To actually get the result, one must call \c{wait} (\refTirName{wait-spec}).
-$\c{iter}\ \v{ctx}\ \v{fut}\ \v{fn}$ attaches callback \v{fn} to \v{fut} (\refTirName{iter-spec}) and $\c{map}\ \v{ctx}\ \v{fut}_1\ \v{fn}$ creates a new future to be resolved after $\v{fut}_1$ (\refTirName{map-spec}).
+$\c{iter}\ \v{ctx}\ \v{fut}\ \v{task}$ attaches callback \v{task} to \v{fut} (\refTirName{iter-spec}) and $\c{map}\ \v{ctx}\ \v{fut}_1\ \v{task}$ creates a new future to be resolved after $\v{fut}_1$ (\refTirName{map-spec}).
 
-Futures are specified using three predicates: \inv, \result and \consumer.
-Their behavior is exactly the same as in the specification of ivars (see \cref{sec:std_ivar}).
-In particular, $\consumer\ \v{fut}\ \iPredThree$ represents the right to consume \iPredThree once \v{fut} has been determined (\refTirName{inv-result-consumer}); it can be divided using \refTirName{consumer-divide}.
+The persistent assertion $\inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour$ represents the knowledge that $t$ is a valid future attached to pool \v{pool} such that:
+(1) \iPredTwo is the \emph{non-persistent output predicate} satisfied by the produced value;
+(2) \iPredFour is the \emph{persistent output predicate} satisfied by the produced value.
+\v{depth} is the depth of $t$ in the forest formed by all futures.
+
+The persistent assertion $\result\ t\ \zooVal$ represents the knowledge that future $t$ has been resolved to value \zooVal.
+Using \refTirName{inv-result}, it can also be combined with \inv to obtain the persistent output predicate.
+After the pool has finished, it is guaranteed that all futures have been resolved (\refTirName{inv-finished}).
+
+The assertion $\consumer\ t\ \iPredThree$ represents the right to consume \iPredThree once future $t$ has been resolved.
+Indeed, using \refTirName{inv-result-consumer}, it can be combined with \inv and \result to obtain \iPredThree.
+When $t$ is created, this assertion is produced with the full non-persistent predicate (\refTirName{async-spec}, \refTirName{map-spec}); then, it can be divided into several parts (\refTirName{consumer-divide}).
+
+The persistent assertion $\obligation\ \v{pool}\ \v{depth}\ \iProp$ represents a proof obligation emitted by \c{iter} (\refTirName{iter-spec}).
+It allows retrieving \iProp once \v{pool} has finished (\refTirName{obligation-finished}).
+
+One notable aspect of this specification is that resolution of the future --- as indicated by \result --- is separated from the division of the output predicates --- as achieved by \consumer.
 
 \end{tirPrefix}
 
 \subsection{Implementation}
 \label{sec:parabs_future_impl}
 
-Futures are implemented as ivars (see \cref{sec:std_ivar}).
+Futures are implemented using \emph{ivars} (concurrent write-once variables), as implemented and verified in the \Zoo standard library.
 \c{async} creates an ivar and calls \c{async\_silent} to resolve it asynchronously.
 \c{wait} calls \c{wait\_until} to wait \emph{actively} until the ivar is resolved and returns the resulting value.
 \c{wait\_until} runs a loop similar to that of the worker domains described above; the wait is \emph{active} in the sense that the domain participate in the execution of tasks.

@@ -3,7 +3,7 @@
 \input{parabs/figures/overview}
 
 \Cref{fig:parabs_overview} gives an overview of \Parabs; solid edges represent module dependencies while dashed edges represent interface implementations.
-Essentially, the library is made of four abstraction levels built on top of each other: \ocamlinline{Ws_deques}, \ocamlinline{Ws_hub}, \ocamlinline{Pool} and \ocamlinline{Vertex}.
+Essentially, the library is made of four abstraction levels built on top of each other: \ocamlinline{Ws_deques}, \ocamlinline{Ws_hub}, \ocamlinline{Pool} and \ocamlinline{Future} / \ocamlinline{Vertex}.
 
 The \ocamlinline{Pool} module provides a task scheduler; internally, it maintains a pool of domains.
 Its design is inspired by \Domainslib, \Taskflow~\citep{DBLP:journals/tpds/HuangLLL22} and \Moonpool~\citep{moonpool}.

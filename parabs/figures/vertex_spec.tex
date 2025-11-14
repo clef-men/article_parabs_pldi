@@ -2,7 +2,7 @@
 \begin{mathparpagebreakable}
     \iPersistent{(\inv\ t\ \iProp\ \iPropThree)}
   \and
-    \iPersistent{(\running\ \v{iter})}
+    \iPersistent{(\ready\ \v{iter})}
   \and
     \iPersistent{(\finished\ t)}
   \and
@@ -41,7 +41,7 @@
     \infer[predecessor-finished]{
         \predecessor\ t\ \v{iter}
       \\\\
-        \running\ \v{iter}
+        \ready\ \v{iter}
     }{
       \finished\ t
     }
@@ -77,7 +77,7 @@
     ]{
       \Exists \v{iter}. \\
       \inv\ t\ \iProp\ \iPropThree \iSep \\
-      \model\ t\ (\l{option.get}\ (\c{fun: <> => false})\ \v{task})\ \v{iter} \iSep \\
+      \model\ t\ (\l{option.get}\ (\c{fun: <> => ()})\ \v{task})\ \v{iter} \iSep \\
       \output\ t\ \iProp
     }
   \\
@@ -127,7 +127,23 @@
       \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
       \inv\ t\ \iProp\ \iPropThree \iSep \\
       \model\ t\ \v{task}\ \v{iter} \iSep \\
-      \wp\ t\ \iProp\ \iPropThree\ \v{task}\ \v{iter}
+      \begin{inboxIndent}
+        \Forall \v{pool}\ \v{ctx}\ \v{scope}\ \v{iter}'. \\
+        \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iWand \\
+        \ready\ \v{iter} \iWand \\
+        \model\ t\ \v{task}\ \v{iter}' \iWand \\
+        \iWp{
+          \v{task}\ \v{ctx}
+        }[
+          \c{()}
+        ]{
+          \Exists \v{task}. \\
+          \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
+          \model\ t\ \v{task}\ \v{iter}' \iSep \\
+          \iLater \iProp \iSep \\
+          \iLater \iPersistently \iPropThree
+        }
+      \end{inboxIndent}
     }{
       \c{release}\ \v{ctx}\ t
     }[

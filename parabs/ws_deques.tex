@@ -7,7 +7,7 @@ It currently has two realizations: \ocamlinline{Ws_deques_public} (\cref{sec:par
 \label{sec:parabs_ws_deques_public}
 
 The first realization, \ocamlinline{Ws_deques_public}~\refLibTheoriesFile{zoo_parabs/ws_deques_public}, implements the standard work-stealing strategy with \emph{public deques}.
-More precisely, it simply relies on a shared array of Chase-Lev work-stealing deques, as implemented in \Saturn (see \cref{sec:chaselev}).
+More precisely, it simply relies on a shared array of Chase-Lev work-stealing deques (see \cref{sec:chaselev}).
 These deques are public in the sense that both their owner and the thieves can access it directly --- which requires synchronization.
 
 \subsection{Private deques}

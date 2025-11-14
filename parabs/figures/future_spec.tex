@@ -6,40 +6,6 @@
   \and
     \iPersistent{(\result\ t\ \zooVal)}
   \\
-    \infer[inv-finished]{
-        \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
-      \\\\
-        \l{pool.finished}\ \v{pool}
-    }{
-      \iLater[2 \cdot \v{depth} + 1]
-      \Exists \zooVal.
-      \result\ t\ \zooVal
-    }
-  \and
-    \infer[obligation-finished]{
-        \obligation\ \v{pool}\ \v{depth}\ \iProp
-      \\\\
-        \l{pool.finished}\ \v{pool}
-    }{
-      \iLater[2 \cdot \v{depth} + 2]
-      \iPersistently \iProp
-    }
-  \and
-    \infer[consumer-divide]{
-        \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
-      \\\\
-        \consumer\ t\ \iPredThree
-      \\\\
-        \Forall \zooVal.
-        \iPredThree\ \zooVal \iWand
-        \iBigSep_{\iPredThree \in \iPredThree{}s}
-          \iPredThree\ \zooVal
-    }{
-      \iFupd
-      \iBigSep_{\iPredThree \in \iPredThree{}s}
-        \consumer\ t\ \iPredThree
-    }
-  \and
     \infer[result-agree]{
         \result\ t\ \zooVal_1
       \\\\
@@ -57,6 +23,31 @@
       \iLater \iPersistently \iPredFour\ \zooVal
     }
   \and
+    \infer[inv-finished]{
+        \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
+      \\\\
+        \l{pool.finished}\ \v{pool}
+    }{
+      \iLater[2 \cdot \v{depth} + 1]
+      \Exists \zooVal.
+      \result\ t\ \zooVal
+    }
+  \and
+    \infer[consumer-divide]{
+        \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
+      \\\\
+        \consumer\ t\ \iPredThree
+      \\\\
+        \Forall \zooVal.
+        \iPredThree\ \zooVal \iWand
+        \iBigSep_{\iPredThree \in \iPredThree{}s}
+          \iPredThree\ \zooVal
+    }{
+      \iFupd
+      \iBigSep_{\iPredThree \in \iPredThree{}s}
+        \consumer\ t\ \iPredThree
+    }
+  \and
     \infer[inv-result-consumer]{
         \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
       \\\\
@@ -66,6 +57,15 @@
     }{
       \iFupd
       \iLater[2] \iPredThree\ \zooVal
+    }
+  \and
+    \infer[obligation-finished]{
+        \obligation\ \v{pool}\ \v{depth}\ \iProp
+      \\\\
+        \l{pool.finished}\ \v{pool}
+    }{
+      \iLater[2 \cdot \v{depth} + 2]
+      \iPersistently \iProp
     }
   \\
     \iSpec[
