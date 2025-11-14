@@ -9,7 +9,7 @@ The longer term goal is to support the more practical \Taskflow interface, inclu
 
 The raison d'être of these works is to represent more interesting dependency relations than is possible using standard parallel primitives (\c{fork}/\c{join}, futures, \etc) in order to express irregular parallel computations, \eg those for graph problems.
 
-Concretely, this takes the form of a simple and elegant programming model: a parallel computation is seen as a graph where vertices represent basic sequential computations and edges represent dependencies between vertices.
+This takes the form of a simple and elegant programming model: a parallel computation is seen as a graph where vertices represent basic sequential computations and edges represent dependencies between vertices.
 A vertex can be executed only when its predecessors, \ie dependencies, are finished.
 Crucially, the structure of the graph is not static: while executing, a vertex may create new vertices and edges.
 Naturally, with great expressivity comes great responsibility: care must be taken not to introduce cycles in the graph, although the model does allow looping on a vertex.

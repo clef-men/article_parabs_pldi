@@ -7,8 +7,8 @@
 \footnote{
 See also the master thesis of \citet{DBLP:journals/corr/abs-2309-03642}.
 }
-were the first to achieve foundational verification of the Chase-Lev work-stealing deque, including under safe memory reclamation schemes.
-Prior to their work, \citet{DBLP:conf/ppopp/LePCN13} presented a pen-and-paper proof of the correctness of an ARM implementation and \citet{DBLP:journals/computing/MutluergilT19} verified an idealized implementation based on an infinite array using \CIVL~\citep{DBLP:conf/fmcad/KraglQ21}.
+were the first to achieve foundational verification of the Chase-Lev work-stealing deque, including safe memory reclamation schemes.
+Before, \citet{DBLP:conf/ppopp/LePCN13} presented a pen-and-paper proof of the correctness of an ARM implementation and \citet{DBLP:journals/computing/MutluergilT19} verified an idealized implementation based on an infinite array using \CIVL~\citep{DBLP:conf/fmcad/KraglQ21}.
 
 As explained in \cref{sec:chaselev}, however, \citet{DBLP:journals/pacmpl/JungLCKPK23} only verify a weak specification, too weak to prove the termination of our scheduler.
 We verify a strong specification but, contrary to \citet{DBLP:conf/ppopp/LePCN13}, we rely on a sequentially consistent memory model; extending our work to relaxed memory is left for future work (see \cref{sec:future_work}).
@@ -18,7 +18,7 @@ We verify a strong specification but, contrary to \citet{DBLP:conf/ppopp/LePCN13
 To the best of our knowledge, \Parabs is the first realistic scheduler to be verified in \Iris.
 Previous works cover toy implementations, not suitable for real-world usage; in contrast, our implementation is close to state-of-the-art schedulers and offers comparable performance according to our preliminary experiments.
 
-\Citet{DBLP:journals/pacmpl/VilhenaP21} verify a simple cooperative scheduler based on algebraic effects, which serves as a case study for their \Iris-based program logic.
+\Citet{DBLP:journals/pacmpl/VilhenaP21} verify a simple cooperative scheduler based on algebraic effects, as a case study for their \Iris-based program logic.
 This scheduler does not support parallelism; it runs fibers inside a single domain.
 Their notion of future/promise is rudimentary; it only supports persistent output predicates.
 However, their work, especially the way they formalize the scheduler's effects, will be of particular interest when introducing algebraic effects into \ZooLang and \Parabs.
