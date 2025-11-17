@@ -63,6 +63,15 @@ Care must be taken to block and unblock work-stealing deques properly.
 When the scheduler is killed, it is crucial that workers block their deque before stopping; otherwise, the scheduler may never terminate because of a running worker waiting forever for a response from a stopped but unblocked worker.
 Also, the main domain, from which tasks can be submitted externally through \c{run}, must unblock when it is executing tasks and block when it is not.
 
+\paragraph{Awaiting.}
+
+\c{wait\_until} runs a loop similar to that of the worker domains described above; the wait is \emph{active} in the sense that the domain participate in the execution of tasks.
+Consequently, \c{wait\_until} calls can be nested.
+This can be a problem in practice because it increases the call stack size in an arbitrary way, potentially causing stack overflow.
+
+Instead, \Domainslib leverages algebraic effects: awaiting a future captures the continuation and stores it into the future; when the future is resolved, it resubmits all the waiting tasks.
+This avoids any stack issue and is probably more efficient, since no polling is necessary.
+
 \paragraph{Shutdown.}
 
 In \Domainslib, scheduler shutdown consists in submitting special tasks through the main domain; when a worker finds such a task, it quickly stops.
