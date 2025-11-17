@@ -18,7 +18,7 @@ In fact, the two notions are often used in conjunction to represent the two side
 The specification is given in \cref{fig:parabs_future_spec}.
 It features four predicates: \inv, \result, \consumer and \obligation.
 
-\c{async} also allows submitting a task asynchronously while executing under a context (\refTirName{sync-spec}), returning a \emph{future} representing the result of the task.
+\c{async} allows submitting a task asynchronously while executing under a context (\refTirName{sync-spec}), returning a \emph{future} representing the result of the task.
 To actually get the result, one must call \c{wait} (\refTirName{wait-spec}).
 $\c{iter}\ \v{ctx}\ \v{fut}\ \v{task}$ attaches callback \v{task} to \v{fut} (\refTirName{iter-spec}) and $\c{map}\ \v{ctx}\ \v{fut}_1\ \v{task}$ creates a new future to be resolved after $\v{fut}_1$ (\refTirName{map-spec}).
 
