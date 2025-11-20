@@ -4,7 +4,7 @@
 At the third level, \ocamlinline{Pool}~\refLibTheoriesFile{zoo_parabs/pool} implements a task scheduler on top of a given realization of \ocamlinline{Ws_hub}.
 It offers essentially the same functionalities as \Domainslib with a few notable differences.
 (1) Exceptions raised by tasks are not caught and therefore not re-raised properly by the scheduler since \ZooLang does not currently support them.
-(2) Since \ZooLang does not support algebraic effects~\citep{DBLP:conf/pldi/Sivaramakrishnan21} neither, the interface is slightly more involved (see \emph{execution contexts} in \cref{sec:parabs_pool_spec}).
+(2) Since \ZooLang does not support algebraic effects~\citep{DBLP:conf/pldi/Sivaramakrishnan21} either, the interface is slightly more involved (see \emph{execution contexts} in \cref{sec:parabs_pool_spec}).
 
 Moreover, this limitation imposes a \emph{child-stealing} strategy, as opposed to a \emph{continuation-stealing} strategy that would require capturing the continuation of a computation.
 
