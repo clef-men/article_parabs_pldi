@@ -16,5 +16,5 @@ In addition, it should be possible to implement other scheduling strategies (see
 On top of \ocamlinline{Pool}, the \ocamlinline{Vertex} module provides a \emph{task graph} abstraction.
 More precisely, it is an implementation of \emph{DAG-calculus}~\citep{DBLP:conf/icfp/AcarCRS16} --- we present it in \cref{sec:parabs_vertex}.
 
-Remarkably, the three upper levels implemented on top of \ocamlinline{Ws_deques} should be \OCaml functors.
+It is worth noting that the three upper levels implemented on top of \ocamlinline{Ws_deques} should be \OCaml functors.
 Unfortunately, \ZooLang does not currently support functors; therefore, only one branch of the tree of \cref{fig:parabs_overview} is active at a time.

@@ -24,7 +24,7 @@ Also, this makes it difficult to implement a \c{yield} operation%
 The specification is given in \cref{fig:parabs_pool_spec}.
 It features five predicates: \inv, \model, \context, \finished and \obligation.
 
-The persistent assertion $\inv\ t\ v{sz}$ represents the knowledge that $t$ is a valid scheduler; \v{sz} is the number of worker domains.
+The persistent assertion $\inv\ t\ \v{sz}$ represents the knowledge that $t$ is a valid scheduler; \v{sz} is the number of worker domains.
 It is returned by \c{create} (\refTirName{create-spec}) and required only by \c{size} (\refTirName{size-spec}).
 Its only purpose is to record the immutable characteristics of the scheduler.
 
@@ -65,7 +65,7 @@ Also, the main domain, from which tasks can be submitted externally through \c{r
 
 \paragraph{Awaiting.}
 
-\c{wait\_until} runs a loop similar to that of the worker domains described above; the wait is \emph{active} in the sense that the domain participate in the execution of tasks.
+\c{wait\_until} runs a loop similar to that of the worker domains described above; the wait is \emph{active} in the sense that the domain participates in the execution of tasks.
 Consequently, \c{wait\_until} calls can be nested.
 This can be a problem in practice because it increases the call stack size in an arbitrary way, potentially causing stack overflow.
 

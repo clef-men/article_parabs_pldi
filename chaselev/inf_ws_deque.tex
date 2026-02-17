@@ -51,12 +51,12 @@ Another point we would like to make is that weakening the specification does mak
 The implementation relies on
 (1) an infinite array,
 (2) a \emph{monotonic} front index for the thieves, and
-(3) a back index reserved to the owner of the deque.
+(3) a back index reserved for the owner of the deque.
 
 In general, we can divide the infinite array as in \cref{fig:chaselev_inf_ws_deque_physical_state}.
 The first part, between 0 and the front index, corresponds to the \emph{persistent} history of stolen values.
 The second part, between the two indices, corresponds to the logical content of the deque, as represented by \model.
-The last part, beyond the back index, corresponds to the private section of the array, reserved to the owner.
+The last part, beyond the back index, corresponds to the private section of the array, reserved for the owner.
 
 Given this representation, the algorithm proceeds as follows.
 $\c{push}\ t\ \zooVal$ writes \zooVal into the first private cell and atomically increments the back index, thereby publishing the value.
