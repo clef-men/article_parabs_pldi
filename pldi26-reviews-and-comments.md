@@ -36,11 +36,23 @@
 > 
 > * Some of the interfaces differ slightly from the standard/published versions (e.g.,  
 > of the DAG calculus). This generally isn't a problem: the equivalence isn't too hard to see. But it means it would be useful to give the OCaml interface in the paper (with brief comments) in addition to the formal specification. In some cases, I went looking for the interfaces in the anonymized repo and was a bit disappointed to find they weren't commented.
-> 
+
+Thanks for giving concrete evidence that providing an anonymized repo was useful!
+
+TODO: consider including OCaml APIs somewhere in the paper.
+
 > * The most notable instance of the above is the use of execution contexts in the Pool specification in order to work around the lack of algebraic effects. While I have some intuition for how these are used, I would have liked more detail in the paper, particularly on how this difference in the interface would affect users of the scheduler (e.g., does it only impact designers of new higher-level parallelism libraries like Futures and Vertex or does it bleed into those interfaces as well)?
-> 
+
+We could show three simple examples of (1) how this would be done in a traditional implementation of futures (in a language without effect handlers), (2) how it can be done in OCaml with effect handlers, and (3) how it is done when using our library.
+
+First include this in the response, then consider adding this to 11.2 if we can find extra space.
+
 > Naturally, addressing the above comments will require some more space. I don't expect this paper to be entirely self-contained---that would be impossible even with a number of extra pages! It would be worthwhile for the authors to think about (or maybe they already have, in which case I would be interested to know) the intended audience of the paper: is it the Iris community, developers of parallel schedulers, users of OCaml 5, some combination of the above? This is just one opinion, but personally I would have preferred if some of the sections were omitted (maybe included in an appendix) in favor of more detail on the key modules.
-> 
+
+[Gabriel] my impression is that the people who are most likely to benefit from our work and try to reuse it are researchers on verification of concurrent data structures. Developers of parallel schedulers can find more state-of-the-art material elsewhere, and OCaml 5 users should look for tutorials on how to write concurrent programs. My hope is that the PDF presentation gives a good overview of the overall structure of the implementation and its proof, key invariants and proof techniques (in particular those that could be reused in other projects), and guide people through the mechanized proof if they are interested in going to this level of details.
+
+This does not mean that the paper should be purposefully opaque to non-experts, so of course we can try to also make it clearer for parallelism experts and/or people interested in using library-defined concurrent schedulers. Your suggestions in that direction are appreciated.
+
 > Nonetheless, I feel that these presentation issues can be fixed within a revision period and thus, on balance, feel the paper should be accepted.
 > 
 > Detailed comments for authors
