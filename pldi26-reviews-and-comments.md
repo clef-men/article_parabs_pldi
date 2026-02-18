@@ -90,17 +90,31 @@ This does not mean that the paper should be purposefully opaque to non-experts, 
 > Questions for author response
 > -----------------------------
 > 1. Who do you feel is the intended audience of this paper (presumably a proper subset of the PLDI audience)?
-> 
+
+[Gabriel] I would say: people interested in formal verification of real-world concurrent programs.
+
 > 2. Can you go into more detail on the execution contexts, particularly their impacts on users of the library (see above)?
-> 
+
+TODO
+
 > 3. How easily do you feel the proof is reusable for other parallel schedulers and/or extensions of Parabs?
-> 
+
+We strived to have a clean architecture in the code and in the mechanization as well, with separate building blocks with a clear specification -- changing one of the blocks does not require touching the others as long as specifications are preserved. We already show that experimenting with different scheduling policies is possible, and we believe that for other changes as well it would be reasonably easy to reuse, adapt or extend our work. (Relatively to the fact that, in mechanized verification, everything is hard.)
+
+The easiest form of reuse would be to build verified algorithms on top of Parabs and its high-level specification. In particular, the DAG-calculus was proposed as a lingua franca for some task abstractions, we believe that verifying concurrency models that can be expressed on top of our Vertex module should be relatively easy.
+
 > 4. How challenging were the verifications of the implementations, once the specifications were worked out? Are there any interesting points/key invariants?
-> 
+
+Very challenging! Finding the right invariant is usually the key difficult, and we proceed iteratively (pick a reasonable invariant, try to do a pen-and-paper proof, see where that breaks, refine the invariant and loop until fixpoint). For reasons of space we chose to expose specifications in the paper, and mostly keep the invariants in the mechanized artifact only, with the exception of the Chase-Lev invariant which we believe is a significant, reusable contribution.
+
+The "wise prophets" and "multiplexed prophets" that we present in Section 3 may look like technical details to Iris non-users, but they capture non-trivial proof patterns that we had to invent to verify complex linearization patterns, going beyond what had already been done in the Iris literature. We believe that they could be useful to other people doing mechanized verification (using prophecy variables, which now exist in other logics than Iris) of concurrent programs.
+
 > 5. Would it be possible to extend the proof to give a quantitative verification of the scheduler's performance (like Arora, Blumofe and Plaxton [SPAA '98]'s bound for a work-stealing scheduler)?
-> 
-> 
-> 
+
+Our best guess would be that this is possible but likely to be quite difficult, due to difficulties about reasoning about fairness in state-of-the-art concurrent program logics.
+
+We already know that Iris is a reasonable setting to reason about algorithmic complexity in time or space ( see for example https://iris-project.org/pdfs/2019-esop-time.pdf ), and there have been mechanized proofs of efficient scheduling policies ( for example https://www.chargueraud.org/research/2018/heartbeat/heartbeat.pdf ). However, lock-free algorithms such as the one we use in our implementation are known to create difficulties to reason about termination (and more precise quantiative properties), because their termination relies on a fairness assumption. This is discussed in depth in https://www.cs.cmu.edu/~janh/papers/lockfree2013.pdf , and/but currently standard Iris does not provide pleasant tools to reason about fairness and thus state quantitative properties of lock-free implementations. (Our implementation of work-stealing also uses random-number generation to select dequeues to steal from, which would also require fairness assumptions / working with probabilities.)
+
 > Review #742B
 > ===========================================================================
 > 
