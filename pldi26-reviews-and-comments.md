@@ -21,7 +21,13 @@
 > Strengths
 > ---------
 > To the authors' knowledge (and mine), this is the first formal verification of a realistic parallel scheduler. While parallel schedulers for languages like OCaml aren't necessarily very large pieces of code, they are extremely tricky to get right and must maintain complex invariants.
-> 
+
+TODO: I wonder whether the CertiKOS project contains a realistic concurrent scheduler of comparable algorithmic complexity. This is somewhat suggested by
+  https://flint.cs.yale.edu/certikos/mc2.html
+but I am not sure where to find more details.
+
+I believe that we should cite this in the Related Work.
+
 > While the verification is of one scheduler (slightly less flexible than the Domainslib scheduler of OCaml 5, mostly due to limitations in Zoo), at least parts of it seem reusable: if nothing else, the verification of Chase-Lev deques can be reused in verifications of other work stealing schedulers.
 > 
 > While the overwhelming contribution of the paper is theoretical, the authors also show that Parabs is comparable in performance to Domainslib, which is pretty impressive.
@@ -146,16 +152,42 @@ We already know that Iris is a reasonable setting to reason about algorithmic co
 > experience: the authors seem to assume that the reader already knows how the
 > APIs described there are meant to be used, but that is far from clear. Without
 > this knowledge, it is difficult to make sense of the specifications.
-> 
+
+TODO: document the API, even minimally.
+
 > There is no mention of verified clients using these APIs. Space limits preclude
 > actually discussing such a client in great detail, but given how easy it is to
 > come up with a useless specification, it would still be desirable to verify some
 > examples and then just briefly mention them in the text.
-> 
+
+We verified the parallel iterators (in paraticular a parallel-for) mentioned in Section 12, which are themselves clients of the Future interface. They are in an Algo module
+
+  interface: https://anonymous.4open.science/r/zoo-A236/lib/zoo_parabs/algo.mli
+  implementation: https://anonymous.4open.science/r/zoo-A236/lib/zoo_parabs/algo.ml
+  verification: https://anonymous.4open.science/r/zoo-A236/theories/zoo_parabs/algo.v
+
+(Of course, these APIs are convenient to program against but more complex than the direct Future interface, and so their specifications are also a bit of a mouthful.)
+
+Our artifact also includes an implementation of the naive Fibonacci function using futures
+
+  https://anonymous.4open.science/r/zoo-A236/lib/examples/fibonacci.ml
+
+and a proof that it computes correctly
+
+  https://anonymous.4open.science/r/zoo-A236/theories/examples/fibonacci.v
+
+(Note: the .ml file has two `fibonacci` function with name shadowing, the first is parametrized by a pool and the other wraps it under a simple interface. The first becomes `fibonacci_0` after translation, and the .v file contains proofs about both functions.)
+
 > There is no report on the amount of effort that this verification took. Lines of
 > code are not a great metric, but they are better than nothing, and in particular
 > the ratio of lines of code vs lines of proof can be quite informative.
-> 
+
+The contributions presented in our submissions represent verification work that has spanned several years (but with other projects in parallel). (The benchmarks, even though they are fairly naive, also required non-trivial effort, maybe a full-time month, due to the many iterations in benchmarking and analysis required to reach solid, justifiable qualitative conclusions.)
+
+A simplistic count (ls -1 *.v | grep -v '__' | xargs wc -l) puts `theories/zoo_parabs` at 8900 lines of proofs, with the corresponding implementations (ls *.ml | xargs wc -l) at 741 lines, suggesting a 12x code-to-proofs ratio. The work-stealing-related data structures in `zoo_saturn` exhibit a higher ratio, with 340 lines of code and 7495 lines of proofs, so 22x more proofs.
+
+We are unsure what conclusions to draw from the code-to-proofs ratio. Having massively more proofs than code can be the sign of a lack of attention to proof engineering, for example missed opportunities in proof automation. It can also be the sign of a fundamentally hard problem domain: we believe that lock-free data structures are exceptionally good at packing quite the verification difficulties in a small number of lines of code. Of course we believe the second explanation more (it explains why the core data-structure code has a worse ratio than the scheduler code).
+
 > Detailed comments for authors
 > -----------------------------
 > I think the paper should be accepted for the sheer feat of verifying a real
@@ -248,15 +280,20 @@ We already know that Iris is a reasonable setting to reason about algorithmic co
 > "two-sided"? I supposed for all the intermediate layers, the next layer up can
 > be considered a client, but that still leaves at least the top layer without any
 > users.
-> 
+
+see above
+
 > How many lines of code have been verified for this paper, and how many lines did
 > those proofs take?
+
+see above
+
 > 
 > Is there a proof of termination of the scheduler? If not, would the weaker spec
 > of the deque have been sufficient for all results of this paper?
-> 
-> 
-> 
+
+TODO let Clément explain this :-)
+
 > Review #742C
 > ===========================================================================
 > 
@@ -275,11 +312,17 @@ We already know that Iris is a reasonable setting to reason about algorithmic co
 > Strengths
 > ---------
 > Useful accounts for OCaml audience
-> 
+
+We believe that verified concurrent schedulers are scarce for any programming language, so our results are interesting beyond an OCaml audience. For example Go or GHC runtime authors considering formal verifications, of people considering correctness-critical usage of TaskFlow or Cilk, etc.
+
 > Weaknesses
 > ----------
 > Incremental progress on parallel scheduling issues
-> 
+
+We would like to emphasize that the claimed contribution of this work is the mechanized _verification_ of a realistic implementation. The implementation itself is not novel (it closely follows an existing OCaml library, Domainslib), and should look relatively standard and unsophisticated to parallel-scheduling experts. On the other hand, the formal verification of such an implementation is a significant achievement.
+
+Note: the original inspiration for our implementation, Domainslib, is not our own work, it has been benchmarked for scalability in the past (in particular the benchmarks in https://dl.acm.org/doi/10.1145/3408995 used an earlier version of Domainslib) and received attention and profiling/optimization work from parallelism experts.
+
 > Detailed comments for authors
 > -----------------------------
 > The write up style with embedded refs to code is very nice.
@@ -299,3 +342,8 @@ We already know that Iris is a reasonable setting to reason about algorithmic co
 > Sec 11-12: I am confused that sec 10 mentions that the Pool does not support continuations, but the implementation of Futures relies on them? It's also not clear whether these share mechanics with the completion-based VERTEX support.
 > 
 > Sec 13 / Appendix. I was surprised not to see a sanity-check comparison with Cilk on the two benchmarks (lu and matmul) that I'm guessing are based on initial Cilk code.
+
+TODO: I (Gabriel) can try to provide numbers for this in time for the response period.
+
+Note that I expect C compilers to significantly outperform OCaml for this type of programs (due to agressive unrolling etc.), so the baseline performance would likely be very different, making direct performance comparisons difficult. (I can try to use `gcc -O0` and see whether it is closer to the OCaml abseline.) For some OCaml programs, the OCaml versions is also likely to scale worse due to scalability bottlenecks in the OCaml runtime (in particular the stop-the-world nature of the minor GC; which may not affect those two benchmarks as much), independent of our work.
+
