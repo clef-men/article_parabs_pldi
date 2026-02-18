@@ -343,7 +343,42 @@ Note: the original inspiration for our implementation, Domainslib, is not our ow
 > 
 > Sec 13 / Appendix. I was surprised not to see a sanity-check comparison with Cilk on the two benchmarks (lu and matmul) that I'm guessing are based on initial Cilk code.
 
-TODO: I (Gabriel) can try to provide numbers for this in time for the response period.
+To clarify: the `lu` and `matmul` implementation in the benchmarks are extremely simple parallel implementations: we wrote the cubic algorithm and then made one of the for-loop parallel. We looked at the Cilk implementations of `lu` on your suggestion, its block-based implementation is substantially more sophisticated.
 
-Note that I expect C compilers to significantly outperform OCaml for this type of programs (due to agressive unrolling etc.), so the baseline performance would likely be very different, making direct performance comparisons difficult. (I can try to use `gcc -O0` and see whether it is closer to the OCaml abseline.) For some OCaml programs, the OCaml versions is also likely to scale worse due to scalability bottlenecks in the OCaml runtime (in particular the stop-the-world nature of the minor GC; which may not affect those two benchmarks as much), independent of our work.
+We would also predict that benchmark results between Cilk and OCaml would be wildly different, to the point of being very difficult to compare:
 
+- C compilers optimize this kind of numeric code agressively
+  (unrolling etc.), while the OCaml compiler does not, so the baseline
+  sequential performance is going to be fairly different.
+
+- Cilk offers a compiler-supported implementation, while we verify
+  a "user-level" scheduler entirely implemented in OCaml, with no
+  compiler support. (For example each creation of a subtask allocates
+  a closure.) We would naively expect a Cilk benchmark to perform much
+  better on small cutoffs, in a different league from user-level
+  schedulers.
+
+- In general the OCaml runtime itself contains some scalability
+  bottleneck (especially the stop-the-world minor collector) which
+  would make scalability comparisons with no-runtime languages
+  difficult -- but in the case of these examples there should not be
+  much allocator pressure so this point may not apply.
+
+We found the idea of spending hours (building OpenCilk and)
+benchmarking and comparing two wildly different implementations a bit
+discouraging, and did not prepare results in time for the author
+response period.
+
+If the reviewer could explain what they have in mind with using Cilk
+as a "sanity check" (what kind of potential measurement or setup error
+on our side could the comparison reveal? how would you work around the
+vastly different performance profiles of the two languages for this
+problem domain (use clang -O0?) and vastly different implementation
+strategies?), we are happy to consider doing this during the
+conditional-rewrite period, possibly with some back-and-forth
+interaction with the reviewer or a separate designated expert that
+would be willing to help and provide feedback.
+
+TODO: at least implement a basic version of lu.c in sequential C++,
+and compare the performance with sequential OCaml. Consider a version
+using std::async instead of Cilk.
