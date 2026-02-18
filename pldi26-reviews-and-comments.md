@@ -28,6 +28,11 @@ but I am not sure where to find more details.
 
 I believe that we should cite this in the Related Work.
 
+More details on page 11 (esp. figure 9) of
+  https://flint.cs.yale.edu/certikos/publications/certikos.pdf
+
+The data structures are relatively simple in comparison to ours (no work-stealing), but it is arguably a realistic implementation.
+
 > While the verification is of one scheduler (slightly less flexible than the Domainslib scheduler of OCaml 5, mostly due to limitations in Zoo), at least parts of it seem reusable: if nothing else, the verification of Chase-Lev deques can be reused in verifications of other work stealing schedulers.
 > 
 > While the overwhelming contribution of the paper is theoretical, the authors also show that Parabs is comparable in performance to Domainslib, which is pretty impressive.
@@ -49,15 +54,21 @@ TODO: consider including OCaml APIs somewhere in the paper.
 
 > * The most notable instance of the above is the use of execution contexts in the Pool specification in order to work around the lack of algebraic effects. While I have some intuition for how these are used, I would have liked more detail in the paper, particularly on how this difference in the interface would affect users of the scheduler (e.g., does it only impact designers of new higher-level parallelism libraries like Futures and Vertex or does it bleed into those interfaces as well)?
 
+[Clément]: yes, the context creeps into the interface, this is a rather common programming pattern. (Scala's implicit arguments would help hide this from users in many cases.)
+
+meta: [Gabriel]'s reply below is concerned with continuations, not the context-passing discipline.
+
 We could show three simple examples of (1) how this would be done in a traditional implementation of futures (in a language without effect handlers), (2) how it can be done in OCaml with effect handlers, and (3) how it is done when using our library.
 
 First include this in the response, then consider adding this to 11.2 if we can find extra space.
 
 > Naturally, addressing the above comments will require some more space. I don't expect this paper to be entirely self-contained---that would be impossible even with a number of extra pages! It would be worthwhile for the authors to think about (or maybe they already have, in which case I would be interested to know) the intended audience of the paper: is it the Iris community, developers of parallel schedulers, users of OCaml 5, some combination of the above? This is just one opinion, but personally I would have preferred if some of the sections were omitted (maybe included in an appendix) in favor of more detail on the key modules.
 
-[Gabriel] my impression is that the people who are most likely to benefit from our work and try to reuse it are researchers on verification of concurrent data structures. Developers of parallel schedulers can find more state-of-the-art material elsewhere, and OCaml 5 users should look for tutorials on how to write concurrent programs. My hope is that the PDF presentation gives a good overview of the overall structure of the implementation and its proof, key invariants and proof techniques (in particular those that could be reused in other projects), and guide people through the mechanized proof if they are interested in going to this level of details.
+[Gabriel] my impression is that the people who are most likely to benefit from our work and try to reuse it are researchers on verification of concurrent data structures. Developers of parallel schedulers can find more state-of-the-art material elsewhere, and OCaml 5 users should look for tutorials on how to write concurrent programs. Our hope is that the presentation in the article gives a good overview of the overall structure of the implementation and its proof, key invariants and proof techniques (in particular those that could be reused in other projects), and guide people through the mechanized proof if they are interested in going to this level of details.
 
 This does not mean that the paper should be purposefully opaque to non-experts, so of course we can try to also make it clearer for parallelism experts and/or people interested in using library-defined concurrent schedulers. Your suggestions in that direction are appreciated.
+
+(Implementors of parallel schedulers as a secondary audience: "what would it take to verify my own implementations? are there good tools to do this? what design choices make implementation easier?".)
 
 > Nonetheless, I feel that these presentation issues can be fixed within a revision period and thus, on balance, feel the paper should be accepted.
 > 
@@ -88,9 +99,15 @@ This does not mean that the paper should be purposefully opaque to non-experts, 
 > Sec. 12 This doesn't need to be its own section (and could probably just be mentioned in the overview)
 > 
 > 830-832 Why use different notations for persistent/non-persistent outputs for Future and Vertex?
-> 
+
+[Gabriel] I would understand this as "different arguments" here, I think that "notations" is a distraction.
+
 > Fig. 13 Maybe I'm missing something about how to read these rules, but I would have expected something else in the postcondition of Vertex-release-spec
-> 
+
+[Gabriel] The specification of Vertex-Release-Spec does not tell you that the node you release will eventually run, for good reasons: we cannot know at this point whether it will ever run, as it depends on its own dependencies.
+
+One may then wonder how to acquire a `finished` proposition for a given node. It is a bit tricky to see, but if you want to know when a given node N is finished, you can attach a successor S to that node, set to S the `task` that you want to perform when N is finished, and release S. In the `wp` conditions for that "release" call, you know that when `task` runs S will be ready, and you know that (predecessor N S) holds, so you can use the rule Vertex-Predecessor-Finished to learn that N is finished.
+
 > 962 With algebraic -> With algebraic effects
 > 
 > Questions for author response
@@ -119,7 +136,9 @@ The "wise prophets" and "multiplexed prophets" that we present in Section 3 may 
 
 Our best guess would be that this is possible but likely to be quite difficult, due to difficulties about reasoning about fairness in state-of-the-art concurrent program logics.
 
-We already know that Iris is a reasonable setting to reason about algorithmic complexity in time or space ( see for example https://iris-project.org/pdfs/2019-esop-time.pdf ), and there have been mechanized proofs of efficient scheduling policies ( for example https://www.chargueraud.org/research/2018/heartbeat/heartbeat.pdf ). However, lock-free algorithms such as the one we use in our implementation are known to create difficulties to reason about termination (and more precise quantiative properties), because their termination relies on a fairness assumption. This is discussed in depth in https://www.cs.cmu.edu/~janh/papers/lockfree2013.pdf , and/but currently standard Iris does not provide pleasant tools to reason about fairness and thus state quantitative properties of lock-free implementations. (Our implementation of work-stealing also uses random-number generation to select dequeues to steal from, which would also require fairness assumptions / working with probabilities.)
+We already know that Iris is a reasonable setting to reason about algorithmic complexity in time or space ( see for example https://iris-project.org/pdfs/2019-esop-time.pdf ), and there have been mechanized proofs of complexity-efficient scheduling policies ( for example https://www.chargueraud.org/research/2018/heartbeat/heartbeat.pdf )
+
+However, lock-free data structures such as the one we use in our implementation are known to create difficulties to reason about termination (and more precise quantiative properties), because their termination relies on a fairness assumption. (The original proof of Arora, Blumofe and Plaxton also needs fairness-like assumptions.) This is discussed in depth in https://www.cs.cmu.edu/~janh/papers/lockfree2013.pdf , and/but currently standard Iris does not provide pleasant tools to reason about fairness and thus state quantitative properties of lock-free implementations. (Our implementation of work-stealing also uses random-number generation to select dequeues to steal from, which would also require fairness assumptions / working with probabilities.)
 
 > Review #742B
 > ===========================================================================
@@ -168,7 +187,7 @@ We verified the parallel iterators (in paraticular a parallel-for) mentioned in 
 
 (Of course, these APIs are convenient to program against but more complex than the direct Future interface, and so their specifications are also a bit of a mouthful.)
 
-Our artifact also includes an implementation of the naive Fibonacci function using futures
+Our artifact also includes an implementation of the naive `fibonacci` function using futures
 
   https://anonymous.4open.science/r/zoo-A236/lib/examples/fibonacci.ml
 
@@ -178,15 +197,15 @@ and a proof that it computes correctly
 
 (Note: the .ml file has two `fibonacci` function with name shadowing, the first is parametrized by a pool and the other wraps it under a simple interface. The first becomes `fibonacci_0` after translation, and the .v file contains proofs about both functions.)
 
+We agree that it would be nice to provide more examples, in particular an example of using the Vertex interface.
+
 > There is no report on the amount of effort that this verification took. Lines of
 > code are not a great metric, but they are better than nothing, and in particular
 > the ratio of lines of code vs lines of proof can be quite informative.
 
-The contributions presented in our submissions represent verification work that has spanned several years (but with other projects in parallel). (The benchmarks, even though they are fairly naive, also required non-trivial effort, maybe a full-time month, due to the many iterations in benchmarking and analysis required to reach solid, justifiable qualitative conclusions.)
-
 A simplistic count (ls -1 *.v | grep -v '__' | xargs wc -l) puts `theories/zoo_parabs` at 8900 lines of proofs, with the corresponding implementations (ls *.ml | xargs wc -l) at 741 lines, suggesting a 12x code-to-proofs ratio. The work-stealing-related data structures in `zoo_saturn` exhibit a higher ratio, with 340 lines of code and 7495 lines of proofs, so 22x more proofs.
 
-We are unsure what conclusions to draw from the code-to-proofs ratio. Having massively more proofs than code can be the sign of a lack of attention to proof engineering, for example missed opportunities in proof automation. It can also be the sign of a fundamentally hard problem domain: we believe that lock-free data structures are exceptionally good at packing quite the verification difficulties in a small number of lines of code. Of course we believe the second explanation more (it explains why the core data-structure code has a worse ratio than the scheduler code).
+We are unsure what conclusions to draw from the code-to-proofs ratio. Having massively more proofs than code can be the sign of a lack of attention to proof engineering, for example missed opportunities in proof automation. It can also be the sign of a fundamentally hard problem domain. Of course we believe the second explanation more: lock-free data structures are exceptionally good at packing quite the verification difficulties in a relatively small number of lines of code. It explains why the core data-structure code in `zoo_saturn` has a worse ratio than the scheduler code in `zoo_parabs`.
 
 > Detailed comments for authors
 > -----------------------------
@@ -205,6 +224,11 @@ We are unsure what conclusions to draw from the code-to-proofs ratio. Having mas
 > stronger spec is needed to "prove termination". However, given that this paper
 > uses Iris and that there is no discussion of termination results, I assume no
 > proof of termination happened. This is quite misleading and should be clarified.
+
+We agree that our wording was misleading and we will rephrase this.
+
+The proofs were done in a partial-correctness logic, so indeed we do not prove termination of the scheduler and we should reformulate. What we were trying to say (in a few words) is the following: the API exposes a way to kill all tasks owned by a scheduler, and to know that they have been terminated. In this case we want to recover all the resources that were previously owned by those tasks. Reasoning about this requires the stronger specification for Chase-Lev. So here "termination" should not be understood as "we prove formally that running the tasks eventually terminate", but "we let you reason correctly about what you know after termination".
+
 > - Line 112: This is a very unconventional way to write Hoare triples, and it is
 > very confusing since it looks a lot like an inference rule, and many figures mix
 > inference rules and Hoare triples. I would encourage the others to make their
@@ -222,9 +246,19 @@ We are unsure what conclusions to draw from the code-to-proofs ratio. Having mas
 > ownership, but it seems there is still just a single global `model` assertion.
 > - Line 423: I assume those liveness properties have not been verified? This
 > should be clarified.
+
+Our formulation is confusing and we will clarify. What we had in mind when writing this is a different notion of 'liveness' from GC-ed languages: it is bad to retain user-provided values in "unused" slots of a data structure, as it could keep memory alive longer than necessary. The usual trick, which is used by the OCaml data structures of the Saturn library, is to write a `null` (poetically called `Obj.magic ()`) in their place to recover good "liveness" (in that sense) properties.
+
+Note: The implementation we provided in our artifact does not in fact implement this extra erasing write in `ws_deque_2.ml` -- we did verify this in an earlier version, and when we rewrote to use the current Zoo approach this subtlety of the implementation was lost. This is a small mistake on our part that is easy to fix, and which we will address shortly.
+
+From the perspective of the paper this is a technical detail, but it leaks through the choice of public postconditions of the `Ws_deque` specification, which we thought was worth justifying.
+
 > - Line 485: It is not clear to me what is meant by "stable" and "unstable"
 > states. I first thought the authors referred to stable/unstable propositions in
 > separation logic, but this seems to be something else.
+
+The 'unstable' states correspond to states of the data-structure that can only be observed transiently while concurrent operations on the structure are ongoing. When a program has reached a quiescent state where no operations are ongoing, only stable states may be observed.
+
 > - Line 462: Which three upper levels? I am looking at the figure, and it's not
 > clear which 3 nodes the text is referring to here. Only later did I realize that
 > it probably refers back to line 530, but with that being on the previous page
@@ -243,26 +277,63 @@ We are unsure what conclusions to draw from the code-to-proofs ratio. Having mas
 > - Line 642: Why is the postcondition P of the task in `async` (and in
 > `obligation`) apparently always persistent? Why can a task not return exclusive
 > ownership?
+
+We designed the Pool interface with the intent to build Future on top of it. With Future you can indeed have non-persistent outputs, so programming examples which require non-persistent outputs are convenient to implement and verify. Doing so directly at the level of Pool is less pleasant (it requires an extra encoding), we could indeed extend the specification a bit to add non-persistent outputs for `async` and make it more direct -- we would be happy to make this change.
+
+An example of program that benefits from non-persistent outputs (and is thus easy to implement on top of our Future, and less easy to implement on top of Pool directly) is 'quicksort', as implemented for example in the PulseCore paper ( https://dl.acm.org/doi/pdf/10.1145/3729311 ) page 21: to know that the `async` task is finished sorting one half of the array, they call `teardown_pool`, and at this point they want to obtain a non-persistent property.
+
 > - Line 664: How does wait_until behave and how is it used? It seems to support
 > waiting until an arbitrary opaque predicate becomes true -- so does it just
 > busy-wait, or is it somehow integrated with the scheduler?
+
+This is integrated in the scheduler -- one can think of a user-level
+equivalent of pthreads condition variables. The scheduler calls the
+predicate periodically when it considers re-running this task.
+
 > - Line 728: Here I got quite lost. Apparently futures can have "callbacks"
 > attached to them via `iter`? What are those for and when do they get triggered?
 > The systems for futures I have encountered in other languages have no such
 > mechanism. I tried to reverse engineer this from the specification but was not
 > successful.
+
+Future.iter and Future.map are analogous to List.iter and List.map. `iter` runs a callback on the result, but the callback itself returns no result. The callback of `map` returns a value, and `map` itself returns a future to that value.
+
+In lib/zoo_parabs/future.mli:
+
+    val iter : Pool.context -> 'a t -> ('a -> unit) Pool.task -> unit
+    val map : Pool.context -> 'a t -> ('a -> 'b) Pool.task -> 'b t
+
+We will try to integrate these APIs in the paper, as suggested previously.
+
 > - Line 747: What is going on with the later modalities here?
+
+We improved on this slightly in the current version of our
+development, without the `2.depth+1` nesting.
+
 > - Line 780: Why are persistent and non-persistent output predicates separated?
+
+The idea was to make the interface more convenient to use. This follows the design
+patterns of `ivar` in the Zoo standard library.
+
 > - Line 782: Why is there this level of indirection between `inv` and `result`
 > and `consumer`? Apparently the goal is to be able to split up the postcondition
 > so different parties can own parts of the postcondition of the same async task;
 > this could be explained more explicitly -- but more importantly, it is not
 > motivated. And then there's also `obligation` which I did not understand at all,
 > since it isn't even clear what `iter` actually *does* operationally.
+
+TODO explain obligation.
+
 > - Line 802: I got quite lost here. When would they be nested?
+
+TODO show a simple example that uses 'wait' to explain the nesting problem.
+
 > - Line 812: This section on the "vertex" layer is not understandable just from
 > this paper alone. It would be good to at least give a *basic* understanding of
 > how programming with this API looks like.
+
+TODO should we consider moving Vertex to an appendix, or dropping it from the paper?
+
 > - Line 855: What is going on with this `option.get` here?
 > 
 > Typos:
@@ -330,7 +401,9 @@ Note: the original inspiration for our implementation, Domainslib, is not our ow
 > The accounts in this paper will be useful to OCaml users, but I'm not sure that there is enough incremental progress on parallel scheduling to report yet.
 > 
 > Verification (sec 2-4): The paper should make clear up front exactly what properties are being verified (especially given discussions in sec5+). A simple table or list in sec 1 or 2 would help identify those properties required for any of the many possible variations in implementation. The motivation for introducing Iris extensions seems to be coverage of an omitted property of push in previous work. It's not clear whether this was an oversight that could have been addressed using the methods in those accounts, or whether the introduced Prophet-based techniques are essential. Please explain. I don't have enough expertise with Iris to determine this, or to evaluate its use here.
-> 
+
+We verify functional correctness (in a partial-correctness logic).
+
 > The Parabs API and design walk-through in sec (sec 5-13) seems OK, but could use some retrospective rationalization: Explain the design space up front, and then why/how particular choices (for example private queues) are made in different components. As it stands, Parabs seems to provide a reasonable set of abstractions, but doesn't (yet?) include many new ideas compared to other frameworks in other languages.
 > 
 > Sec 8: Dealing with excess contention and wastage during ramp-down and phase changes is subject to constant attention in production frameworks. See for example the (too recent to have been cited) PPoPP 2026 "Waste-Efficient Work Stealing". The sleep-based approach here is fine for some workloads, but not others.
@@ -343,7 +416,12 @@ Note: the original inspiration for our implementation, Domainslib, is not our ow
 > 
 > Sec 13 / Appendix. I was surprised not to see a sanity-check comparison with Cilk on the two benchmarks (lu and matmul) that I'm guessing are based on initial Cilk code.
 
-To clarify: the `lu` and `matmul` implementation in the benchmarks are extremely simple parallel implementations: we wrote the cubic algorithm and then made one of the for-loop parallel. We looked at the Cilk implementations of `lu` on your suggestion, its block-based implementation is substantially more sophisticated.
+There is probably an ancestral link from the Cilk benchmarks, but our own source of inspiration for our benchmarks was benchmarks from Domainslib and Taskflow, not Cilk directly
+
+  https://github.com/ocaml-multicore/domainslib/blob/main/test/LU_decomposition_multicore.ml
+  https://github.com/taskflow/taskflow/blob/master/benchmarks/matrix_multiplication/omp.cpp
+
+Note in particular that the `lu` and `matmul` implementation in the benchmarks are extremely simple parallel implementations: we wrote the cubic algorithm and then made one of the for-loop parallel. (). We looked at the Cilk implementations of `lu` on your suggestion, its block-based implementation is substantially more sophisticated.
 
 We would also predict that benchmark results between Cilk and OCaml would be wildly different, to the point of being very difficult to compare:
 
@@ -358,27 +436,19 @@ We would also predict that benchmark results between Cilk and OCaml would be wil
   better on small cutoffs, in a different league from user-level
   schedulers.
 
-- In general the OCaml runtime itself contains some scalability
+- In general, the OCaml runtime itself contains some scalability
   bottleneck (especially the stop-the-world minor collector) which
   would make scalability comparisons with no-runtime languages
   difficult -- but in the case of these examples there should not be
-  much allocator pressure so this point may not apply.
+  much allocator pressure so this point should not apply.
 
 We found the idea of spending hours (building OpenCilk and)
 benchmarking and comparing two wildly different implementations a bit
 discouraging, and did not prepare results in time for the author
 response period.
 
-If the reviewer could explain what they have in mind with using Cilk
-as a "sanity check" (what kind of potential measurement or setup error
-on our side could the comparison reveal? how would you work around the
-vastly different performance profiles of the two languages for this
-problem domain (use clang -O0?) and vastly different implementation
-strategies?), we are happy to consider doing this during the
-conditional-rewrite period, possibly with some back-and-forth
-interaction with the reviewer or a separate designated expert that
-would be willing to help and provide feedback.
-
 TODO: at least implement a basic version of lu.c in sequential C++,
-and compare the performance with sequential OCaml. Consider a version
-using std::async instead of Cilk.
+and compare the performance with sequential OCaml.
+
+TODO: run the Domainslib and Taskflow versions of the LU benchmarks and compare
+running times with ours.
