@@ -419,56 +419,12 @@ We verify functional correctness (in a partial-correctness logic).
 There is probably an ancestral link from the Cilk benchmarks, but our own source of inspiration for our benchmarks was benchmarks from Domainslib and Taskflow, not Cilk directly
 
   https://github.com/ocaml-multicore/domainslib/blob/main/test/LU_decomposition_multicore.ml
-  https://github.com/taskflow/taskflow/blob/master/benchmarks/matrix_multiplication/omp.cpp
+  https://github.com/taskflow/taskflow/blob/master/benchmarks/matrix_multiplication/taskflow.cpp
 
-Note in particular that the `lu` and `matmul` implementation in the benchmarks are extremely simple parallel implementations: we wrote the cubic algorithm and then made one of the for-loop parallel. (). We looked at the Cilk implementations of `lu` on your suggestion, its block-based implementation is substantially more sophisticated.
+Note in particular that the `lu` and `matmul` implementation in the benchmarks are extremely simple parallel implementations: it is the cubic algorithm, with one of the for-loop parallel. We looked at the Cilk implementations of `lu` on your suggestion, its block-based implementation is substantially more sophisticated.
 
-We would also predict that benchmark results between Cilk and OCaml would be wildly different, to the point of being very difficult to compare:
+We were inspired by the suggestion to perform "sanity checks" using benchmarks implemented by someone else than us, so we built the benchmark `fibonacci.cpp` from the TaskFlow examples directory (we did not build the `matrix_multiplication` benchmark because its build system insists on having TBB available).  https://github.com/taskflow/taskflow/blob/master/examples/fibonacci.cpp
 
-- C compilers optimize this kind of numeric code agressively
-  (unrolling etc.), while the OCaml compiler does not, so the baseline
-  sequential performance is going to be fairly different.
+This version has _no_ cutoff, so its performance is dominated by the scheduler overhead with very small tasks. On our machine, this benchmark exactly unchanged takes 5s to compute fib(42), when the implementation we provided takes 8s using Parabs. We modified the taskflow example to use a cutoff value provided as an extra parameter, with cutoff=10 the Taskflow implementation takes 206ms (±8ms) and our Parabs version takes 520ms (±15ms), so it is around 2.5x slower – both with the default settings of using as many domains/threads as possible. When configured to use a single domain/thread, the Taskflow version takes 1.15s and our Parabs version takes 2.8s. This suggests that the parallel speedup of both benchmark versions is very similar, 5.6x for the Taskflow benchmark and 5.4x for our Parabs version.
 
-- Cilk offers a compiler-supported implementation, while we verify
-  a "user-level" scheduler entirely implemented in OCaml, with no
-  compiler support. (For example each creation of a subtask allocates
-  a closure.) We would naively expect a Cilk benchmark to perform much
-  better on small cutoffs, in a different league from user-level
-  schedulers.
-
-- In general, the OCaml runtime itself contains some scalability
-  bottleneck (especially the stop-the-world minor collector) which
-  would make scalability comparisons with no-runtime languages
-  difficult -- but in the case of these examples there should not be
-  much allocator pressure so this point should not apply.
-
-We did write a baseline sequential version in C++ and OCaml to compare
-to our guesswork estimate that a C/C++ baseline may be up to 5x
-faster. We found that the C++ version is 1.45x faster with `g++ -O1`,
-and 3.4x faster with `-O3` (similar results with g++ or clang++) -- so
-our 5x guess was a bit pessimistic.
-
-We were inspired by the reviewer's suggestion to perform "sanity
-checks" using benchmarks implemented by someone else than us, and we did
-the following:
-
-1. We built the benchmark `fibonacci.cpp` from the TaskFlow examples
-   directory (we did not build the `matrix_multiplication` benchmark
-   because its build system insists on having TBB available).
-   https://github.com/taskflow/taskflow/blob/master/examples/fibonacci.cpp
-
-   This version has _no_ cutoff, so its performance is dominated by
-   the scheduler overhead with very small tasks. On our machine, this
-   benchmark exactly unchanged takes 5s to compute fib(42), when the
-   implementation we provided takes 8s using Parabs. We modified the
-   taskflow example to use a cutoff value provided as an extra
-   parameter, with cutoff=10 the Taskflow implementation takes 206ms
-   (±8ms) and our Parabs version takes 520ms (±15ms), so it is around
-   2.5x slower – both with the default settings of using as many
-   domains/threads as possible. When configured to use a single
-   domain/thread, the Taskflow version takes 1.15s and our Parabs
-   version takes 2.8s. This suggests that the parallel speedup of both
-   benchmark versions is very similar, 5.6x for the Taskflow benchmark
-   and 5.4x for our Parabs version.
-
-2. TODO Domainslib lu version?
+(We wondered about why C++ is noticeably faster, this appears to come in part from unspeakable optimizations performed by `g++ -O2` on the fibonacci function. The purely-sequential version of fibonacci (for fib(40)) takes 255ms with `g++ -O2`, 450ms with `clang++ -O2`, 960ms with `ocamlopt` (only 880s with the OCaml 4.14 pre-multicore runtime).)
