@@ -442,13 +442,11 @@ We would also predict that benchmark results between Cilk and OCaml would be wil
   difficult -- but in the case of these examples there should not be
   much allocator pressure so this point should not apply.
 
-We found the idea of spending hours (building OpenCilk and)
-benchmarking and comparing two wildly different implementations a bit
-discouraging, and did not prepare results in time for the author
-response period.
-
-TODO: at least implement a basic version of lu.c in sequential C++,
-and compare the performance with sequential OCaml.
+We did write a baseline sequential version in C++ and OCaml to compare
+to our guesswork estimate that a C/C++ baseline may be up to 5x
+faster. We found that the C++ version is 1.45x faster with `g++ -O1`,
+and 3.4x faster with `-O3` (similar results with g++ or clang++) -- so
+our 5x guess was a bit pessimistic.
 
 TODO: run the Domainslib and Taskflow versions of the LU benchmarks and compare
 running times with ours.
