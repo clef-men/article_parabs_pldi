@@ -448,5 +448,27 @@ faster. We found that the C++ version is 1.45x faster with `g++ -O1`,
 and 3.4x faster with `-O3` (similar results with g++ or clang++) -- so
 our 5x guess was a bit pessimistic.
 
-TODO: run the Domainslib and Taskflow versions of the LU benchmarks and compare
-running times with ours.
+We were inspired by the reviewer's suggestion to perform "sanity
+checks" using benchmarks implemented by someone else than us, and we did
+the following:
+
+1. We built the benchmark `fibonacci.cpp` from the TaskFlow examples
+   directory (we did not build the `matrix_multiplication` benchmark
+   because its build system insists on having TBB available).
+   https://github.com/taskflow/taskflow/blob/master/examples/fibonacci.cpp
+
+   This version has _no_ cutoff, so its performance is dominated by
+   the scheduler overhead with very small tasks. On our machine, this
+   benchmark exactly unchanged takes 5s to compute fib(42), when the
+   implementation we provided takes 8s using Parabs. We modified the
+   taskflow example to use a cutoff value provided as an extra
+   parameter, with cutoff=10 the Taskflow implementation takes 206ms
+   (±8ms) and our Parabs version takes 520ms (±15ms), so it is around
+   2.5x slower – both with the default settings of using as many
+   domains/threads as possible. When configured to use a single
+   domain/thread, the Taskflow version takes 1.15s and our Parabs
+   version takes 2.8s. This suggests that the parallel speedup of both
+   benchmark versions is very similar, 5.6x for the Taskflow benchmark
+   and 5.4x for our Parabs version.
+
+2. TODO Domainslib lu version?
