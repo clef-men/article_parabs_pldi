@@ -409,18 +409,26 @@ The flexibility that we mention in Section 5 comes from the fact that our schedu
 
 > The motivation for introducing Iris extensions seems to be coverage of an omitted property of push in previous work. It's not clear whether this was an oversight that could have been addressed using the methods in those accounts, or whether the introduced Prophet-based techniques are essential. Please explain. I don't have enough expertise with Iris to determine this, or to evaluate its use here.
 
-
+Proving this stronger specification required a substantial amount of work designing a more precise invariant to capture the lifecycle of Chase-Lev deques, in particular the logical-state protocol of Figure 9 which we believe is a new contribution of our work. The earlier work on Chase-Lev ( https://arxiv.org/abs/2309.03642 ) proved a weaker specification where a simpler, less precise invariant sufficed. Multiplexed prophets are a useful proof pattern to use in some concurrent scenarios where reasoning about linearization requires reasoning on several different memory cells at once; we used it in our specification of the "empty-ish" logical state (Figure 9), and it was not necessary in the invariant of that previous work.
 
 > The Parabs API and design walk-through in sec (sec 5-13) seems OK, but could use some retrospective rationalization: Explain the design space up front, and then why/how particular choices (for example private queues) are made in different components. As it stands, Parabs seems to provide a reasonable set of abstractions, but doesn't (yet?) include many new ideas compared to other frameworks in other languages.
 > 
 > Sec 8: Dealing with excess contention and wastage during ramp-down and phase changes is subject to constant attention in production frameworks. See for example the (too recent to have been cited) PPoPP 2026 "Waste-Efficient Work Stealing". The sleep-based approach here is fine for some workloads, but not others.
 > 
 > Sec 9: If the FIFO realization used a dequeue in which owners must "steal" their own tasks, then it would fall under the same characterization as others, with breadth-first execution. Is there a reason not to do this?
-> 
+
+We do not understand your suggestion well enough to answer it. When we studied concurrent schedulers, we noticed that some (more naive, but used in production nonetheless) use a single global FIFO stack of tasks. This gives a depth-first execution which offers good locality but behaves poorly on fork-join workflows. We reproduced this implementation approach and verified it correct, but would not recommend this implementation choice. Per-thread work-stealing deques (public or private) behave much better: threads steal tasks from each other on the "LIFO" end of each queue, so they steal "larger" tasks in fork-join workflows which is good, while consuming tasks from the "FIFO" end of their own queue, so they preseve good locality for local work.
+
 > Sec 10: The Pool design and implementation seems to need a lot of work. It does not properly handle exceptions, abruptly shutdown, and has no mechanism to support transient blocking. It might be productive to come up with an extended set of properties in Fig 11 to more carefully specify and verify such issues.
-> 
+
+This is correct, but we consider that it is reasonable to leave as future work. (Note: the verification framework for OCaml that we use in our work, Zoo, does not currently handle exceptions, so our specifications require that client tasks do not raise exceptions to the scheduler.)
+
+Note that the reference library Domainslib that we implemented does not support advanced concerns either -- it does handle exceptions by storing them in the future and then re-raising then on `await`, which we could easily do should Zoo gain support for working with exceptions. The concurrent-library ecosystem of OCaml 5 is still fairly young relatively to more mature multicore languages.
+
 > Sec 11-12: I am confused that sec 10 mentions that the Pool does not support continuations, but the implementation of Futures relies on them? It's also not clear whether these share mechanics with the completion-based VERTEX support.
-> 
+
+TODO
+
 > Sec 13 / Appendix. I was surprised not to see a sanity-check comparison with Cilk on the two benchmarks (lu and matmul) that I'm guessing are based on initial Cilk code.
 
 There is probably an ancestral link from the Cilk benchmarks, but our own source of inspiration for our benchmarks was benchmarks from Domainslib and Taskflow, not Cilk directly
@@ -434,4 +442,4 @@ We were inspired by the suggestion to perform "sanity checks" using benchmarks i
 
 This version has _no_ cutoff, so its performance is dominated by the scheduler overhead with very small tasks. On our machine, this benchmark exactly unchanged takes 5s to compute fib(42), when the implementation we provided takes 8s using Parabs. We modified the taskflow example to use a cutoff value provided as an extra parameter, with cutoff=10 the Taskflow implementation takes 206ms (±8ms) and our Parabs version takes 520ms (±15ms), so it is around 2.5x slower – both with the default settings of using as many domains/threads as possible. When configured to use a single domain/thread, the Taskflow version takes 1.15s and our Parabs version takes 2.8s. This suggests that the parallel speedup of both benchmark versions is very similar, 5.6x for the Taskflow benchmark and 5.4x for our Parabs version.
 
-(We wondered about why C++ is noticeably faster, this appears to come in part from unspeakable optimizations performed by `g++ -O2` on the fibonacci function. The purely-sequential version of fibonacci (for fib(40)) takes 255ms with `g++ -O2`, 450ms with `clang++ -O2`, 960ms with `ocamlopt` (only 880s with the OCaml 4.14 pre-multicore runtime).)
+(We wondered about why C++ is noticeably faster, this appears to come in part from unspeakable optimizations performed by `g++ -O2` on the fibonacci function. One one test machine, the purely-sequential version of fibonacci (for fib(40)) takes 255ms with `g++ -O2`, 450ms with `clang++ -O2`, and 960ms with `ocamlopt` (only 880s with the OCaml 4.14 pre-multicore runtime, which does not need a resizable-stack check in function prologues).)
