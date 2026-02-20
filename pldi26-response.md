@@ -26,7 +26,7 @@ To summarize, we propose to:
 
 Note: we already have longer-form descriptions of this material in writing, so adding more detailed content on the OCaml APIs in particular does not require writing fully new content.
 
-## Detailed per-review comments (option)
+## Detailed per-review comments (optional)
 
 ### Review A
 
@@ -111,6 +111,7 @@ and a proof that it computes correctly
 (Note: the .ml file has two `fibonacci` function with name shadowing, the first is parametrized by a pool and the other wraps it under a simple interface. The first becomes `fibonacci_0` after translation, and the .v file contains proofs about both functions.)
 
 We agree that it would be nice to provide more examples, in particular an example of using the Vertex interface. (But then maybe Vertex will be removed to win space.)
+TODO
 
 > There is no report on the amount of effort that this verification took. Lines of
 > code are not a great metric, but they are better than nothing, and in particular
@@ -136,7 +137,7 @@ What we were trying to say (in a few words) is the following: the API exposes a 
 
 Our formulation is confusing and we will clarify. What we had in mind when writing this is a different notion of 'liveness' from GC-ed languages: it is bad to retain user-provided values in "unused" slots of a data structure, as it could keep memory alive longer than necessary. The usual trick, which is used by the OCaml data structures of the Saturn library, is add an indirection through a separate memory block in which a `null` (poetically called `Obj.magic ()`) is written after `pop` to recover good "liveness" (in that sense) properties.
 
-Note: The implementation we provided in our artifact does not in fact implement this extra erasing write in `ws_deque_2.ml` -- we did verify this in an earlier version, and during a later rewriting in Zoo this subtlety of the implementation was lost. This is a small mistake on our part that is easy to fix, and which we will address shortly -- it is not hard to add these erasing writes and prove them correct, as the proof setup is done precisely to make this easy.
+Note: The implementation we provided in our artifact does not in fact implement this extra erasing write in `ws_deque_2.ml` -- we did verify this in an earlier version, and during a later rewriting in Zoo this subtlety of the implementation was lost. This is a small mistake on our part which we just fixed.
 
 From the perspective of the paper this is a technical detail, but it leaks through the choice of public postconditions of the `Ws_deque` specification, which we thought was worth mentioning.
 
@@ -242,7 +243,11 @@ Proving this stronger specification required a substantial amount of work design
 
 > Sec 9: If the FIFO realization used a dequeue in which owners must "steal" their own tasks, then it would fall under the same characterization as others, with breadth-first execution. Is there a reason not to do this?
 
-We do not understand your suggestion well enough to answer it. When we studied concurrent schedulers, we noticed that some (more naive, but used in production nonetheless) use a single global FIFO stack of tasks. This gives a depth-first execution which offers good locality but behaves poorly on fork-join workflows. We reproduced this implementation approach and verified it correct, but would not recommend this implementation choice. Per-thread work-stealing deques (public or private) behave much better: threads steal tasks from each other on the "LIFO" end of each queue, so they steal "larger" tasks in fork-join workflows which is good, while consuming tasks from the "FIFO" end of their own queue, so they preseve good locality for local work.
+We do not understand your suggestion well enough to answer it.
+
+When we studied concurrent schedulers, we noticed that some (more naive, but used in production nonetheless) use a single global FIFO stack of tasks. This gives a breadth-first execution which has bad memory consumption on fork-join workflows, because smaller tasks accumulate in the queue until the very end, leading to excessive memory consumption: in a typical recursive fork-join task tree, running a task results in the long-term accumulation of 2 subtasks, so there are 2^N tasks of depth N that will be present simultaneously on the queue. We reproduced this implementation approach and verified it correct, but would not recommend this implementation choice.
+
+Per-thread work-stealing deques (public or private) behave much better: threads steal tasks from each other on the "FIFO" end of each queue (in breadth-first fashion), so they steal "larger" tasks which is good to reduce communication, while consuming tasks from the "LIFO" end of their own queue (depth-first fashion), so they preserve good locality for local work and avoid the long-term accumulation of many small tasks: in fork-join trees, running a task pushes two sub-tasks, but one sub-task gets popped immediately by the thread so the number of waiting sub-tasks remains constant, so the number of queued tasks remains close to the number of threads.
 
 
 > Sec 10: The Pool design and implementation seems to need a lot of work. It does not properly handle exceptions, abruptly shutdown, and has no mechanism to support transient blocking.
@@ -269,4 +274,4 @@ We were inspired by the suggestion to perform "sanity checks" using benchmarks i
 
 This version has _no_ cutoff, so its performance is dominated by the scheduler overhead with very small tasks. On our machine, this benchmark exactly unchanged takes 5s to compute fib(42), when the implementation we provided takes 8s using Parabs. We modified the taskflow example to use a cutoff value provided as an extra parameter, with cutoff=10 the Taskflow implementation takes 206ms (±8ms) and our Parabs version takes 520ms (±15ms), so it is around 2.5x slower – both with the default settings of using as many domains/threads as possible. When configured to use a single domain/thread, the Taskflow version takes 1.15s and our Parabs version takes 2.8s. This suggests that the parallel speedup of both benchmark versions is very similar, 5.6x for the Taskflow benchmark and 5.4x for our Parabs version.
 
-(We wondered about why C++ is noticeably faster, this appears to come in part from unspeakable optimizations performed by `g++ -O2` on the fibonacci function. One one test machine, the purely-sequential version of fibonacci (for fib(40)) takes 255ms with `g++ -O2`, 450ms with `clang++ -O2`, and 960ms with `ocamlopt` (only 880s with the OCaml 4.14 pre-multicore runtime, which does not need a resizable-stack check in function prologues).)
+(We wondered about why C++ is noticeably faster, this appears to come in part from unspeakable optimizations performed by `g++ -O2` on the fibonacci function. One our test machine, the purely-sequential version of fibonacci (for fib(40)) takes 255ms with `g++ -O2`, 450ms with `clang++ -O2`, and 960ms with `ocamlopt` (only 880s with the OCaml 4.14 pre-multicore runtime, which does not need a resizable-stack check in function prologues).)
