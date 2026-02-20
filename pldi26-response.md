@@ -116,9 +116,9 @@ We agree that it would be nice to provide more examples, in particular an exampl
 > code are not a great metric, but they are better than nothing, and in particular
 > the ratio of lines of code vs lines of proof can be quite informative.
 
-A simplistic count (ls -1 *.v | grep -v '__' | xargs wc -l) puts `theories/zoo_parabs` at 8900 lines of proofs, with the corresponding implementations (ls *.ml | xargs wc -l) at 741 lines, suggesting a 12x code-to-proofs ratio. The work-stealing-related data structures in `zoo_saturn` (*ws*.ml) exhibit a higher ratio, with 340 lines of code and 7495 lines of proofs, so 22x more proofs.
+A simplistic count (`ls -1 *.v | grep -v '__' | xargs wc -l`) puts `theories/zoo_parabs` at 8900 lines of proofs, with the corresponding implementations (`ls *.ml | xargs wc -l`) at 741 lines, suggesting a 12x code-to-proofs ratio. The work-stealing-related data structures in `zoo_saturn` (`ls *ws*.ml`) exhibit a higher ratio, with 340 lines of code and 7495 lines of proofs, so 22x more proofs.
 
-We are unsure what conclusions to draw from the code-to-proofs ratio. Having massively more proofs than code can be the sign of a lack of attention to proof engineering, for example missed opportunities in proof automation. It can also be the sign of a fundamentally hard problem domain. Of course we believe the second explanation more: lock-free data structures are exceptionally good at packing quite the verification difficulties in a relatively small number of lines of code. This argument explains why the core data-structure code in `zoo_saturn` has a worse ratio than the scheduler code in `zoo_parabs`.
+We are unsure what conclusions to draw from the code-to-proofs ratio. Having massively more proofs than code can be the sign of a lack of attention to proof engineering, for example missed opportunities in proof automation. It can also be the sign of a fundamentally hard problem domain. Of course we believe the second explanation more: we are careful about proof engineering, yet lock-free data structures are exceptionally good at packing quite the verification difficulties in a relatively small number of lines of code. This argument explains why the core data-structure code in `zoo_saturn` has a worse ratio than the scheduler code in `zoo_parabs`.
 
 > - Line 62: Multiple times throughout the paper, the authors mention that the
 > stronger spec is needed to "prove termination". However, given that this paper
@@ -134,7 +134,7 @@ What we were trying to say (in a few words) is the following: the API exposes a 
 > - Line 423: I assume those liveness properties have not been verified? This
 > should be clarified.
 
-Our formulation is confusing and we will clarify. What we had in mind when writing this is a different notion of 'liveness' from GC-ed languages: it is bad to retain user-provided values in "unused" slots of a data structure, as it could keep memory alive longer than necessary. The usual trick, which is used by the OCaml data structures of the Saturn library, is to write a `null` (poetically called `Obj.magic ()`) in their place to recover good "liveness" (in that sense) properties.
+Our formulation is confusing and we will clarify. What we had in mind when writing this is a different notion of 'liveness' from GC-ed languages: it is bad to retain user-provided values in "unused" slots of a data structure, as it could keep memory alive longer than necessary. The usual trick, which is used by the OCaml data structures of the Saturn library, is add an indirection through a separate memory block in which a `null` (poetically called `Obj.magic ()`) is written after `pop` to recover good "liveness" (in that sense) properties.
 
 Note: The implementation we provided in our artifact does not in fact implement this extra erasing write in `ws_deque_2.ml` -- we did verify this in an earlier version, and during a later rewriting in Zoo this subtlety of the implementation was lost. This is a small mistake on our part that is easy to fix, and which we will address shortly -- it is not hard to add these erasing writes and prove them correct, as the proof setup is done precisely to make this easy.
 
@@ -154,15 +154,13 @@ The 'unstable' states correspond to states of the data-structure that can only b
 
 We designed the Pool interface with the intent to build Future on top of it. With Future you can indeed have non-persistent outputs, so programming examples which require non-persistent outputs are convenient to implement and verify. Doing so directly at the level of Pool is less pleasant (it requires an extra encoding), we could indeed extend the specification a bit to add non-persistent outputs for `async` and make it more direct -- we would be happy to make this change.
 
-An example of program that benefits from non-persistent outputs (and is thus easy to implement on top of our Future, and less easy to implement on top of Pool directly) is 'quicksort', as implemented for example in the PulseCore paper ( https://dl.acm.org/doi/pdf/10.1145/3729311 ) page 21: to know that the `async` task is finished sorting both halves of the array, they call `teardown_pool`, and at this point they want to obtain a non-persistent property. (This also relates to the previous discussion on the need to reason "after completion".)
+An example of program that benefits from non-persistent outputs (and is thus easy to implement on top of our Future, and less easy to implement on top of Pool directly as the non-persistent part must go through an invariant) is 'quicksort', as implemented for example in the PulseCore paper ( https://dl.acm.org/doi/pdf/10.1145/3729311 ) page 21: to know that the `async` task is finished sorting both halves of the array, they call `teardown_pool`, and at this point they want to obtain a non-persistent property. (This also relates to the previous discussion on the need to reason "after completion".)
 
 > - Line 664: How does wait_until behave and how is it used? It seems to support
 > waiting until an arbitrary opaque predicate becomes true -- so does it just
 > busy-wait, or is it somehow integrated with the scheduler?
 
-This is integrated in the scheduler -- one can think of a user-level
-equivalent of pthreads condition variables. The scheduler calls the
-predicate periodically when it considers re-running this task.
+This is integrated in the scheduler -- one can think of a user-level equivalent of pthreads condition variables. The scheduler calls the predicate periodically when it considers re-running this task.
 
 (It would be reasonable to also implement more specialized waiting functions whose users would be directly awakened in 'push' fashion, instead of checking in 'pull' mode as in this maximally-expressive version.)
 
@@ -214,7 +212,7 @@ We believe that your three questions (clients; proof effort and code-to-proofs r
 
 We would like to emphasize that the contribution of our work is not an interesting new work-stealing scheduler as an OCaml 5 library, it is the _verification_ of a realistic scheduler modelled after Domains a pre-existing OCaml library (not written by us). The implementation we verify was done by us (with strong inspiration by Domainslib), designed to have clean building blocks to facilitate verification, but we certainly do not claim that it improves over the state-of-the-art of (unverified) concurrent schedulers.
 
-We reviewed our explicit 'Contributions' paragraph after the feedback from this review; we believe that it does not claim any progress on parallel scheduling implementation techniques, and that it correctly claims _verification_ contributions. Our main claim regarding the implementation is as follows, and we stand by it: "this is the first verified implementation of a parallel work-stealing task scheduler (for any language) using realistic implementation techniques."
+We reviewed our explicit 'Contributions' paragraph after the feedback from this review; we believe that it does not claim any progress on parallel scheduling implementation techniques, and that it correctly claims _verification_ contributions. We stand by our main claim regarding the implementation: "this is the first verified implementation of a parallel work-stealing task scheduler (for any language) using realistic implementation techniques."
 
 > Strengths
 > ---------
@@ -232,9 +230,9 @@ Note: the original inspiration for our implementation, Domainslib, is not our ow
 
 > Verification (sec 2-4): The paper should make clear up front exactly what properties are being verified (especially given discussions in sec5+). A simple table or list in sec 1 or 2 would help identify those properties required for any of the many possible variations in implementation.
 
-We verify functional correctness (in a partial-correctness logic: formally we prove that programs run (possibly forever) without crashing, and if it terminates it satisfies the specified postcondition).
+We verify functional correctness, in a partial-correctness logic: formally we prove that programs run (possibly forever) without crashing, and if it terminates it satisfies the specified postcondition.
 
-Of course one would naturally ask: functional correctness, but with respect to what specification? The answer is a bit of a mouthful, for example the specification of the function `Pool.wait_until` exposed by the Pool interface is given by Pool-Wait-Until-Spec in Figure 11 page 14; informally, it tells us that if `wait_until ctx pred` is called in presence of a concurrency context variable `ctx`, and `pred` correctly checks whether a certain logical property `P` holds, then when `wait_until_ctx_pred` returns we know that `P` holds.
+Of course one would naturally ask: functional correctness, but with respect to what specification? The answer is a bit of a mouthful, for example the specification of the function `Pool.wait_until` exposed by the Pool interface is given by Pool-Wait-Until-Spec in Figure 11 page 14; informally, it tells us that if `wait_until ctx pred` is called in presence of a concurrency context variable `ctx`, and `pred : unit -> bool` correctly checks whether a certain logical property `P` holds, then when `wait_until ctx pred` returns we know that `P` holds (in particular, we own any logical state included in `P`). The figures 11, 12, 13 are key because they expose precisely what we claim to have proven about our scheduling library.
 
 The flexibility that we mention in Section 5 comes from the fact that our scheduler logic is split in several building blocks with well-specified interfaces and interactions. We could verify several possible implementations for the central data-structure of a task pool, and on top of the middle-level `Pool` interface build different higher-level interfaces exposed to users.
 
