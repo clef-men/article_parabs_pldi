@@ -181,8 +181,8 @@ We will try to integrate these APIs in the paper, as suggested previously.
 
 > - Line 747: What is going on with the later modalities here?
 
-We improved on this slightly in the current version of our
-development, without the `2.depth+1` nesting.
+We improved on this slightly in the current version of our development, without the `2.depth+1` nesting.
+TODO
 
 > - Line 780: Why are persistent and non-persistent output predicates separated?
 
@@ -238,7 +238,7 @@ The flexibility that we mention in Section 5 comes from the fact that our schedu
 
 > The motivation for introducing Iris extensions seems to be coverage of an omitted property of push in previous work. It's not clear whether this was an oversight that could have been addressed using the methods in those accounts, or whether the introduced Prophet-based techniques are essential. Please explain. I don't have enough expertise with Iris to determine this, or to evaluate its use here.
 
-Proving this stronger specification required a substantial amount of work designing a more precise invariant to capture the lifecycle of Chase-Lev deques, in particular the logical-state protocol of Figure 9 which we believe is a new contribution of our work. The earlier work on Chase-Lev ( https://arxiv.org/abs/2309.03642 ) proved a weaker specification where a simpler, less precise invariant sufficed. Multiplexed prophets are a useful proof pattern to use in some concurrent scenarios where reasoning about linearization requires reasoning on several different memory cells at once; we used it in our specification of the "empty-ish" logical state (Figure 9), and it was not necessary in the invariant of that previous work.
+Proving this stronger specification required a substantial amount of work designing a more precise invariant to capture the lifecycle of Chase-Lev deques, in particular the logical-state protocol of Figure 9 which we believe is a new contribution of our work. This protocol involves a future-dependent linearization point (paragraph 4.1.4). In Iris, future-dependent linearization is addressed using prophecy variables (prophets). But unlike previously verified concurrent data structures (for instance RDCSS), the linearization point involves multiple prophecies corresponding to multiple indices; this is what multiplexed prophets are designed to address. The earlier work on Chase-Lev ( https://arxiv.org/abs/2309.03642 ) proved a weaker specification where a less precise invariant sufficed with a simpler, non-future-dependent linearization point.
 
 > Sec 9: If the FIFO realization used a dequeue in which owners must "steal" their own tasks, then it would fall under the same characterization as others, with breadth-first execution. Is there a reason not to do this?
 
