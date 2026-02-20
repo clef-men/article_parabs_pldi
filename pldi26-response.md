@@ -20,11 +20,11 @@ We agree that taking some space to present the APIs and possibly simple usage ex
 
 To summarize, we propose to:
 
-- shorten the section on prophecies and, if it remains very Iris-technical, move it to a later section of the paper
-- if the reviewers agree, remove the section on Vertex or at least move it to an appendix
-- use the extra space for more informal explanation/document of how to use each API being presented
+1. shorten the section on prophecies and, if it remains very Iris-technical, move it to a later section of the paper
+2. if the reviewers agree, remove the section on Vertex or at least move it to an appendix
+3. use the extra space for more informal explanation/documentation of how to use each API being presented
 
-; note that we already have longer-form descriptions of this material in writing, so adding more detailed content the OCaml APIs in particular does not require writing fully new content.
+Note: we already have longer-form descriptions of this material in writing, so adding more detailed content on the OCaml APIs in particular does not require writing fully new content.
 
 ## Detailed per-review comments (option)
 
