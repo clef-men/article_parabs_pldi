@@ -54,13 +54,10 @@ TODO: consider including OCaml APIs somewhere in the paper.
 
 > * The most notable instance of the above is the use of execution contexts in the Pool specification in order to work around the lack of algebraic effects. While I have some intuition for how these are used, I would have liked more detail in the paper, particularly on how this difference in the interface would affect users of the scheduler (e.g., does it only impact designers of new higher-level parallelism libraries like Futures and Vertex or does it bleed into those interfaces as well)?
 
-[Clément]: yes, the context creeps into the interface, this is a rather common programming pattern. (Scala's implicit arguments would help hide this from users in many cases.)
+The fact that a global 'context' parameter has to be passed around is not uncommon in library-based schedulers. For example TaskFlow functions will pass a `tf::Runtime&` parameter to functions creating new asynchronous tasks. The 'Pool.context' parameter does leak into the API of Future and Vertex which also require a contex. Some programmer appreciate API designs where functions explicitly demand the capability to schedule asynchronous computations; others may want to de-emphasize this aspects by hiding the context as a global/singleton in their application, or using programming-language support for implicit but type-tracked parameter passing (Scala's implicit parameters, or the Reader monad in Haskell for example). 
 
-meta: [Gabriel]'s reply below is concerned with continuations, not the context-passing discipline.
-
-We could show three simple examples of (1) how this would be done in a traditional implementation of futures (in a language without effect handlers), (2) how it can be done in OCaml with effect handlers, and (3) how it is done when using our library.
-
-First include this in the response, then consider adding this to 11.2 if we can find extra space.
+Note: we were unsure what you had in mind about "the lack of algebraic effects". Algebraic effects are useful in some APIs that expose a `yield` operation that would otherwise have to take an explicit continuation parameter. But we would not typically use an effect handler just for dynamic binding, recovering a `context` parameter. And for example Domainslib, which does rely on algebraic effects internally, still has an API where a `pool` parameter is passed around explicitly:
+  https://github.com/ocaml-multicore/domainslib/blob/main/lib/task.mli
 
 > Naturally, addressing the above comments will require some more space. I don't expect this paper to be entirely self-contained---that would be impossible even with a number of extra pages! It would be worthwhile for the authors to think about (or maybe they already have, in which case I would be interested to know) the intended audience of the paper: is it the Iris community, developers of parallel schedulers, users of OCaml 5, some combination of the above? This is just one opinion, but personally I would have preferred if some of the sections were omitted (maybe included in an appendix) in favor of more detail on the key modules.
 
@@ -136,9 +133,11 @@ The "wise prophets" and "multiplexed prophets" that we present in Section 3 may 
 
 Our best guess would be that this is possible but likely to be quite difficult, due to difficulties about reasoning about fairness in state-of-the-art concurrent program logics.
 
-We already know that Iris is a reasonable setting to reason about algorithmic complexity in time or space ( see for example https://iris-project.org/pdfs/2019-esop-time.pdf ), and there have been mechanized proofs of complexity-efficient scheduling policies ( for example https://www.chargueraud.org/research/2018/heartbeat/heartbeat.pdf )
+We already know that Iris is a reasonable setting to reason about algorithmic complexity in time or space ( see for example https://iris-project.org/pdfs/2019-esop-time.pdf ), and there have been mechanized proofs of complexity-efficient scheduling policies ( for example https://www.chargueraud.org/research/2018/heartbeat/heartbeat.pdf ). (The SPAA'98 proof is with an idealized model of the program and its scheduler, the 'heartbeat' proof uses an abstract machine with an axiomatic treatment of the scheduler; both are far more idealized than an actual scheduler implementation as we present in our work.)
 
 However, lock-free data structures such as the one we use in our implementation are known to create difficulties to reason about termination (and more precise quantiative properties), because their termination relies on a fairness assumption. (The original proof of Arora, Blumofe and Plaxton also needs fairness-like assumptions.) This is discussed in depth in https://www.cs.cmu.edu/~janh/papers/lockfree2013.pdf , and/but currently standard Iris does not provide pleasant tools to reason about fairness and thus state quantitative properties of lock-free implementations. (Our implementation of work-stealing also uses random-number generation to select dequeues to steal from, which would also require fairness assumptions / working with probabilities.)
+
+Remark: Iris is a partial logic so it is non-intuitive that it can be used to prove complexity results, even in settings that do not need to make global fairness assumptions. The time-credits paper we mention earlier has interesting discussions on this; the gist is that (1) the complexity is proved with respect to a number of `tick` instructions that have to be carefully inserted in the program (in particular "silent" loops without ticks could still diverge in a proven-correct program), and (2) proving a precise bound on termination steps as a function of the input (which can then be weakened into a complexity-class result) can turn termination, apparently a liveness property, into a safety property, by stating that "no execution path will `tick` more than `f(N)` times".
 
 > Review #742B
 > ===========================================================================
@@ -227,7 +226,7 @@ We are unsure what conclusions to draw from the code-to-proofs ratio. Having mas
 
 We agree that our wording was misleading and we will rephrase this.
 
-The proofs were done in a partial-correctness logic, so indeed we do not prove termination of the scheduler and we should reformulate. What we were trying to say (in a few words) is the following: the API exposes a way to kill all tasks owned by a scheduler, and to know that they have been terminated. In this case we want to recover all the resources that were previously owned by those tasks. Reasoning about this requires the stronger specification for Chase-Lev. So here "termination" should not be understood as "we prove formally that running the tasks eventually terminate", but "we let you reason correctly about what you know after termination".
+The proofs were done in a partial-correctness logic, so indeed we do not prove termination of the scheduler and we should reformulate. What we were trying to say (in a few words) is the following: the API exposes a way to block until all the tasks owned by a scheduler have terminated (and to then prevent the scheduler from accepting new tasks). In this case we want to recover all the resources that were previously owned by those tasks. Reasoning about this requires the stronger specification for Chase-Lev. So here "termination" should not be understood as "we prove formally that running the tasks eventually terminate", but "we let you reason correctly about the point where all tasks have terminated". We should have written that we can "reason after termination", rather mistakenly suggesting that we "prove termination"; maybe "completion" would be a better terminology to avoid the confusion.
 
 > - Line 112: This is a very unconventional way to write Hoare triples, and it is
 > very confusing since it looks a lot like an inference rule, and many figures mix
@@ -400,9 +399,17 @@ Note: the original inspiration for our implementation, Domainslib, is not our ow
 > 
 > The accounts in this paper will be useful to OCaml users, but I'm not sure that there is enough incremental progress on parallel scheduling to report yet.
 > 
-> Verification (sec 2-4): The paper should make clear up front exactly what properties are being verified (especially given discussions in sec5+). A simple table or list in sec 1 or 2 would help identify those properties required for any of the many possible variations in implementation. The motivation for introducing Iris extensions seems to be coverage of an omitted property of push in previous work. It's not clear whether this was an oversight that could have been addressed using the methods in those accounts, or whether the introduced Prophet-based techniques are essential. Please explain. I don't have enough expertise with Iris to determine this, or to evaluate its use here.
+> Verification (sec 2-4): The paper should make clear up front exactly what properties are being verified (especially given discussions in sec5+). A simple table or list in sec 1 or 2 would help identify those properties required for any of the many possible variations in implementation.
 
-We verify functional correctness (in a partial-correctness logic).
+We verify functional correctness (in a partial-correctness logic: formally we prove that programs run (possibly forever) without crashing, and if it terminates it satisfies the specified postcondition).
+
+Of course one would naturally ask: functional correctness, but with respect to what specification? The answer is a bit of a mouthful, for example the specification of the function `Pool.wait_until` exposed by the Pool interface is given by Pool-Wait-Until-Spec in Figure 11 page 14; informally, it tells us that if `wait_until ctx pred` is called in presence of a concurrency context variable `ctx`, and `pred` correctly checks whether a certain logical property `P` holds, then when `wait_until_ctx_pred` returns we know that `P` holds.
+
+The flexibility that we mention in Section 5 comes from the fact that our scheduler logic is split in several building blocks with well-specified interfaces and interactions. We could verify several possible implementations for the central data-structure of a task pool, and on top of the middle-level `Pool` interface build different higher-level interfaces exposed to users.
+
+> The motivation for introducing Iris extensions seems to be coverage of an omitted property of push in previous work. It's not clear whether this was an oversight that could have been addressed using the methods in those accounts, or whether the introduced Prophet-based techniques are essential. Please explain. I don't have enough expertise with Iris to determine this, or to evaluate its use here.
+
+
 
 > The Parabs API and design walk-through in sec (sec 5-13) seems OK, but could use some retrospective rationalization: Explain the design space up front, and then why/how particular choices (for example private queues) are made in different components. As it stands, Parabs seems to provide a reasonable set of abstractions, but doesn't (yet?) include many new ideas compared to other frameworks in other languages.
 > 
