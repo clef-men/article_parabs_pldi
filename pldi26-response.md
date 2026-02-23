@@ -123,9 +123,9 @@ We agree that it would be nice to provide more examples, in particular an exampl
 > code are not a great metric, but they are better than nothing, and in particular
 > the ratio of lines of code vs lines of proof can be quite informative.
 
-A simplistic count (`ls -1 *.v | grep -v '__' | xargs wc -l`) puts `theories/zoo_parabs` at 8900 lines of proofs, with the corresponding implementations (`ls *.ml | xargs wc -l`) at 741 lines, suggesting a 12x code-to-proofs ratio. The work-stealing-related data structures in `zoo_saturn` (`ls *ws*.ml`) exhibit a higher ratio, with 340 lines of code and 7495 lines of proofs, so 22x more proofs.
+A simplistic count (`ls -1 *.v | grep -v '__' | xargs wc -l`) puts `theories/zoo_parabs` at 8900 lines of proofs, with the corresponding implementations (`ls *.ml | xargs wc -l`) at 741 lines, suggesting a 12x code-to-proofs ratio for the scheduler implementation and proofs. The code related to Chase-Lev is `ls lib/zoo_saturn/*ws*.ml` and `lib/zoo_std/inf_array.ml`, totaling 419 of code, and the proofs take 10000 lines (including 1000 lines about circular arrays in `theories/zoo_std/array.v`), bringing the ratio of this part to 24x more proofs.
 
-We are unsure what conclusions to draw from the code-to-proofs ratio. Having massively more proofs than code can be the sign of a lack of attention to proof engineering, for example missed opportunities in proof automation. It can also be the sign of a fundamentally hard problem domain. Of course we believe the second explanation more: we are careful about proof engineering, yet lock-free data structures are exceptionally good at packing quite the verification difficulties in a relatively small number of lines of code. This argument explains why the core data-structure code in `zoo_saturn` has a worse ratio than the scheduler code in `zoo_parabs`.
+We are unsure what conclusions to draw from the code-to-proofs ratio. Having massively more proofs than code can be the sign of a lack of attention to proof engineering, for example missed opportunities in proof automation. It can also be the sign of a fundamentally hard problem domain. Of course we believe the second explanation more: we are careful about proof engineering, yet lock-free data structures are exceptionally good at packing quite the verification difficulties in a relatively small number of lines of code. This argument explains why the core data-structure code in `zoo_{std,saturn}` has a worse ratio than the scheduler code in `zoo_parabs`.
 
 > - Line 62: Multiple times throughout the paper, the authors mention that the
 > stronger spec is needed to "prove termination". However, given that this paper
@@ -143,7 +143,7 @@ What we were trying to say (in a few words) is the following: the API exposes a 
 
 Our formulation is confusing and we will clarify. What we had in mind when writing this is a different notion of 'liveness' from GC-ed languages: it is bad to retain user-provided values in "unused" slots of a data structure, as it could keep memory alive longer than necessary. The usual trick, which is used by the OCaml data structures of the Saturn library, is add an indirection through a separate memory block in which a `null` (poetically called `Obj.magic ()`) is written after `pop` to recover good "liveness" (in that sense) properties.
 
-Note: The implementation we provided in our artifact does not in fact implement this extra erasing write in `ws_deque_2.ml` -- we did verify this in an earlier version, and during a later rewriting in Zoo this subtlety of the implementation was lost. This is a small mistake on our part which we just fixed.
+Note: The implementation we provided in our artifact does not in fact implement this extra erasing write in `ws_deque_2.ml` -- we did verify this in an earlier version, and during a later rewriting in Zoo this subtlety of the implementation was lost. This is a small mistake on our part which we just fixed in our current version.
 
 From the perspective of the paper this is a technical detail, but it leaks through the choice of public postconditions of the `Ws_deque` specification, which we thought was worth mentioning.
 
