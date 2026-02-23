@@ -110,8 +110,14 @@ and a proof that it computes correctly
 
 (Note: the .ml file has two `fibonacci` function with name shadowing, the first is parametrized by a pool and the other wraps it under a simple interface. The first becomes `fibonacci_0` after translation, and the .v file contains proofs about both functions.)
 
-We agree that it would be nice to provide more examples, in particular an example of using the Vertex interface. (But then maybe Vertex will be removed to win space.)
-TODO
+We agree that it would be nice to provide more examples, in particular an example of using the Vertex interface. (But then maybe Vertex will be removed to win space.) In response to this very reasonable question, we added the following examples to our current version of the formalization:
+
+- a simple Future example that increments a shared counter,
+  and whose proof requires using the `obligation` predicate
+
+- and a simple Vertex example demonstrating diamond-shaped dependencies,
+  and a version of `fibonacci` using the Vertex interface which
+  demonstrates the `Vertex.yield` operation.
 
 > There is no report on the amount of effort that this verification took. Lines of
 > code are not a great metric, but they are better than nothing, and in particular
