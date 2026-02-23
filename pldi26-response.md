@@ -21,7 +21,7 @@ We agree that taking some space to present the APIs and possibly simple usage ex
 To summarize, we propose to:
 
 1. shorten the section on prophecies and, if it remains very Iris-technical, move it to a later section of the paper
-2. if the reviewers agree, remove the section on Vertex or at least move it to an appendix
+2. if the reviewers agree, remove the section on Vertex
 3. use the extra space for more informal explanation/documentation of how to use each API being presented
 
 Note: we already have longer-form descriptions of this material in writing, so adding more detailed content on the OCaml APIs in particular does not require writing fully new content.
@@ -167,9 +167,9 @@ An example of program that benefits from non-persistent outputs (and is thus eas
 > waiting until an arbitrary opaque predicate becomes true -- so does it just
 > busy-wait, or is it somehow integrated with the scheduler?
 
-This is integrated in the scheduler -- one can think of a user-level equivalent of pthreads condition variables. The scheduler calls the predicate periodically when it considers re-running this task.
+One can think of this as a user-level equivalent of pthreads condition variables. The caller of `wait_until` does not busy-wait, it participates to scheduling work by fetching other tasks from the pool and completing them, checking periodically (after each task completed) whether the predicate has become true.
 
-(It would be reasonable to also implement more specialized waiting functions whose users would be directly awakened in 'push' fashion, instead of checking in 'pull' mode as in this maximally-expressive version.)
+(We discuss this in more details in our answer to your question about line 802.)
 
 > - Line 728: Here I got quite lost. Apparently futures can have "callbacks"
 > attached to them via `iter`? What are those for and when do they get triggered?
@@ -197,7 +197,6 @@ We improved on this slightly in the current version of our development, without 
 - We could do even better now using the 'physical-step' modality of https://iris-project.org/pdfs/2026-cpp-step-modality.pdf .
 )
 
-
 > - Line 780: Why are persistent and non-persistent output predicates separated?
 
 The idea was to make the interface more convenient to use. This follows the design
@@ -207,15 +206,37 @@ patterns of `ivar` in the Zoo standard library.
 > and `consumer`? Apparently the goal is to be able to split up the postcondition
 > so different parties can own parts of the postcondition of the same async task;
 > this could be explained more explicitly -- but more importantly, it is not
-> motivated. And then there's also `obligation` which I did not understand at all,
+> motivated.
+
+Indeed, `wait` produces a `result` instead of connecting to a single `consumer`, and this lets us resolve different parts of the postcondition with different consumer parties. For example, we could consider a future that initializes an array, to be consumed by two separate futures operating on disjoint segments of the array. We will mention this in the revised version.
+
+> And then there's also `obligation` which I did not understand at all,
 > since it isn't even clear what `iter` actually *does* operationally.
 
-TODO explain `obligation`.
+`Future.obligation` comes from the interface of `iter` which does not return a new future. With `map`, you get a new future that can be `awaited` to obtain the postcondition. With `iter` there is no handle to wait for termination; instead we produce an `obligation`, which will be resolved when the whole task pool is finished.
 
 > - Line 802: I got quite lost here. When would they be nested?
 
-TODO show a simple example that uses 'wait' to explain the nesting problem.
+If we had algebraic effects, we could capture the continuation of the caller of `wait{,_until}` and push it in some global scheduler data structures of tasks waiting to be resumed. For `wait` we would mark the continuations runnable when the future we are waiting on terminates, for `wait_until` we could periodically check the waiting predicates. (We would then consider more specialized interfaces with "push" wakeup information rather than "pulling" them as with `wait_until`.)
 
+Our scheduler does not use continuation capture, it implements waiting in a different way:
+
+```ocaml
+let rec wait_until ctx pred =
+  if not @@ pred () then
+    match Ws_hub_std.pop_steal_until ctx.context_hub ctx.context_id max_round_noyield pred with
+    | None ->
+        ()
+    | Some job ->
+        execute ctx job ;
+        wait_until ctx pred
+```
+
+When the caller of `wait_until` does have to wait, it takes a task from the task pool and executes it, before checking again if it can run. The call to `execute` is not in tail-call position; in a sense we use the call stack to store waiting tasks, instead of a pool data structure. If the `execute`-d task waits in turn, we can get chains of waiting tasks on the call stack. This is what we think of as a nested-waiting scenario.
+
+Note: the OCaml 5 runtime uses call stacks for its domains which are separate from the native callstack and will grow on demand, with a configurable limit at 1Gio before a stack-overflow exception is raised. This implies that using the call stack is not a hard limitation in practice, more of a lingering minor performance concern.
+
+Note: if the user calls `Pool.wait_until` directly (rather than higher-level abstractions like `Future.wait`) with an incorrect predicate that always returns `false`, the current implementation will degrade to busy-waiting infinitely once all other tasks have completed. Luckily we offer the ability to verify client code in Rocq to avoid this programming error ;-)
 
 > Questions for author response
 
@@ -271,7 +292,8 @@ Note that the reference library Domainslib that we implemented does not support 
 
 > Sec 11-12: I am confused that sec 10 mentions that the Pool does not support continuations, but the implementation of Futures relies on them? It's also not clear whether these share mechanics with the completion-based VERTEX support.
 
-TODO
+Neither Pool nor Future rely on capturing continuations. In particular the `wait` operations are implemented in direct style -- the caller executes other tasks from the pool until it can stop waiting.
+
 
 
 > Sec 13 / Appendix. I was surprised not to see a sanity-check comparison with Cilk on the two benchmarks (lu and matmul) that I'm guessing are based on initial Cilk code.
