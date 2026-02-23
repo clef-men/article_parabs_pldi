@@ -189,7 +189,14 @@ We will try to integrate these APIs in the paper, as suggested previously.
 > - Line 747: What is going on with the later modalities here?
 
 We improved on this slightly in the current version of our development, without the `2.depth+1` nesting.
-TODO
+
+(For Iris experts: the `depth` parameter counts the length of a dependency chain of futures, and
+- We initially started with the "future" abstraction inlined in the "pool" module,
+- Later we moved to a more modular development structure, and we had to make these dependency chains more apparent, resulting in nested laters when consuming `pool.finished` assumptions as shown in our submission.
+- After submission we improved the interface again, using persistent time receipts, and we were able to get rid of this explicit `2.depth+{1,2}` accounting, replacing iterated laters by a 'big-later' modality that can be eliminated in one step.
+- We could do even better now using the 'physical-step' modality of https://iris-project.org/pdfs/2026-cpp-step-modality.pdf .
+)
+
 
 > - Line 780: Why are persistent and non-persistent output predicates separated?
 
