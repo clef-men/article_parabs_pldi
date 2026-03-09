@@ -26,3 +26,5 @@
   + [ ] discuss persistent vs. non-persistent outputs for Pool and Future
   + [ ] use the improved specification without the 2.depth+1 laters
   + [ ] consider saying more about 'wait' using the callstack
+
+- [ ] go over reviews to check for remaining comments
