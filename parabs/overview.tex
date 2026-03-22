@@ -3,7 +3,7 @@
 \input{parabs/figures/overview}
 
 \Cref{fig:parabs_overview} gives an overview of \Parabs; solid edges represent module dependencies while dashed edges represent interface implementations.
-Essentially, the library is made of four abstraction levels built on top of each other: \ocamlinline{Ws_deques}, \ocamlinline{Ws_hub}, \ocamlinline{Pool} and \ocamlinline{Future} / \ocamlinline{Vertex}.
+Essentially, the library is made of four abstraction levels built on top of each other: \ocamlinline{Ws_deques}, \ocamlinline{Ws_hub}, \ocamlinline{Pool} and \ocamlinline{Future}.
 
 The \ocamlinline{Pool} module provides a task scheduler; internally, it maintains a pool of domains.
 Its design is inspired by \Domainslib, \Taskflow~\citep{DBLP:journals/tpds/HuangLLL22} and \Moonpool~\citep{moonpool}.
@@ -13,8 +13,8 @@ As of today, it supports three scheduling strategies:
 (3) a simple ``first-in first-out'' strategy with one shared queue.
 In addition, it should be possible to implement other scheduling strategies (see \cref{sec:future_work}), \eg work sharing.
 
-On top of \ocamlinline{Pool}, the \ocamlinline{Vertex} module provides a \emph{task graph} abstraction.
-More precisely, it is an implementation of \emph{DAG-calculus}~\citep{DBLP:conf/icfp/AcarCRS16} --- we present it in \cref{sec:parabs_vertex}.
+%On top of \ocamlinline{Pool}, the \ocamlinline{Vertex} module provides a \emph{task graph} abstraction.
+%More precisely, it is an implementation of \emph{DAG-calculus}~\citep{DBLP:conf/icfp/AcarCRS16} --- we present it in \cref{sec:parabs_vertex}.
 
 It is worth noting that the three upper levels implemented on top of \ocamlinline{Ws_deques} should be \OCaml functors.
 Unfortunately, \ZooLang does not currently support functors; therefore, only one branch of the tree of \cref{fig:parabs_overview} is active at a time.

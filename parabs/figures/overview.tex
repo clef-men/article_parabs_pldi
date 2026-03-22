@@ -12,8 +12,8 @@
   \node [parabs] (algo) at (0,-1*\vsep) {\c{Algo}} ;
   \node [parabs] (future) at (0,0) {\c{Future}} ;
   \node [std] (ivar) at (-2*\hsep,0) {\c{Ivar}} ;
-  \node [parabs] (vertex) at (2*\hsep,0) {\c{Vertex}} ;
-  \node [saturn] (mpmc_stack) at (2*\hsep,1*\vsep) {\c{Mpmc\_stack}} ;
+  %\node [parabs] (vertex) at (2*\hsep,0) {\c{Vertex}} ;
+  %\node [saturn] (mpmc_stack) at (2*\hsep,1*\vsep) {\c{Mpmc\_stack}} ;
   \node [parabs] (pool) at (0,1*\vsep) {\c{Pool}} ;
   \node [std] (domain) at (-2*\hsep,1*\vsep) {\c{Domain}} ;
   \node [parabs] (ws_hub) at (0,2*\vsep) {\c{Ws\_hub}} ;
@@ -33,8 +33,8 @@
     (future) -> (algo) ;
     (ivar) -> (future) ;
     (pool) -> (future) ;
-    (mpmc_stack) -> (vertex) ;
-    (pool) -> (vertex) ;
+    %(mpmc_stack) -> (vertex) ;
+    %(pool) -> (vertex) ;
     (domain) -> (pool) ;
     (ws_hub) -> (pool) ;
     (ws_hub_std) -> [densely dashed] (ws_hub) ;
