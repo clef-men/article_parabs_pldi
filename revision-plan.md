@@ -2,9 +2,9 @@
   + [x] shorten the section on prophecies
   + [x] move it to a later section of the paper
 
-- [ ] vertex
+- [x] vertex
   + [ ] move it to an appendix, OR
-  + [ ] remove it from the paper
+  + [x] remove it from the paper
   
 - [ ] API documentation
   + [ ] document the API of Ws_deque
