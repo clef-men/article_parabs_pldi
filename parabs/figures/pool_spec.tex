@@ -21,6 +21,14 @@
     }{
       \iLater \iPersistently \iProp
     }
+  \and
+    \infer[consumer-finished]{
+        \consumer\ t\ \iProp
+      \\
+        \finished\ t
+    }{
+      \iFupd \iProp
+    }
   \\
     \iSpec[
       lab=create-spec
@@ -99,7 +107,8 @@
           \_
         ]{
           \context\ t\ \v{ctx}\ \v{scope} \iSep
-          \iLater \iPersistently \iProp
+          \iLater \iPersistently \iProp \iSep
+          \iLater \iPropTwo
         }
       \end{inboxIndent}
     }{
@@ -108,7 +117,8 @@
       \c{()}
     ]{
       \context\ t\ \v{ctx}\ \v{scope} \iSep \\
-      \obligation\ t\ \iProp
+      \obligation\ t\ \iProp \iSep \\
+      \consumer\ t\ \iPropTwo
     }
   \and
     \iSpec[
