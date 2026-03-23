@@ -5,7 +5,7 @@
   \def\height{2cm}
 
   \node[align=center] (s1) {
-    \ding{172} empty \\
+    \ding{172} Empty \\
   	\begin{tikzpicture}[scale=0.5]
       \def\hist{2}
       \def\priv{2.8}
@@ -19,7 +19,7 @@
   } ;
 
   \node[align=center] (s2) [right=\width of s1] {
-    \ding{173} non-empty \\
+    \ding{173} Non-empty \\
     \begin{tikzpicture}[scale=0.5]
       \def\hist{2}
       \def\histx{1}
@@ -37,7 +37,7 @@
   } ;
 
   \node[align=center] (s3) [below=\height of s2] {
-    \ding{174} emptyish \\
+    \ding{174} Emptyish \\
     \begin{tikzpicture}[scale=0.5]
       \def\hist{2}
       \def\histx{1}
@@ -51,7 +51,7 @@
     \end{tikzpicture}
   } ;
   \node[align=center] (s4) [below=\height of s1] {
-    \ding{175} super-empty \\
+    \ding{175} Super-empty \\
     \begin{tikzpicture}[scale=0.5]
       \def\hist{2}
       \def\histx{1}
@@ -72,8 +72,7 @@
   \draw[thick, ->] (s2) to[bend left] node[right] {\c{pop}} (s3) ;
   \draw[thick, dotted, ->] (s3) to[bend left] node[below] {\c{pop}, \c{steal}} (s4) ;
   \draw[thick, dotted, ->] (s4) to[bend left] node[left] {\c{pop}} (s1) ;
-  \draw[thick, ->] (s1) to[bend left] node[right] {\c{pop}} (s4) ;
-  \draw[thick, dotted, ->] ([xshift=2mm]s1.south) to[bend left] ([xshift=2mm]s4.north) ;
+  \draw[thick, dotted, ->] (s1) to[bend left] node[right] {\c{pop}} (s4) ;
 
   \matrix [right, nodes={font=\tiny}] at (current bounding box.south west) {
     \draw[thick, ->] (0, 0) -- (1em, 0) node[right] {linearization} ; \\
