@@ -36,12 +36,8 @@
     \infer[consumer-divide]{
         \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
       \\\\
-        \consumer\ t\ \iPredThree
-      \\\\
-        \Forall \zooVal.
-        \iPredThree\ \zooVal \iWand
-        \iBigSep_{\iPredThree \in \iPredThree{}s}
-          \iPredThree\ \zooVal
+        \consumer\ t\ \left( \iBigSep_{\iPredThree \in \iPredThree{}s}
+          \iPredThree\ \zooVal \right)
     }{
       \iFupd
       \iBigSep_{\iPredThree \in \iPredThree{}s}
