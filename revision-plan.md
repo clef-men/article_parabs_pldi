@@ -1,6 +1,6 @@
-- [ ] prophets
-  + [ ] shorten the section on prophecies
-  + [ ] move it to a later section of the paper
+- [x] prophets
+  + [x] shorten the section on prophecies
+  + [x] move it to a later section of the paper
 
 - [ ] vertex
   + [ ] move it to an appendix, OR
