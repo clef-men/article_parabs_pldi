@@ -55,6 +55,11 @@ users would prefer the higher-level interface of the
   worker domains, which can help when deciding how to split work in an
   appropriate number of asynchronous tasks.
 
+  \Xgabriel{As I was writing this I wondered whether we really want to
+    expose \ocamlinline{size} in the paper. Could we drop it from the
+    API, from the specification, and as an argument of the
+    $\mathsf{inv}$ predicate in the spec?}
+
 \item[\ocamlinline{val async : context -> unit task -> unit}] schedules
   a given task to be executed asynchronous by a running scheduler.
 
