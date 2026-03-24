@@ -100,16 +100,17 @@ On all schedulers, the performance for larger \c{CUTOFF} values should be good i
 
 \paragraph{\c{fibonacci}.}
 
+As a control, we introduced a \c{taskflow} implementation for this benchmark, which is a C++ version using the \TaskFlow scheduler. We expect \c{taskflow} to be faster due to a more optimized, industrial implementation and a more aggressively optimizing compiler (\texttt{clang++ -O3}).
+
 In the per-cutoff results (logarithmic scale), we see that all schedulers start to behave badly when the \c{CUTOFF} becomes small enough, with exponentially-decreasing performance after a certain drop point.
-For \Moonpool, performance drops around $\c{CUTOFF} = 20$. The FIFO and work-stealing variants have similar profiles, with work-stealing performing noticeably better.
-For \Parabs and \Domainslib, performance drops around $\c{CUTOFF} = 12$. \Parabs performs noticeably better for small-enough cutoff values.
+For \Moonpool, performance drops around $\c{CUTOFF} = 20$. The FIFO and work-stealing variants have similar profiles, with work-stealing performing noticeably better. We put a timeout at 8 seconds, so the results on small cutoffs are clamped.
+For \Parabs, \Domainslib and \TaskFlow, performance drops around $\c{CUTOFF} = 15$. \Parabs performs noticeably better than \Domainslib for small-enough cutoff values, and \TaskFlow is even better: for $\c{CUTOFF} = 12$, \Taskflow is 51\% faster than \Parabs which is in turn 22\% faster than \Domainslib.
 In fact, even for the sequential scheduler we observe a small performance drop: the task-using version creates closures and performs indirect calls, so it is noticeably slower (by a constant factor) than the version used below the sequential cutoff.
 
 Note: we observe very large memory usage with \Moonpool at smaller cutoff values --- when computing $\l{fibonacci}\ 40$, attempting to run the benchmark with $\c{CUTOFF} = 5$ fails with out-of-memory errors on a machine with 32Gio of RAM.
 This seems to come from the FIFO architecture which runs the oldest and thus biggest task first, and thus stores an exponential number of smaller tasks in the queue.
 
-Per-domain results (linear scale): we studied per-domain performance on a $\c{CUTOFF}=25$ point where all implementations behave well. For this value we see that \c{parabs} and \c{domainslib} perform similarly, and both \c{moonpool} implementations are measurably slower.
-Performance becomes very close for larger number of domains ($\c{DOMAINS} \geq 7$).
+Per-domain results (linear scale): we studied per-domain performance on a $\c{CUTOFF}=25$ point where all implementations behave well. For this value we see relatively few performance difference between OCaml implementations, especially for larger number of domains ($\c{DOMAINS} \geq 7$). For example for 4 domains, \Taskflow is 32\% faster than \Parabs, which is 6\% faster than \Domainslib, which is 4\% faster than \Moonpool.
 
 \paragraph{\c{for\_irregular}.}
 

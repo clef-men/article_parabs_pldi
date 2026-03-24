@@ -15,8 +15,8 @@
   + [0] document the API of Vertex (in appendix)
   + [~] document the API of Algo iterators
 
-- [ ] benchmarks
-  + [ ] tweak Fibonacci benchmarks and include Taskflow baseline
+- [x] benchmarks
+  + [x] tweak Fibonacci benchmarks and include Taskflow baseline
 
 - [ ] writing clarifications
   + [ ] "reason about termination" => completion
