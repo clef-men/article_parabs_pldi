@@ -1,4 +1,21 @@
 \section{Parallel iterators}
 \label{sec:parabs_algorithms}
 
-On top of \ocamlinline{Future}, we  implemented and verified standard parallel iterators~\refLibTheoriesFile{zoo_parabs/algo} that are particularly useful for benchmarks (see \cref{sec:benchmarks}): \c{for\_}, \c{for\_each}, \c{fold} and \c{find}.
+On top of \ocamlinline{Future}, we  implemented and verified standard parallel iterators~\refLibTheoriesFile{zoo_parabs/algo} that are particularly useful for benchmarks (see \cref{sec:benchmarks}): \c{for\_}, \c{for\_each}, \c{fold} and \c{find}. For reasons of space we do not detail all of them, but for example \ocamlinline{Algo.for_} has the following type
+\begin{ocamlcode}
+val for_ :
+  Pool.context ->
+  int (* begin index (included) *) ->
+  int (* end index (excluded) *) ->
+  int option (* recommended sequential cutoff size *) ->
+  (int -> int -> unit) Pool.task -> unit
+\end{ocamlcode}
+%
+and could be used as follows:
+\begin{ocamlcode}
+let double_array ctx t =
+  Algo.for_ ctx 0 (Array.length t) None (fun _ctx begin_ end_ ->
+    for i = begin_ to end_ - 1 do
+      t.(i) <- 2 * t.(i)
+    done)
+\end{ocamlcode}
