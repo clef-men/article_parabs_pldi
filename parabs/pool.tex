@@ -15,6 +15,7 @@ Also, this makes it difficult to implement a \c{yield} operation%
 , \ie an operation that yields control to the scheduler, letting it reschedule the current task later.
 
 \subsection{Interface}
+\label{sec:parabs_pool_intf}
 
 The \OCaml interface of the \ocamlinline{Pool} module is as follows~\refLib{zoo_parabs/pool.mli}:
 \begin{description}
@@ -84,7 +85,8 @@ let () =
 \end{ocamlcode}
 
 The \ocamlinline{fibo} itself could be defined from the low-level
-interface directly as follows:
+interface directly as follows (assume \ocamlinline{fibo_seq} is
+a sequential definition of the fibonacci function):
 \begin{ocamlcode}
 let rec fibo ctx n =
   if n <= sequential_cutoff then fibo_seq n
