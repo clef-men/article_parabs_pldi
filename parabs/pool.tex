@@ -14,6 +14,87 @@ Also, this makes it difficult to implement a \c{yield} operation%
 }%
 , \ie an operation that yields control to the scheduler, letting it reschedule the current task later.
 
+\subsection{Interface}
+
+The \OCaml interface of the \ocamlinline{Pool} module is as follows~\refLib{zoo_parabs/pool.mli}:
+\begin{description}
+\item[\ocamlinline{type t}] represents a scheduler that owns a pool of
+  $n$ worker domains and a queue of tasks to compute. One domain owns
+  the scheduler and sends a toplevel task, so in total $n + 1$ domains
+  participate to computation.
+
+\item[\ocamlinline{type context}] represents the runtime execution
+  state of a running scheduler. All asynchronous functions take
+  a \ocamlinline{context} parameter, which is passed to asynchronous
+  operations.
+
+\item[\ocamlinline{type 'a task = context -> 'a}]
+\end{description}
+
+The following functions are the high-level part of the module,
+needed to create a scheduler and run a toplevel task.
+\begin{description}
+\item[\ocamlinline{val create : int -> t}] creates a scheduler with
+  the given number of worker domains.
+
+\item[\ocamlinline{val run : t -> 'a task -> 'a}] runs a toplevel task
+  on a scheduler. Subtasks will run on the caller domain and on the
+  worker domains. The call returns when the toplevel task is finished.
+
+\item[\ocamlinline{val kill : t -> unit}] stops a scheduler,
+  terminating workers when they become idle. This should be called
+  once you know that the toplevel task is finished.
+\end{description}
+
+The following low-level functions are typically not used directly, as
+users would prefer the higher-level interface of the
+\ocamlinline{Future} (\cref{sec:parabs_future}) or \ocamlinline{Algo}
+(\cref{sec:parabs_algorithms}) modules to define asynchronous tasks.
+\begin{description}
+\item[\ocamlinline{val size : context -> int}] returns the number of
+  worker domains, which can help when deciding how to split work in an
+  appropriate number of asynchronous tasks.
+
+\item[\ocamlinline{val async : context -> unit task -> unit}] schedules
+  a given task to be executed asynchronous by a running scheduler.
+
+\item[\ocamlinline{val wait_until : context -> (unit -> bool) -> unit}]
+  waits until the prodivded predicate returns \ocamlinline{true},
+  executing other tasks in the meantime.
+\end{description}
+
+For example, suppose we have a
+%
+\ocamlinline{fibo : Pool.context -> int -> int}
+%
+function that computes fibonacci numbers naively but in parallel. Then
+the following main expression will compute and print the $40$-th
+fibonacci number.
+\begin{ocamlcode}
+let () =
+  let pool = Pool.create (Domain.recommended_domain_count () - 1) in
+  let fib40 = Pool.run pool (fun ctx -> fibo ctx 40) in
+  Pool.kill pool;
+  Printf.printf "fib 40 = %d\n%!" fib40
+\end{ocamlcode}
+
+The \ocamlinline{fibo} itself could be defined from the low-level
+interface directly as follows:
+\begin{ocamlcode}
+let rec fibo ctx n =
+  if n <= sequential_cutoff then fibo_seq n
+  else
+    let a = Atomic.make None in
+    Pool.async ctx (fun ctx -> Atomic.set a (Some (fibo ctx (n - 1))));
+    let b = fibo ctx (n - 2) in
+    Pool.wait_until ctx (fun () -> Option.is_some (Atomic.get a));
+    Option.get (Atomic.get a) + b
+\end{ocamlcode}
+Because \ocamlinline{Pool.async} does not help waiting on a result, we
+use an atomic reference to store the result and wait on it. This
+pattern is wrapped in an \ocamlinline{Ivar} module from the Zoo standard
+library, but it is even better to use \ocamlinline{Future} directly.
+
 \subsection{Specification}
 \label{sec:parabs_pool_spec}
 
