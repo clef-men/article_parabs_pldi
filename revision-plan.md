@@ -3,17 +3,17 @@
   + [x] move it to a later section of the paper
 
 - [x] vertex
-  + [ ] move it to an appendix, OR
+  + [0] move it to an appendix, OR
   + [x] remove it from the paper
   
-- [ ] API documentation
-  + [ ] document the API of Ws_deque
-  + [ ] document the API of Pool
-  + [ ] document the API of Future
+- [x] API documentation
+  + [x] document the API of Ws_deque
+  + [x] document the API of Pool
+  + [x] document the API of Future
     (in particular: no direct way to force a Future.iter)
     (note: consider renaming 'kill' which gives the wrong intuition; 'drain'?)
-  + [ ] document the API of Vertex (in appendix)
-  + [ ] document the API of Algo iterators
+  + [0] document the API of Vertex (in appendix)
+  + [~] document the API of Algo iterators
 
 - [ ] benchmarks
   + [ ] tweak Fibonacci benchmarks and include Taskflow baseline
