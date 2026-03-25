@@ -21,7 +21,7 @@
   + [ ] fibonacci (using Futures)
 
 - [ ] writing clarifications
-  + [ ] "reason about termination" => completion
+  + [x] "reason about termination" => completion
   + [ ] "liveness": reformulate/clarify
   + [x] include code- and proof-line estimates in the paper
   + [ ] discuss persistent vs. non-persistent outputs for Pool and Future
