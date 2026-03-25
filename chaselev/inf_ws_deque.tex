@@ -21,7 +21,6 @@ The only public operation is \c{steal} (\refTirName{steal-spec}), which does not
 
 Note that the public postconditions of the private operations are quite verbose.
 This is due to the fact that \owner is passed to the operation and therefore cannot be combined with \model through \refTirName{owner-model} to get information about the content of the deque; instead, we provide such information in the public postcondition.
-We need this expressivity in practice to verify a wrapper~\refLibTheoriesFile{zoo_saturn/inf_ws_deque_2} with better liveness properties.
 
 \subsubsection{Weak specification.}
 
