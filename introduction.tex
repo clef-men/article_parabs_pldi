@@ -36,7 +36,7 @@ Our contributions include:
 \begin{enumerate}
   \item
     A new mechanized verification of the Chase-Lev work-stealing queue~\citep{DBLP:conf/spaa/ChaseL05}, with finer-grained invariants than had previously appeared in the literature.
-    In particular, our invariant lets us reason about the failure case of the \c{pop} operation, which was missing from earlier formalizations and is essential to prove termination of the work-stealing scheduler when all task queues are exhausted.
+    In particular, our invariant lets us reason about the failure case of the \c{pop} operation, which was missing from earlier formalizations and is essential to prove completion of the work-stealing scheduler when all task queues are exhausted.
   \item
     A fully verified implementation of a parallel scheduler in \OCamlFive, \Parabs, which provides a verified alternative to the state-of-the-art \Domainslib library.
     To the best of our knowledge, this is the first verified implementation of a parallel work-stealing task scheduler (for any language) using realistic implementation techniques.

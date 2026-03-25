@@ -10,7 +10,7 @@ See also the master thesis of \citet{DBLP:journals/corr/abs-2309-03642}.
 were the first to achieve foundational verification of the Chase-Lev work-stealing deque, including safe memory reclamation schemes.
 Before, \citet{DBLP:conf/ppopp/LePCN13} presented a pen-and-paper proof of the correctness of an ARM implementation and \citet{DBLP:journals/computing/MutluergilT19} verified an idealized implementation based on an infinite array using \CIVL~\citep{DBLP:conf/fmcad/KraglQ21}.
 
-As explained in \cref{sec:chaselev}, however, \citet{DBLP:journals/pacmpl/JungLCKPK23} only verify a weak specification, too weak to prove the termination of our scheduler.
+As explained in \cref{sec:chaselev}, however, \citet{DBLP:journals/pacmpl/JungLCKPK23} only verify a weak specification, too weak to prove the completion of our scheduler.
 We verify a strong specification but, contrary to \citet{DBLP:conf/ppopp/LePCN13}, we rely on a sequentially consistent memory model; extending our work to relaxed memory is left for future work (see \cref{sec:future_work}).
 
 \paragraph{Parallel scheduler}
