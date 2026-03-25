@@ -29,12 +29,11 @@ The OCaml interface of the \ocamlinline{Future} module is as follows~\refLib{zoo
 
 \item[\ocamlinline{val iter : Pool.context -> 'a t -> ('a -> unit)
     Pool.task -> unit}] schedules a unit-returning task to run after
-  the result of the given future is available, and returns
-  immediately.
+  the result of a future is available, and returns immediately.
 
 \item[\ocamlinline{val map : Pool.context -> 'a t -> ('a -> 'b)
     Pool.task -> 'b t}] schedules a task to run after the result of
-  the given future is available, and returns a future for its result.
+  a future is available, and returns a future for its result.
 \end{description}
 
 \paragraph{Example}
