@@ -1,8 +1,8 @@
 \begin{figure}
 \begin{mathparpagebreakable}
-    \iPersistent{(\inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour)}
+    \iPersistent{(\inv\ \v{pool}\ t\ \iPredTwo\ \iPredFour)}
   \and
-    \iPersistent{(\obligation\ \v{pool}\ \v{depth}\ \iProp)}
+    \iPersistent{(\obligation\ \v{pool}\ \iProp)}
   \and
     \iPersistent{(\result\ t\ \zooVal)}
   \\
@@ -15,7 +15,7 @@
     }
   \and
     \infer[inv-result]{
-        \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
+        \inv\ \v{pool}\ t\ \iPredTwo\ \iPredFour
       \\\\
         \result\ t\ \zooVal
     }{
@@ -24,19 +24,19 @@
     }
   \and
     \infer[inv-finished]{
-        \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
+        \inv\ \v{pool}\ t\ \iPredTwo\ \iPredFour
       \\\\
         \l{pool.finished}\ \v{pool}
     }{
-      \iLater[2 \cdot \v{depth} + 1]
+      \iBiglater
       \Exists \zooVal.
       \result\ t\ \zooVal
     }
   \and
     \infer[consumer-divide]{
-        \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
+        \inv\ \v{pool}\ t\ \iPredTwo\ \iPredFour
       \\\\
-        \consumer\ t\ \left( \iBigSep_{\iPredThree \in \iPredThree{}s}
+        \consumer\ t\ \left( \Lambda \zooVal. \iBigSep_{\iPredThree \in \iPredThree{}s}
           \iPredThree\ \zooVal \right)
     }{
       \iFupd
@@ -45,7 +45,7 @@
     }
   \and
     \infer[inv-result-consumer]{
-        \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
+        \inv\ \v{pool}\ t\ \iPredTwo\ \iPredFour
       \\\\
         \result\ t\ \zooVal
       \\\\
@@ -56,11 +56,11 @@
     }
   \and
     \infer[obligation-finished]{
-        \obligation\ \v{pool}\ \v{depth}\ \iProp
+        \obligation\ \v{pool}\ \iProp
       \\\\
         \l{pool.finished}\ \v{pool}
     }{
-      \iLater[2 \cdot \v{depth} + 2]
+      \iBiglater
       \iPersistently \iProp
     }
   \\
@@ -87,7 +87,7 @@
       t
     ]{
       \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
-      \inv\ \v{pool}\ t\ 0\ \iPredTwo\ \iPredFour \iSep \\
+      \inv\ \v{pool}\ t\ \iPredTwo\ \iPredFour \iSep \\
       \consumer\ t\ \iPredTwo
     }
   \and
@@ -95,7 +95,7 @@
       lab=wait-spec
     ]{
       \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
-      \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour
+      \inv\ \v{pool}\ t\ \iPredTwo\ \iPredFour
     }{
       \c{wait}\ \v{ctx}\ t
     }[
@@ -110,7 +110,7 @@
       lab=iter-spec
     ]{
       \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
-      \inv\ \v{pool}\ t\ \v{depth}\ \iPredTwo\ \iPredFour \iSep \\
+      \inv\ \v{pool}\ t\ \iPredTwo\ \iPredFour \iSep \\
       \begin{inboxIndent}
         \Forall \v{ctx}\ \v{scope}\ \zooVal. \\
         \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iWand \\
@@ -130,14 +130,14 @@
       \c{()}
     ]{
       \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
-      \obligation\ \v{pool}\ \v{depth}\ \iProp
+      \obligation\ \v{pool}\ \iProp
     }
   \and
     \iSpec[
       lab=map-spec
     ]{
       \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
-      \inv\ \v{pool}\ t_1\ \v{depth}\ \iPredTwo_1\ \iPredFour_1 \iSep \\
+      \inv\ \v{pool}\ t_1\ \iPredTwo_1\ \iPredFour_1 \iSep \\
       \begin{inboxIndent}
         \Forall \v{ctx}\ \v{scope}\ \zooVal_1. \\
         \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iWand \\
@@ -158,7 +158,7 @@
       t_2
     ]{
       \l{pool.context}\ \v{pool}\ \v{ctx}\ \v{scope} \iSep \\
-      \inv\ \v{pool}\ t_2\ (\v{depth} + 1)\ \iPredTwo_2\ \iPredFour_2 \iSep \\
+      \inv\ \v{pool}\ t_2\ \iPredTwo_2\ \iPredFour_2 \iSep \\
       \consumer\ t_2\ \iPredTwo_2
     }
 \end{mathparpagebreakable}
