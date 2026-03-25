@@ -20,7 +20,7 @@ Multiple thieves may concurrently attempt to steal tasks from a single deque.
 
 The fact that \ocamlinline{steal} works on the opposite end from \ocamlinline{push/pop} has two purposes. First, the owner domain and a thief more rarely race on the same task. Second, the owner domain pops tasks and pushes smaller sub-tasks, so tasks are typically smaller at the back: the owner pops small tasks that it pushed recently, good for locality, while thieves steal larger tasks, making steals rarer.
 
-\paragraph{Deque implementations.}
+\paragraph{Implementations.}
 
 The most popular work-stealing deque algorithm is the Chase-Lev deque~\citep{DBLP:conf/spaa/ChaseL05,DBLP:conf/ppopp/LePCN13}; it is lock-free and unbounded.
 We verified the implementation from the \Saturn library~\citep{saturn}~\refLibTheoriesFile{zoo_saturn/ws_deque_1} along with two other variants: a bounded variant~\refLibTheoriesFile{zoo_saturn/ws_bdeque_1}, used in the \Moonpool~\citep{moonpool} and \Taskflow~\citep{DBLP:journals/tpds/HuangLLL22} libraries, and an idealized infinite-array-based variant~\refLibTheoriesFile{zoo_saturn/inf_ws_deque_1}.
