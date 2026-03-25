@@ -15,15 +15,15 @@ Also, this makes it difficult to implement a \c{yield} operation%
 , \ie an operation that yields control to the scheduler, letting it reschedule the current task later.
 
 \subsection{Interface}
-\label{sec:parabs_pool_intf}
+\label{sec:parabs_pool_interface}
 
 The \OCaml interface of the \ocamlinline{Pool} module is as follows~\refLib{zoo_parabs/pool.mli}:
 
 \begin{description}
 \item[\ocamlinline{type t}] represents a scheduler that owns a pool of
-  $n$ worker domains and a queue of tasks to compute. One domain owns
-  the scheduler and sends a toplevel task, so in total $n + 1$ domains
-  participate to computation.
+  $n$ worker domains and a set of tasks to compute. One domain owns
+  the scheduler and can send toplevel tasks, so in total $n + 1$ domains
+  participate to the computation.
 
 \item[\ocamlinline{type context}] represents the runtime execution
   state of a running scheduler. All asynchronous functions take
@@ -41,7 +41,7 @@ needed to create a scheduler and run a toplevel task.
   the given number of worker domains.
 
 \item[\ocamlinline{val run : t -> 'a task -> 'a}] runs a toplevel task
-  on a scheduler. Subtasks will run on the caller domain and on the
+  on a scheduler. Subtasks will run on the caller domain or on the
   worker domains. The call returns when the toplevel task is finished.
 
 \item[\ocamlinline{val kill : t -> unit}] stops a scheduler,
@@ -60,14 +60,16 @@ users would prefer the higher-level interface of the
   appropriate number of asynchronous tasks.
 
 \item[\ocamlinline{val async : context -> unit task -> unit}] schedules
-  a given task to be executed asynchronous by a running scheduler.
+  a given task to be executed asynchronously by a running scheduler.
 
 \item[\ocamlinline{val wait_until : context -> (unit -> bool) -> unit}]
-  waits until the prodivded predicate returns \ocamlinline{true},
+  waits until the provided predicate returns \ocamlinline{true},
   executing other tasks in the meantime.
 \end{description}
 
-\paragraph{Example}
+\subsection{Example}
+\label{sec:parabs_pool_example}
+
 Suppose we have a
 %
 \ocamlinline{fibo : Pool.context -> int -> int}
