@@ -55,13 +55,7 @@ let rec fibo ctx n =
 
 \input{parabs/figures/future_spec}
 
-The specification is given in \cref{fig:parabs_future_spec}%
-\footnote{
-For technical reasons, reasoning about futures in \Iris involves the \emph{later modality} ($\iLater \iProp$)~\citep{DBLP:journals/jfp/JungKJBBD18}, the \emph{big later modality} ($\iBiglater \iProp$) and \emph{later credits} ($\iCredit{n}$)~\citep{DBLP:journals/pacmpl/SpiesGTJKBD22}.
-They can be safely ignored at first reading.
-Similarly to the later modality, the big later modality can be eliminated in one step of computation.
-}%
-.
+The specification is given in \cref{fig:parabs_future_spec}.
 It features four predicates: \inv, \result, \consumer and \obligation.
 
 \c{async} allows submitting a task asynchronously while executing under a context (\refTirName{sync-spec}), returning a \emph{future} representing the result of the task.

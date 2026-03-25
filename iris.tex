@@ -106,3 +106,9 @@ Quantifiers $\seq{x}$ represent the \emph{demonic nature} of $\iProp_\v{pub}$: t
 Quantifiers $\seq{y}$ represent the \emph{angelic nature} of \iPropTwo: at the linearization point, the operation can choose how to instantiate the new state \iPropTwo.
 
 In sum, the atomic specification says: if the private precondition $\iProp_\v{priv}$ holds, we can safely execute $\zooExpr$ and, if the execution terminates, (1) the returned value satisfies the private postcondition \iPred and (2) at some point during the execution, the state was atomically updated from $\iProp_\v{pub}$ to \iPropTwo.
+
+\paragraph{Later modalities}
+
+For technical reasons, \Iris specifications sometimes involve the \emph{later modality} ($\iLater \iProp$)~\citep{DBLP:journals/jfp/JungKJBBD18}, the \emph{big later modality} ($\iBiglater \iProp$) and \emph{later credits} ($\iCredit{n}$)~\citep{DBLP:journals/pacmpl/SpiesGTJKBD22}.
+They can be safely ignored at first reading.
+Both the later and the big later modalities can be eliminated in one step of computation.
