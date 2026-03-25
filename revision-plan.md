@@ -22,6 +22,7 @@
   + [ ] clarify that we verified some simple clients
   + [x] include code- and proof-line estimates in the paper
   + [ ] discuss persistent vs. non-persistent outputs for Pool and Future
+    note: we added 'consumer' to Pool as well for consistency
   + [x] use the improved specification without the 2.depth+1 laters
   + [ ] consider saying more about 'wait' using the callstack
 
