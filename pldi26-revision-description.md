@@ -18,7 +18,7 @@ Here are the main structural changes:
 
   The goal is that an OCaml programmer should get a sense of how to use these modules from this description (and the examples). We hope that this will also help when attacking the specifications -- some of the questions you had, for example on Pool.iter, we try to pre-emptively address in the API documentation.
   
-- We changed the Fibonacci benchmarks to provide a C++ version using Taskflow as a control. (We had to widen the range of cutoffs to make the discussion interesting, which required adding timeouts because Moonpool became too slow, and in the process we reported and diagnosed an implementation bug in Moonpool.)
+- We changed the Fibonacci benchmarks to provide a C++ version using Taskflow as a control -- see the figure page 26 and discussion page 25. (We had to widen the range of cutoffs to make the discussion interesting, which required adding timeouts because Moonpool became too slow, and in the process we reported and diagnosed an implementation bug in Moonpool.)
 
 Our hope is that the final version will have the same general shape as the current intermediate version. In particular, any feedback you would have on some of the changes listed above is warmly welcome.
 
