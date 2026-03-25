@@ -5,7 +5,7 @@
 - [x] vertex
   + [0] move it to an appendix, OR
   + [x] remove it from the paper
-  
+
 - [x] API documentation
   + [x] document the API of Ws_deque
   + [x] document the API of Pool
@@ -22,7 +22,7 @@
   + [ ] clarify that we verified some simple clients
   + [x] include code- and proof-line estimates in the paper
   + [ ] discuss persistent vs. non-persistent outputs for Pool and Future
-  + [ ] use the improved specification without the 2.depth+1 laters
+  + [x] use the improved specification without the 2.depth+1 laters
   + [ ] consider saying more about 'wait' using the callstack
 
 - [ ] go over reviews to check for remaining comments
