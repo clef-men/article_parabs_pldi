@@ -32,9 +32,8 @@ In particular, although they do not behave exactly the same way, the original an
 
 The three \ocamlinline{deque} implementations we describe below share the same programming interface \refLib{zoo_saturn/ws_deque_2.mli}.
 
-\ocamlinline{create} returns a new queue:
 \begin{description}
-\item[\ocamlinline{val create : unit -> 'a t}]
+\item[\ocamlinline{val create : unit -> 'a t}] returns a new queue
 \end{description}
 
 ``Private'' operations may only be called by the domain owning the deque:
