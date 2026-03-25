@@ -16,10 +16,13 @@
 - [x] benchmarks
   + [x] tweak Fibonacci benchmarks and include Taskflow baseline
 
+- [ ] verified examples
+  + [ ] counter (using Pool)
+  + [ ] fibonacci (using Futures)
+
 - [ ] writing clarifications
   + [ ] "reason about termination" => completion
   + [ ] "liveness": reformulate/clarify
-  + [ ] clarify that we verified some simple clients
   + [x] include code- and proof-line estimates in the paper
   + [ ] discuss persistent vs. non-persistent outputs for Pool and Future
     note: we added 'consumer' to Pool as well for consistency
