@@ -17,7 +17,7 @@ Also, this makes it difficult to implement a \c{yield} operation%
 \subsection{Interface}
 \label{sec:parabs_pool_intf}
 
-The \OCaml interface of the \ocamlinline{Pool} module is as follows~\refLib{zoo_parabs/pool.mli}.\\
+The \OCaml interface of the \ocamlinline{Pool} module is as follows~\refLib{zoo_parabs/pool.mli}:
 
 \begin{description}
 \item[\ocamlinline{type t}] represents a scheduler that owns a pool of
@@ -96,10 +96,11 @@ let rec fibo ctx n =
     Pool.wait_until ctx (fun () -> Option.is_some (Atomic.get a));
     Option.get (Atomic.get a) + b
 \end{ocamlcode}
-Because \ocamlinline{Pool.async} does not help waiting on a result, we
-use an atomic reference to store the result and wait on it. This
-pattern is wrapped in an \ocamlinline{Ivar} module from the Zoo standard
-library, but it is even better to use \ocamlinline{Future} directly.
+Because \ocamlinline{Pool.async} does not wait on a result, we use an
+atomic reference to store the result and wait on it. This pattern is
+wrapped in an \ocamlinline{Ivar} module we contributed to the Zoo
+standard library, but it is even better to use \ocamlinline{Future}
+directly.
 
 \subsection{Specification}
 \label{sec:parabs_pool_spec}
