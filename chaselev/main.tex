@@ -36,7 +36,7 @@ The three \ocamlinline{deque} implementations we describe below share the same p
 \item[\ocamlinline{val create : unit -> 'a t}] returns a new queue
 \end{description}
 
-``Private'' operations may only be called by the domain owning the deque:
+\noindent ``Private'' operations may only be called by the domain owning the deque:
 \begin{description}
 \item[\ocamlinline{val size : 'a t -> int}] returns the number of elements on the deques.
 
@@ -47,7 +47,7 @@ The three \ocamlinline{deque} implementations we describe below share the same p
 \item[\ocamlinline{val pop : 'a t -> 'a option}] pops an element from the the ``back'' of the queue.
 \end{description}
 
-Finally \ocamlinline{steal} is ``public'', it may be called by any domain:
+\noindent Finally \ocamlinline{steal} is ``public'', it may be called by any domain:
 \begin{description}
 \item[\ocamlinline{val steal : 'a t -> 'a option}] attempts to steal
   an element from the ``front'' of the queue.
