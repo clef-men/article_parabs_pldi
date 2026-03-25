@@ -134,6 +134,9 @@ The persistent assertion $\obligation\ t\ \iProp$ represents a proof obligation 
 It allows retrieving \iProp once $t$ has finished executing (\refTirName{obligation-finished}).
 Obligations are obtained by submitting tasks through \c{async} (\refTirName{async-spec}).
 
+The assertion $\consumer\ t\ \iProp$ represents the right to consume \iProp once pool $t$ has finished executing (\refTirName{consumer-finished}).
+Similarly to obligations, it can be obtained through \c{async} (\refTirName{async-spec}).
+
 \end{tirPrefix}
 
 \subsection{Implementation}
