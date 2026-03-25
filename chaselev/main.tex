@@ -28,30 +28,7 @@ We verified the implementation from the \Saturn library~\citep{saturn}~\refLibTh
 Remarkably, the three variants essentially share the same logical states.
 In particular, although they do not behave exactly the same way, the original and the idealized versions follow a similar concurrent protocol, involving external and future-dependent linearization.
 
-\subsection{Interface}
-
-The three \ocamlinline{deque} implementations we describe below share the same programming interface \refLib{zoo_saturn/ws_deque_2.mli}.
-
-\begin{description}
-\item[\ocamlinline{val create : unit -> 'a t}] returns a new queue
-\end{description}
-
-\noindent ``Private'' operations may only be called by the domain owning the deque:
-\begin{description}
-\item[\ocamlinline{val size : 'a t -> int}] returns the number of elements on the deques.
-
-\item[\ocamlinline{val is_empty : 'a t -> bool}] checks if the queue is empty.
-
-\item[\ocamlinline{val push : 'a t -> 'a -> unit}] pushes an element to the ``back'' the queue.
-
-\item[\ocamlinline{val pop : 'a t -> 'a option}] pops an element from the the ``back'' of the queue.
-\end{description}
-
-\noindent Finally \ocamlinline{steal} is ``public'', it may be called by any domain:
-\begin{description}
-\item[\ocamlinline{val steal : 'a t -> 'a option}] attempts to steal
-  an element from the ``front'' of the queue.
-\end{description}
+\input{chaselev/ws_intf}
 
 \input{chaselev/inf_ws_deque}
 
