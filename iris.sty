@@ -221,16 +221,22 @@
 }
 
 \NewDocumentCommand\iTriple{m m o m}{%
-  \left\{ \,%
-  #1%
-  \, \right\} \,%
-  #2%
-  \, \left\{ \,%
-  \IfValueT{#3}{%
-    \Return #3.%
+  \curlyBrackets{%
+    \,%
+    #1%
+    \,%
   }%
-  #4%
-  \, \right\}%
+  \,%
+  #2%
+  \,%
+  \curlyBrackets{%
+    \,%
+    \IfValueT{#3}{%
+      \Return #3.%
+    }%
+    #4%
+    \,%
+  }%
 }
 
 \NewDocumentCommand\iWp{O{} m o m}{%
@@ -241,20 +247,23 @@
   \ifx\iArgs@tid\empty \else%
     \@iSeparator \iArgs@tid%
   \fi%
-  \, \left\{ \,%
-  \IfValueTF{#3}{%
-    \begin{array}{@{}l@{\ }l@{}}
-      \Return #3. &
-      \begin{array}[t]{@{}l@{}}
+  \,%
+  \curlyBrackets{%
+    \,%
+    \IfValueTF{#3}{%
+      \begin{array}{@{}l@{\ }l@{}}
+        \Return #3. &
+        \begin{array}[t]{@{}l@{}}
+          #4
+        \end{array}
+      \end{array}%
+    }{%
+      \begin{array}{@{}l@{}}
         #4
-      \end{array}
-    \end{array}%
-  }{%
-    \begin{array}{@{}l@{}}
-      #4
-    \end{array}%
+      \end{array}%
+    }%
+    \,%
   }%
-  \, \right\}%
 }
 
 \NewDocumentCommand\iWpVertical{O{} m o m}{%
@@ -267,28 +276,32 @@
         \@iSeparator \iArgs@tid%
       \fi%
     \\%
-      \left\{ \,%
-      \IfValueTF{#3}{%
-        \begin{array}{@{}l@{\ }l@{}}
-          \Return #3. &
-          \begin{array}[t]{@{}l@{}}
+      \curlyBrackets{%
+        \,%
+        \IfValueTF{#3}{%
+          \begin{array}{@{}l@{\ }l@{}}
+            \Return #3. &
+            \begin{array}[t]{@{}l@{}}
+              #4
+            \end{array}
+          \end{array}%
+        }{%
+          \begin{array}{@{}l@{}}
             #4
-          \end{array}
-        \end{array}%
-      }{%
-        \begin{array}{@{}l@{}}
-          #4
-        \end{array}%
+          \end{array}%
+        }%
+        \,%
       }%
-      \, \right\}%
   \end{inbox}%
 }
 
 \newcommand{\@iSpec}[6]{%
   \begin{array}{@{}c@{}}
-      \begin{array}{l}
-        #1
-      \end{array}
+      \curlyBrackets{
+        \begin{array}{l}
+          #1
+        \end{array}
+      }
     \\ \hline
       #2%
       \ifx#3\empty \else%
@@ -298,17 +311,19 @@
         \@iSeparator #4%
       \fi%
     \\ \hline
-      \IfValueTF{#5}{
-        \begin{array}{l@{\ }l}
-          \Return #5. &
-          \begin{array}[t]{@{}l@{}}
+      \curlyBrackets{
+        \IfValueTF{#5}{
+          \begin{array}{l@{\ }l}
+            \Return #5. &
+            \begin{array}[t]{@{}l@{}}
+              #6
+            \end{array}
+          \end{array}
+        }{
+          \begin{array}{l}
             #6
           \end{array}
-        \end{array}
-      }{
-        \begin{array}{l}
-          #6
-        \end{array}
+        }
       }
   \end{array}%
 }
@@ -325,7 +340,8 @@
 
 \NewDocumentCommand\iAu{D<>{} o m o m m}{%
   \@iArgs{#1}%
-  \left\langle \,%
+  \left\langle%
+  \,%
   \IfValueT{#2}{%
     \Return #2.%
   }%
@@ -337,53 +353,70 @@
   #5%
   \iWandFupd%
   #6%
-  \, \right\rangle_{\iArgs@mask}%
+  \,%
+  \right\rangle_{\iArgs@mask}%
 }
 
 \NewDocumentCommand\iAtriple{O{} m o m m o m o m}{%
   \@iArgs{#1}%
-  \left\{ \,%
-  #2%
-  \, \right\} \left\langle \,%
-  \IfValueT{#3}{%
-    \Return #3.%
+  \curlyBrackets{%
+    \,%
+    #2%
+    \,%
   }%
-  #4%
-  \, \right\rangle \,%
+  \angleBrackets{%
+    \,%
+    \IfValueT{#3}{%
+      \Return #3.%
+    }%
+    #4%
+    \,%
+  }%
+  \,%
   #5%
   \ifx\iArgs@mask\empty \else%
     \@iSeparator \iArgs@mask%
   \fi%
-  \, \left\langle \,%
-  \IfValueT{#6}{%
-    \Return #6.%
+  \,%
+  \angleBrackets{%
+    \,%
+    \IfValueT{#6}{%
+      \Return #6.%
+    }%
+    #7%
+    \,%
   }%
-  #7%
-  \, \right\rangle \left\{ \,%
-  \IfValueT{#8}{%
-    \Return #8.%
+  \curlyBrackets{%
+    \,%
+    \IfValueT{#8}{%
+      \Return #8.%
+    }%
+    #9%
+    \,%
   }%
-  #9%
-  \, \right\}%
 }
 
 \newcommand{\@iAspec}[9]{%
   \begin{array}{@{}c@{}}
-      \begin{array}{l}
-        #1
-      \end{array}
+      \curlyBrackets{
+        \begin{array}{l}
+          #1
+        \end{array}
+      }
     \\ \hdashline
-      \IfValueTF{#2}{
-        \begin{array}{l@{\ }l}
-          \Return #2. &
-          \begin{array}[t]{@{}l@{}}
+      \angleBrackets{
+        \IfValueTF{#2}{
+          \begin{array}{l@{\ }l}
+            \Return #2. &
+            \begin{array}[t]{@{}l@{}}
+              #3
+            \end{array}
+          \end{array}
+        }{
+          \begin{array}{l}
             #3
           \end{array}
-        \end{array}
-      }{
-        \begin{array}{l}
-          #3
-        \end{array}
+        }
       }
     \\ \hline
       #4%
@@ -391,30 +424,34 @@
         \@iSeparator #5%
       \fi%
     \\ \hline
-      \IfValueTF{#6}{
-        \begin{array}{l@{\ }l}
-          \Return #6. &
-          \begin{array}[t]{@{}l@{}}
+      \angleBrackets{
+        \IfValueTF{#6}{
+          \begin{array}{l@{\ }l}
+            \Return #6. &
+            \begin{array}[t]{@{}l@{}}
+              #7
+            \end{array}
+          \end{array}
+        }{
+          \begin{array}{l}
             #7
           \end{array}
-        \end{array}
-      }{
-        \begin{array}{l}
-          #7
-        \end{array}
+        }
       }
     \\ \hdashline
-      \IfValueTF{#8}{
-        \begin{array}{l@{\ }l}
-          \Return #8. &
-          \begin{array}[t]{@{}l@{}}
+      \curlyBrackets{
+        \IfValueTF{#8}{
+          \begin{array}{l@{\ }l}
+            \Return #8. &
+            \begin{array}[t]{@{}l@{}}
+              #9
+            \end{array}
+          \end{array}
+        }{
+          \begin{array}{l}
             #9
           \end{array}
-        \end{array}
-      }{
-        \begin{array}{l}
-          #9
-        \end{array}
+        }
       }
   \end{array}%
 }

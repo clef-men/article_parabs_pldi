@@ -2,6 +2,8 @@
 
 \RequirePackage{mathtools}
 
+\RequirePackage{scalerel} % \scaleleftright
+
 \RequirePackage{stmaryrd}
 
 \RequirePackage[dvipsnames]{xcolor}
@@ -515,6 +517,16 @@
 }
 \newcommand{\transitionRtc}{%
   \transition^{*}%
+}
+
+%----------------------------------------
+
+\newcommand{\curlyBrackets}[1]{%
+  { \left\{ #1 \right\} }%
+}
+
+\newcommand{\angleBrackets}[1]{%
+  { \scaleleftright[2ex]{\langle}{#1}{\rangle} }%
 }
 
 %----------------------------------------
