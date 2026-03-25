@@ -17,7 +17,8 @@ Also, this makes it difficult to implement a \c{yield} operation%
 \subsection{Interface}
 \label{sec:parabs_pool_intf}
 
-The \OCaml interface of the \ocamlinline{Pool} module is as follows~\refLib{zoo_parabs/pool.mli}:
+The \OCaml interface of the \ocamlinline{Pool} module is as follows~\refLib{zoo_parabs/pool.mli}.\\
+
 \begin{description}
 \item[\ocamlinline{type t}] represents a scheduler that owns a pool of
   $n$ worker domains and a queue of tasks to compute. One domain owns
@@ -32,6 +33,7 @@ The \OCaml interface of the \ocamlinline{Pool} module is as follows~\refLib{zoo_
 \item[\ocamlinline{type 'a task = context -> 'a}]
 \end{description}
 
+\noindent
 The following functions are the high-level part of the module,
 needed to create a scheduler and run a toplevel task.
 \begin{description}
@@ -47,6 +49,7 @@ needed to create a scheduler and run a toplevel task.
   once you know that the toplevel task is finished.
 \end{description}
 
+\noindent
 The following low-level functions are typically not used directly, as
 users would prefer the higher-level interface of the
 \ocamlinline{Future} (\cref{sec:parabs_future}) or \ocamlinline{Algo}
@@ -69,7 +72,8 @@ users would prefer the higher-level interface of the
   executing other tasks in the meantime.
 \end{description}
 
-For example, suppose we have a
+\paragraph{Example}
+Suppose we have a
 %
 \ocamlinline{fibo : Pool.context -> int -> int}
 %

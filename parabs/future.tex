@@ -11,7 +11,8 @@ In fact, the two notions are often used in conjunction to represent the two side
 \subsection{Interface}
 \label{sec:parabs_future_intf}
 
-The OCaml interface of the \ocamlinline{Future} module is as follows~\refLib{zoo_parabs/future.mli}:
+The OCaml interface of the \ocamlinline{Future} module is as follows~\refLib{zoo_parabs/future.mli}. \\
+
 \begin{description}
 \item[\ocamlinline{type 'a t}] represents the future result of an asynchronous task,
   of type \ocamlinline{'a}.
@@ -36,7 +37,8 @@ The OCaml interface of the \ocamlinline{Future} module is as follows~\refLib{zoo
   the given future is available, and returns a future for its result.
 \end{description}
 
-We this module we can write a higher-level version of the
+\paragraph{Example}
+With this module we can write a higher-level version of the
 \ocamlinline{fibo} function from \cref{sec:parabs_pool_intf}:
 \begin{ocamlcode}
 let rec fibo ctx n =
