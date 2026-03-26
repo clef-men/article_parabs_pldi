@@ -33,6 +33,6 @@
   - [G] CertikOS + compare-and-swap
   - [G] others? see the author response
 
-- [G] latexdiff
+- [x] latexdiff
 
 - [ ] go over reviews to check for remaining comments
