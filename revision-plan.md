@@ -27,9 +27,12 @@
   + [ ] discuss persistent vs. non-persistent outputs for Pool and Future
     note: we added 'consumer' to Pool as well for consistency
   + [x] use the improved specification without the 2.depth+1 laters
-  + [ ] consider saying more about 'wait' using the callstack
+  + [G] consider saying more about 'wait' using the callstack
 
 - extra citations from the author response
-  - [ ] CertikOS + compare-and-swap
+  - [G] CertikOS + compare-and-swap
+  - [G] others? see the author response
+
+- [G] latexdiff
 
 - [ ] go over reviews to check for remaining comments
