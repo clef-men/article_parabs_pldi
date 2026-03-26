@@ -160,12 +160,9 @@ Also, the main domain, from which tasks can be submitted externally through \c{r
 
 \paragraph{Awaiting.}
 
-\c{wait\_until} runs a loop similar to that of the worker domains described above; the wait is \emph{active} in the sense that the domain participates in the execution of tasks.
-Consequently, \c{wait\_until} calls can be nested.
-This can be a problem in practice because it increases the call stack size in an arbitrary way, potentially causing stack overflow.
+\c{wait\_until} loops until its predicate holds, but it is \emph{active} (rather than a busy-wait) as it participates in the execution of tasks in the meantime. In other words, for a given worker the tasks that are currently waiting are stored on the call stack, and they will be re-checked in LIFO order after the current task terminates.
 
-Instead, \Domainslib leverages algebraic effects: awaiting a future captures the continuation and stores it into the future; when the future is resolved, it resubmits all the waiting tasks.
-This avoids any stack issue and is probably more efficient, since no polling is necessary.
+Note: It would be nicer to store waiting tasks in a scheduler data structure; instead of a 'pull' design where waiting tasks check the future result regularly, one could 'push' tasks which become ready when the future they depend on is resolved. \Domainslib leverages algebraic effects for this: awaiting a future captures the continuation and stores it into the future; when the future is resolved, it resubmits all the waiting tasks.
 
 \paragraph{Shutdown.}
 
