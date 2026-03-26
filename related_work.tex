@@ -15,8 +15,8 @@ We verify a strong specification but, contrary to \citet{DBLP:conf/ppopp/LePCN13
 
 \paragraph{Parallel scheduler}
 
-To the best of our knowledge, \Parabs is the first realistic scheduler to be verified in \Iris.
-Previous works cover toy implementations, not suitable for real-world usage; in contrast, our implementation is close to state-of-the-art schedulers and offers comparable performance according to our preliminary experiments.
+To our knowledge, \Parabs is the first formally verified realistic work-stealing scheduler.
+The previous works we are aware of cover toy implementations, not suitable for real-world usage; in contrast, our implementation is close to state-of-the-art schedulers and offers comparable performance according to our preliminary experiments.
 
 \Citet{DBLP:journals/pacmpl/VilhenaP21} verify a simple cooperative scheduler based on algebraic effects, as a case study for their \Iris-based program logic.
 This scheduler does not support parallelism; it runs fibers inside a single domain.

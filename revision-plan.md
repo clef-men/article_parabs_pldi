@@ -29,4 +29,7 @@
   + [x] use the improved specification without the 2.depth+1 laters
   + [ ] consider saying more about 'wait' using the callstack
 
+- extra citations from the author response
+  - [ ] CertikOS + compare-and-swap
+
 - [ ] go over reviews to check for remaining comments
