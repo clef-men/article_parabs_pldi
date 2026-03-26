@@ -22,7 +22,7 @@
 
 - [ ] writing clarifications
   + [x] "reason about termination" => completion
-  + [ ] "liveness": reformulate/clarify
+  + [0] "liveness": reformulate/clarify
   + [x] include code- and proof-line estimates in the paper
   + [ ] discuss persistent vs. non-persistent outputs for Pool and Future
     note: we added 'consumer' to Pool as well for consistency
