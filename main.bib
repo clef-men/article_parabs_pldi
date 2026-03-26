@@ -41,6 +41,61 @@
   bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
 
+@inproceedings{10.1145/3192366.3192391,
+author = {Acar, Umut A. and Chargu\'{e}raud, Arthur and Guatto, Adrien and Rainey, Mike and Sieczkowski, Filip},
+title = {Heartbeat scheduling: provable efficiency for nested parallelism},
+year = {2018},
+isbn = {9781450356985},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3192366.3192391},
+doi = {10.1145/3192366.3192391},
+abstract = {A classic problem in parallel computing is to take a high-level parallel program written, for example, in nested-parallel style with fork-join constructs and run it efficiently on a real machine. The problem could be considered solved in theory, but not in practice, because the overheads of creating and managing parallel threads can overwhelm their benefits. Developing efficient parallel codes therefore usually requires extensive tuning and optimizations to reduce parallelism just to a point where the overheads become acceptable.  In this paper, we present a scheduling technique that delivers provably efficient results for arbitrary nested-parallel programs, without the tuning needed for controlling parallelism overheads. The basic idea behind our technique is to create threads only at a beat (which we refer to as the "heartbeat") and make sure to do useful work in between. We specify our heartbeat scheduler using an abstract-machine semantics and provide mechanized proofs that the scheduler guarantees low overheads for all nested parallel programs. We present a prototype C++ implementation and an evaluation that shows that Heartbeat competes well with manually optimized Cilk Plus codes, without requiring manual tuning.},
+booktitle = {Proceedings of the 39th ACM SIGPLAN Conference on Programming Language Design and Implementation},
+pages = {769–782},
+numpages = {14},
+keywords = {granularity control, parallel programming languages},
+location = {Philadelphia, PA, USA},
+series = {PLDI 2018}
+}
+
+@article{heartbeat-scheduling,
+author = {Acar, Umut A. and Chargu\'{e}raud, Arthur and Guatto, Adrien and Rainey, Mike and Sieczkowski, Filip},
+title = {Heartbeat scheduling: provable efficiency for nested parallelism},
+year = {2018},
+issue_date = {April 2018},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {53},
+number = {4},
+issn = {0362-1340},
+url = {https://doi.org/10.1145/3296979.3192391},
+doi = {10.1145/3296979.3192391},
+abstract = {A classic problem in parallel computing is to take a high-level parallel program written, for example, in nested-parallel style with fork-join constructs and run it efficiently on a real machine. The problem could be considered solved in theory, but not in practice, because the overheads of creating and managing parallel threads can overwhelm their benefits. Developing efficient parallel codes therefore usually requires extensive tuning and optimizations to reduce parallelism just to a point where the overheads become acceptable.  In this paper, we present a scheduling technique that delivers provably efficient results for arbitrary nested-parallel programs, without the tuning needed for controlling parallelism overheads. The basic idea behind our technique is to create threads only at a beat (which we refer to as the "heartbeat") and make sure to do useful work in between. We specify our heartbeat scheduler using an abstract-machine semantics and provide mechanized proofs that the scheduler guarantees low overheads for all nested parallel programs. We present a prototype C++ implementation and an evaluation that shows that Heartbeat competes well with manually optimized Cilk Plus codes, without requiring manual tuning.},
+journal = {SIGPLAN Not.},
+month = jun,
+pages = {769–782},
+numpages = {14},
+keywords = {granularity control, parallel programming languages}
+}
+
+@inproceedings{csl-lockfree,
+author = {Hoffmann, Jan and Marmar, Michael and Shao, Zhong},
+title = {Quantitative Reasoning for Proving Lock-Freedom},
+year = {2013},
+isbn = {9780769550206},
+publisher = {IEEE Computer Society},
+address = {USA},
+url = {https://doi.org/10.1109/LICS.2013.18},
+doi = {10.1109/LICS.2013.18},
+abstract = {This article describes a novel quantitative proof technique for the modular and local verification of lock-freedom. In contrast to proofs based on temporal rely-guarantee requirements, this new quantitative reasoning method can be directly integrated in modern program logics that are designed for the verification of safety properties. Using a single formalism for verifying memory safety and lock-freedom allows a combined correctness proof that verifies both properties simultaneously. This article presents one possible formalization of this quantitative proof technique by developing a variant of concurrent separation logic (CSL) for total correctness. To enable quantitative reasoning, CSL is extended with a predicate for affine tokens to account for, and provide an upper bound on the number of loop iterations in a program. Lock-freedom is then reduced to total-correctness proofs. Quantitative reasoning is demonstrated in detail, both informally and formally, by verifying the lock-freedom of Treiber's non-blocking stack. Furthermore, it is shown how the technique is used to verify the lock-freedom of more advanced shared-memory data structures that use elimination-back off schemes and hazard-pointers.},
+booktitle = {Proceedings of the 2013 28th Annual ACM/IEEE Symposium on Logic in Computer Science},
+pages = {124–133},
+numpages = {10},
+keywords = {Separation Logic, Quantitative Analysis, Non-Blocking Data Structures, Lock-Freedom, Liveness, Concurrency},
+series = {LICS '13}
+}
+
 @article{DBLP:journals/pacmpl/AllainC0S24,
   author       = {Cl{\'{e}}ment Allain and
                   Basile Cl{\'{e}}ment and
@@ -2210,6 +2265,21 @@
   bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
 
+@inproceedings{certikos,
+author = {Gu, Ronghui and Shao, Zhong and Chen, Hao and Wu, Xiongnan and Kim, Jieung and Sj\"{o}berg, Vilhelm and Costanzo, David},
+title = {CertiKOS: an extensible architecture for building certified concurrent OS kernels},
+year = {2016},
+isbn = {9781931971331},
+publisher = {USENIX Association},
+address = {USA},
+abstract = {Complete formal verification of a non-trivial concurrent OS kernel is widely considered a grand challenge. We present a novel compositional approach for building certified concurrent OS kernels. Concurrency allows interleaved execution of kernel/user modules across different layers of abstraction. Each such layer can have a different set of observable events. We insist on formally specifying these layers and their observable events, and then verifying each kernel module at its proper abstraction level. To support certified linking with other CPUs or threads, we prove a strong contextual refinement property for every kernel function, which states that the implementation of each such function will behave like its specification under any kernel/user context with any valid interleaving. We have successfully developed a practical concurrent OS kernel and verified its (contextual) functional correctness in Coq. Our certified kernel is written in 6500 lines of C and x86 assembly and runs on stock x86 multicore machines. To our knowledge, this is the first proof of functional correctness of a complete, general-purpose concurrent OS kernel with fine-grained locking.},
+booktitle = {Proceedings of the 12th USENIX Conference on Operating Systems Design and Implementation},
+pages = {653–669},
+numpages = {17},
+location = {Savannah, GA, USA},
+series = {OSDI'16}
+}
+
 @inproceedings{DBLP:conf/ppopp/YangM16,
   author       = {Chaoran Yang and
                   John M. Mellor{-}Crummey},
@@ -2229,7 +2299,21 @@
   bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
 
-
+@inproceedings{arora-blumofe-plaxton,
+author = {Arora, Nimar S. and Blumofe, Robert D. and Plaxton, C. Greg},
+title = {Thread scheduling for multiprogrammed multiprocessors},
+year = {1998},
+isbn = {0897919890},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/277651.277678},
+doi = {10.1145/277651.277678},
+booktitle = {Proceedings of the Tenth Annual ACM Symposium on Parallel Algorithms and Architectures},
+pages = {119–129},
+numpages = {11},
+location = {Puerto Vallarta, Mexico},
+series = {SPAA '98}
+}
 
 @misc{backoff,
   title = {Backoff},
@@ -2355,3 +2439,4 @@
   year = {2025},
   url = {https://github.com/ocaml-multicore/saturn}
 }
+

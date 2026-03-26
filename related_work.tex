@@ -13,10 +13,12 @@ Before, \citet{DBLP:conf/ppopp/LePCN13} presented a pen-and-paper proof of the c
 As explained in \cref{sec:chaselev}, however, \citet{DBLP:journals/pacmpl/JungLCKPK23} only verify a weak specification, too weak to prove the completion of our scheduler.
 We verify a strong specification but, contrary to \citet{DBLP:conf/ppopp/LePCN13}, we rely on a sequentially consistent memory model; extending our work to relaxed memory is left for future work (see \cref{sec:future_work}).
 
-\paragraph{Parallel scheduler}
+\paragraph{Parallel schedulers}
 
 To our knowledge, \Parabs is the first formally verified realistic work-stealing scheduler.
 The previous works we are aware of cover toy implementations, not suitable for real-world usage; in contrast, our implementation is close to state-of-the-art schedulers and offers comparable performance according to our preliminary experiments.
+
+\Citet{certikos} is a verified operating system with a thread scheduler; it is realistic but does not attempt to balance threads between CPUs.
 
 \Citet{DBLP:journals/pacmpl/VilhenaP21} verify a simple cooperative scheduler based on algebraic effects, as a case study for their \Iris-based program logic.
 This scheduler does not support parallelism; it runs fibers inside a single domain.
@@ -26,3 +28,7 @@ However, their work, especially the way they formalize the scheduler's effects, 
 \Citet{DBLP:journals/pacmpl/EbnerMRDFRS25} verify a parallel scheduler with the same interface as \Domainslib, which also serves as a case-study for their program logic.
 However, their implementation is extremely simplified: a task list protected by a mutex.
 Their notion of future/joinable is also somewhat rudimentary.
+
+\paragraph{Efficiency guarantees}
+
+\Citet{arora-blumofe-plaxton} proves complexity bounds for an idealized scheduling policy, using pen-and-paper proofs. We currently have made no attempt to prove complexity bounds for our implementation. A mechanized proof of a scheduling policy exists in an idealized setting in \Citet{heartbeat-scheduling}, but scaling this to a verified implementation would be extremely challenging. In particular, reasoning about the efficiency of concurrent data structures typically requires fairness assumptions, and representing them in \Iris specifications is a topic of active research. A very interesting previous work is \Citet{csl-lockfree}, which proposes reasoning rules for lock-freedom in a concurrent separation logic for total correctness.
