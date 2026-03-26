@@ -30,8 +30,8 @@
   + [x] consider saying more about 'wait' using the callstack
 
 - extra citations from the author response
-  - [G] CertikOS + compare-and-swap
-  - [G] others? see the author response
+  - [x] CertikOS + compare-and-swap
+  - [x] others? see the author response
 
 - [x] latexdiff
 
