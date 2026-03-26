@@ -104,6 +104,8 @@ wrapped in an \ocamlinline{Ivar} module we contributed to the Zoo
 standard library, but it is even better to use \ocamlinline{Future}
 directly.
 
+Note that the \ocamlinline{fibo} function takes a parameter \ocamlinline{ctx : Pool.context}. This is idiomatic, all user functions using \ocamlinline{Parabs} for asynchronous computations should take a context parameter. (The higher-level API \ocamlinline{Future} and \ocamlinline{Algo} also require contexts.) This is common practice of library-based schedulers: \Domainslib requires a \ocamlinline{pool} parameter and \Taskflow requires a \texttt{tf::Runtime\&} or \texttt{tf::Executor\&}.
+
 \subsection{Specification}
 \label{sec:parabs_pool_spec}
 
