@@ -18,7 +18,7 @@
 
 - [ ] verified examples
   + [ ] counter (using Pool)
-  + [ ] fibonacci (using Futures)
+  + [x] fibonacci (using Futures)
 
 - [ ] writing clarifications
   + [x] "reason about termination" => completion
