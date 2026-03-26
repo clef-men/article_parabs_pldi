@@ -40,9 +40,8 @@ needed to create a scheduler and run a toplevel task.
 \item[\ocamlinline{val create : int -> t}] creates a scheduler with
   the given number of worker domains.
 
-\item[\ocamlinline{val run : t -> 'a task -> 'a}] runs a toplevel task
-  on a scheduler. Subtasks will run on the caller domain or on the
-  worker domains. The call returns when the toplevel task is finished.
+\item[\ocamlinline{val run : t -> 'a task -> 'a}] runs a task
+  on a scheduler. The call returns when the task is finished.
 
 \item[\ocamlinline{val kill : t -> unit}] stops a scheduler,
   terminating workers when they become idle. This should be called
