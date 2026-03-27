@@ -84,6 +84,7 @@ The persistent assertion $\obligation\ \v{pool}\ \iProp$ represents a proof obli
 It allows retrieving \iProp once \v{pool} has finished (\refTirName{obligation-finished}).
 
 One notable aspect of this specification is that resolution of the future --- as indicated by \result\xspace --- is separated from the division of the output predicates --- as achieved by \consumer.
+In practice, this lets us resolve different parts of the future's postcondition with different consumer parties --- for example, consider a future that initializes an array to be consumed by two separate futures operating on disjoint segments of the array.
 
 \end{tirPrefix}
 
