@@ -137,6 +137,7 @@ Obligations are obtained by submitting tasks through \c{async} (\refTirName{asyn
 
 The assertion $\consumer\ t\ \iProp$ represents the right to consume \iProp once pool $t$ has finished executing (\refTirName{consumer-finished}).
 Similarly to obligations, it can be obtained through \c{async} (\refTirName{async-spec}).
+A simple example of use is the parallel ``quicksort'' algorithm~\refLibTheoriesFile{examples/pool_quicksort}, where multiple nested \consumer assertions are generated.
 
 \end{tirPrefix}
 
