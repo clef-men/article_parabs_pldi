@@ -136,7 +136,8 @@ It allows retrieving \iProp once $t$ has finished executing (\refTirName{obligat
 Obligations are obtained by submitting tasks through \c{async} (\refTirName{async-spec}).
 
 The assertion $\consumer\ t\ \iProp$ represents the right to consume \iProp once pool $t$ has finished executing (\refTirName{consumer-finished}).
-Similarly to obligations, it can be obtained through \c{async} (\refTirName{async-spec}).
+Similarly to \obligation, it can be obtained through \c{async} (\refTirName{async-spec}).
+Contrary to \obligation, it is non-persistent and can only be used once through \refTirName{consumer-finished}, which is sometimes less convenient.
 A simple example of use is the parallel ``quicksort'' algorithm~\refLibTheoriesFile{examples/pool_quicksort}, where multiple nested \consumer assertions are generated.
 
 \end{tirPrefix}
