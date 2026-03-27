@@ -14,20 +14,20 @@
       \v{sz}_1 = \v{sz}_2
     }
   \and
-    \infer[obligation-finished]{
-        \obligation\ t\ \iProp
-      \\
-        \finished\ t
-    }{
-      \iLater \iPersistently \iProp
-    }
-  \and
     \infer[consumer-finished]{
         \consumer\ t\ \iProp
       \\
         \finished\ t
     }{
       \iFupd \iProp
+    }
+  \and
+    \infer[obligation-finished]{
+        \obligation\ t\ \iProp
+      \\
+        \finished\ t
+    }{
+      \iLater \iPersistently \iProp
     }
   \\
     \iSpec[
@@ -107,8 +107,8 @@
           \_
         ]{
           \context\ t\ \v{ctx}\ \v{scope} \iSep
-          \iLater \iPersistently \iProp \iSep
-          \iLater \iPropTwo
+          \iLater \iProp \iSep
+          \iLater \iPersistently \iPropTwo
         }
       \end{inboxIndent}
     }{
@@ -117,8 +117,8 @@
       \c{()}
     ]{
       \context\ t\ \v{ctx}\ \v{scope} \iSep \\
-      \obligation\ t\ \iProp \iSep \\
-      \consumer\ t\ \iPropTwo
+      \consumer\ t\ \iProp \iSep \\
+      \obligation\ t\ \iPropTwo
     }
   \and
     \iSpec[
