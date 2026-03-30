@@ -85,7 +85,7 @@ For example, consider a future that initializes an array to be consumed by two s
 
 The persistent assertion $\obligation\ \v{pool}\ \iProp$ represents a proof obligation emitted by \c{iter} (\refTirName{iter-spec}).
 It allows retrieving \iProp once \v{pool} has finished (\refTirName{obligation-finished}).
-Unlike \ocamlinline{async} and \ocamlinline{map}, \ocamlinline{iter} does not return a handle to wait on its result, so it requires a different assertion.
+Unlike \ocamlinline{async} and \ocamlinline{map}, \ocamlinline{iter} does not return a handle to wait on its result, so its specification requires a different assertion.
 
 \end{tirPrefix}
 
