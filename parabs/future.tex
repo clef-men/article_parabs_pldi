@@ -79,12 +79,13 @@ After the pool has finished, it is guaranteed that all futures have been resolve
 The assertion $\consumer\ t\ \iPredThree$ represents the right to consume \iPredThree once future $t$ has been resolved.
 Indeed, using \refTirName{inv-result-consumer}, it can be combined with \inv and \result to obtain \iPredThree.
 When $t$ is created, this assertion is produced with the full non-persistent predicate (\refTirName{async-spec}, \refTirName{map-spec}); then, it can be divided into several parts (\refTirName{consumer-divide}).
+Note that resolution of the future, indicated by \result, is separated from the division of the output predicates achieved by \consumer.
+This lets us resolve different parts of the future's postcondition with different consumer parties.
+For example, consider a future that initializes an array to be consumed by two separate futures operating on disjoint segments of the array.
 
 The persistent assertion $\obligation\ \v{pool}\ \iProp$ represents a proof obligation emitted by \c{iter} (\refTirName{iter-spec}).
 It allows retrieving \iProp once \v{pool} has finished (\refTirName{obligation-finished}).
-
-One notable aspect of this specification is that resolution of the future --- as indicated by \result\xspace --- is separated from the division of the output predicates --- as achieved by \consumer.
-In practice, this lets us resolve different parts of the future's postcondition with different consumer parties --- for example, consider a future that initializes an array to be consumed by two separate futures operating on disjoint segments of the array.
+Unlike \ocamlinline{async} and \ocamlinline{map}, \ocamlinline{iter} does not return a handle to wait on its result, so it requires a different assertion.
 
 \end{tirPrefix}
 
