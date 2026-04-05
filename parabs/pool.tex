@@ -21,9 +21,9 @@ The \OCaml interface of the \ocamlinline{Pool} module is as follows~\refLib{zoo_
 
 \begin{description}
 \item[\ocamlinline{type t}] represents a scheduler that owns a pool of
-  $n$ worker domains and a set of tasks to compute. One domain owns
-  the scheduler and can send toplevel tasks, so in total $n + 1$ domains
-  participate to the computation.
+  worker domains and a set of tasks to compute. One domain owns the
+  scheduler and can send toplevel tasks: if there are $n$ workers,
+  then in total $n + 1$ domains participate to the computation.
 
 \item[\ocamlinline{type context}] represents the runtime execution
   state of a running scheduler. All asynchronous functions take
@@ -34,25 +34,38 @@ The \OCaml interface of the \ocamlinline{Pool} module is as follows~\refLib{zoo_
 \end{description}
 
 \noindent
-The following functions are the high-level part of the module,
-needed to create a scheduler and run a toplevel task.
+The following high-level function let users conveniently run a task
+on worker domains:
 \begin{description}
-\item[\ocamlinline{val create : int -> t}] creates a scheduler with
-  the given number of worker domains.
-
-\item[\ocamlinline{val run : t -> 'a task -> 'a}] runs a task
-  on a scheduler. The call returns when the task is finished.
-
-\item[\ocamlinline{val kill : t -> unit}] stops a scheduler,
-  terminating workers when they become idle. This should be called
-  once you know that the toplevel task is finished.
+\item[\ocamlinline{val run : int -> 'a task -> 'a}] creates a new pool
+  with the given number of worker domains, runs a task on it, waits
+  for the workers to finish their sub-tasks and terminates them before
+  returning a result.
 \end{description}
 
 \noindent
-The following low-level functions are typically not used directly, as
-users would prefer the higher-level interface of the
+The following functions offer a more finer-grained interface to
+start a scheduler once and send several tasks to it:
+\begin{description}
+\item[\ocamlinline{val create : int -> t}] creates a scheduler
+  with the given number of worker domains.
+
+\item[\ocamlinline{val run_on : t -> 'a task -> 'a}] runs a task on
+  a scheduler. The call returns when the task is finished. Some worker
+  domains may still be executing some tasks asynchronously. (We will
+  see below that the API lets a task start another task without
+  waiting for its result to terminate.)
+
+\item[\ocamlinline{val close : t -> unit}] waits for all scheduled
+  tasks to be finished, terminates the worker domains and closes the
+  scheduler.
+\end{description}
+
+\noindent
+Finally, the following low-level functions are typically not used
+directly, as users would prefer the higher-level interface of the
 \ocamlinline{Future} (\cref{sec:parabs_future}) or \ocamlinline{Algo}
-(\cref{sec:parabs_algorithms}) modules to define asynchronous tasks.
+(\cref{sec:parabs_algorithms}) modules:
 \begin{description}
 \item[\ocamlinline{val size : context -> int}] returns the number of
   worker domains, which can help when deciding how to split work in an
@@ -79,12 +92,19 @@ fibonacci number.
 \begin{ocamlcode}
 let () =
   let pool = Pool.create (Domain.recommended_domain_count () - 1) in
-  let fib40 = Pool.run pool (fun ctx -> fibo ctx 40) in
-  Pool.kill pool;
+  let fib40 = Pool.run_on pool (fun ctx -> fibo ctx 40) in
+  Pool.close pool;
+  Printf.printf "fib 40 = %d\n%!" fib40
+\end{ocamlcode}
+or, equivalently:
+\begin{ocamlcode}
+let () =
+  let workers = Domain.recommended_domain_count () - 1 in
+  let fib40 = Pool.run workers (fun ctx -> fibo ctx 40) in
   Printf.printf "fib 40 = %d\n%!" fib40
 \end{ocamlcode}
 
-The \ocamlinline{fibo} itself could be defined from the low-level
+The \ocamlinline{fibo} task itself could be defined from the low-level
 interface directly as follows (assume \ocamlinline{fibo_seq} is
 a sequential definition of the fibonacci function):
 \begin{ocamlcode}
