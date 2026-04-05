@@ -5,17 +5,18 @@ On top of \ocamlinline{Future}, we  implemented and verified standard parallel i
 \begin{ocamlcode}
 val for_ :
   Pool.context ->
-  int (* begin index (included) *) ->
-  int (* end index (excluded) *) ->
-  int option (* recommended sequential cutoff size *) ->
+  beg:int (* begin index (included) *) ->
+  end_:int (* end index (excluded) *) ->
+  chunk:int option (* recommended sequential cutoff size *) ->
   (int -> int -> unit) Pool.task -> unit
 \end{ocamlcode}
 %
 and could be used as follows:
 \begin{ocamlcode}
 let double_array ctx t =
-  Algo.for_ ctx 0 (Array.length t) None (fun _ctx begin_ end_ ->
-    for i = begin_ to end_ - 1 do
-      t.(i) <- 2 * t.(i)
-    done)
+  Algo.for_ ctx ~beg:0 ~end_:(Array.length t) ~chunk:None 
+    (fun _ctx begin_ end_ ->
+      for i = begin_ to end_ - 1 do
+        t.(i) <- 2 * t.(i)
+      done)
 \end{ocamlcode}
