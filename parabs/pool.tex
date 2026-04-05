@@ -140,7 +140,7 @@ It is returned by \c{create} (\refTirName{create-spec}) and required only by \c{
 Its only purpose is to record the immutable characteristics of the scheduler.
 
 The assertion $\model\ t$ represents the ownership of scheduler $t$.
-It is returned by \c{create} (\refTirName{create-spec}) and required by external operations (\refTirName{run-spec}, \refTirName{kill-spec}).
+It is returned by \c{create} (\refTirName{create-spec}) and required by external operations (\refTirName{run-spec}, \refTirName{close-spec}).
 For example, $\c{run}\ t\ \v{task}$ submits \v{task} to scheduler $t$; it returns both \model and the output predicate of \v{task}.
 
 The assertion $\context\ t\ \v{ctx}\ \v{scope}$ represents the ownership of \emph{execution context} \v{ctx} attached to scheduler $t$; \v{scope} is a purely logical parameter connecting input and output \context, which is necessary in the proof.
@@ -149,7 +149,7 @@ In particular, all internal operations require and return \context.
 For example, $\c{async}\ \v{ctx}\ \v{task}$ submits \v{task} asynchronously while executing under context \v{ctx}; \v{task} must be shown to execute safely under any context attached to the same scheduler (\refTirName{async-spec}).
 
 The persistent assertion $\finished\ t$ represents the knowledge that scheduler $t$ has finished, meaning all submitted tasks were executed.
-It can be obtained by calling \c{kill} (\refTirName{kill-spec}).
+It can be obtained by calling \c{close} (\refTirName{close-spec}).
 
 The persistent assertion $\obligation\ t\ \iProp$ represents a proof obligation attached to scheduler $t$.
 It allows retrieving \iProp once $t$ has finished executing (\refTirName{obligation-finished}).
@@ -170,13 +170,13 @@ A simple example of use is the parallel ``quicksort'' algorithm~\refLibTheoriesF
 The implementation relies on a pool of worker domains and a work-stealing hub.
 Each worker runs the following loop:
 (1) get a task using \ocamlinline{Ws_hub.pop_steal};
-(2) if it fails, the scheduler has been killed and so the worker stops, otherwise execute the task in the context of the current worker;
+(2) if it fails, the scheduler has been closed and so the worker stops, otherwise execute the task in the context of the current worker;
 (3) start over.
 
 \paragraph{Blocking.}
 
 Care must be taken to block and unblock work-stealing deques properly.
-When the scheduler is killed, it is crucial that workers block their deque before stopping; otherwise, the scheduler may never terminate because of a running worker waiting forever for a response from a stopped but unblocked worker.
+When the scheduler is closed, it is crucial that workers block their deque before stopping; otherwise, the scheduler may never terminate because of a running worker waiting forever for a response from a stopped but unblocked worker.
 Also, the main domain, from which tasks can be submitted externally through \c{run}, must unblock when it is executing tasks and block when it is not.
 
 \paragraph{Awaiting.}
@@ -191,4 +191,4 @@ In \Domainslib, scheduler shutdown consists in submitting special tasks through 
 However, this simple mechanism has at least two drawbacks:
 (1) it introduces an indirection for every regular task, which may be expensive;
 (2) it works well under standard work-stealing but is more difficult to implement under other scheduling strategies, especially work-stealing with private deques (see \cref{sec:parabs_ws_deques_private}).
-Consequently, we use an alternative mechanism implemented at the level of \ocamlinline{Ws_hub}: a shared flag, regularly checked in \ocamlinline{Ws_hub.steal} and \ocamlinline{Ws_hub.pop_steal}, is set when the scheduler is killed.
+Consequently, we use an alternative mechanism implemented at the level of \ocamlinline{Ws_hub}: a shared flag, regularly checked in \ocamlinline{Ws_hub.steal} and \ocamlinline{Ws_hub.pop_steal}, is set when the scheduler is closed.
