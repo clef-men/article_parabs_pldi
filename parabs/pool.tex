@@ -34,18 +34,8 @@ The \OCaml interface of the \ocamlinline{Pool} module is as follows~\refLib{zoo_
 \end{description}
 
 \noindent
-The following high-level function let users conveniently run a task
-on worker domains:
-\begin{description}
-\item[\ocamlinline{val run : workers:int -> 'a task -> 'a}] creates a new pool
-  with the given number of worker domains, runs a task on it, waits
-  for the workers to finish their sub-tasks and terminates them before
-  returning a result.
-\end{description}
-
-\noindent
-The following functions offer a more finer-grained interface to
-start a scheduler once and send several tasks to it:
+The following functions are the high-level part of the module,
+needed to create a scheduler and run a task on it.
 \begin{description}
 \item[\ocamlinline{val create : workers:int -> t}] creates a scheduler
   with the given number of worker domains.
@@ -94,13 +84,6 @@ let () =
   let pool = Pool.create ~workers:(Domain.recommended_domain_count () - 1) in
   let fib40 = Pool.run_on pool (fun ctx -> fibo ctx 40) in
   Pool.close pool;
-  Printf.printf "fib 40 = %d\n%!" fib40
-\end{ocamlcode}
-or, equivalently:
-\begin{ocamlcode}
-let () =
-  let workers = Domain.recommended_domain_count () - 1 in
-  let fib40 = Pool.run ~workers (fun ctx -> fibo ctx 40) in
   Printf.printf "fib 40 = %d\n%!" fib40
 \end{ocamlcode}
 
