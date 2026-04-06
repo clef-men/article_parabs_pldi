@@ -37,7 +37,7 @@ The \OCaml interface of the \ocamlinline{Pool} module is as follows~\refLib{zoo_
 The following functions are the high-level part of the module,
 needed to create a scheduler and run a task on it.
 \begin{description}
-\item[\ocamlinline{val create : workers:int -> t}] creates a scheduler
+\item[\ocamlinline{val create : int -> t}] creates a scheduler
   with the given number of worker domains.
 
 \item[\ocamlinline{val run_on : t -> 'a task -> 'a}] runs a task on
@@ -81,7 +81,7 @@ the following main expression will compute and print the $40$-th
 fibonacci number.
 \begin{ocamlcode}
 let () =
-  let pool = Pool.create ~workers:(Domain.recommended_domain_count () - 1) in
+  let pool = Pool.create (Domain.recommended_domain_count () - 1) in
   let fib40 = Pool.run_on pool (fun ctx -> fibo ctx 40) in
   Pool.close pool;
   Printf.printf "fib 40 = %d\n%!" fib40
