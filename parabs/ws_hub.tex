@@ -1,15 +1,15 @@
-\section{Work-stealing hub}
+\section{Work-Stealing Hub}
 
 At the second level, \ocamlinline{Ws_hub}~\refLib{zoo_parabs/ws_hub.ml} provides a generic interface for a set of tasks supporting work-stealing operations --- a so-called ``work-stealing hub''.
 It currently has two realizations: \ocamlinline{Ws_hub_std} (\cref{sec:parabs_ws_hub_std}) and \ocamlinline{Ws_hub_fifo} (\cref{sec:parabs_ws_hub_fifo}).
 
-\subsection{Work-stealing strategy}
+\subsection{Work-Stealing Strategy}
 \label{sec:parabs_ws_hub_std}
 
 The first realization, \ocamlinline{Ws_hub_std}~\refLibTheoriesFile{zoo_parabs/ws_hub_std}, implements a standard randomized work-stealing strategy.
 Under the hood, any work-stealing algorithm may be used, provided that it fits into the \ocamlinline{Ws_hub} interface; in particular, it can instantiated with both realizations of \ocamlinline{Ws_deques}.
 
-\subsection{FIFO strategy}
+\subsection{FIFO Strategy}
 \label{sec:parabs_ws_hub_fifo}
 
 The second realization, \ocamlinline{Ws_hub_fifo}~\refLibTheoriesFile{zoo_parabs/ws_hub_fifo}, implements a simple ``first-in first-out'' scheduling strategy.
