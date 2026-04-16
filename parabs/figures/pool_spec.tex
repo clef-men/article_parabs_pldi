@@ -125,22 +125,14 @@
       lab=wait-until-spec
     ]{
       \context\ t\ \v{ctx}\ \v{scope} \iSep \\
-      \iTriple{
-        \iTrue
-      }{
-        \v{pred}\ \c{()}
-      }[
-        \zooBool
-      ]{
-        \myifOneline{\zooBool}{\iProp}{\iTrue}
-      }
+      \l{ivar.inv}\ \v{ivar}\ \iPredTwo\ \iPredThree\ \iPredFour
     }{
-      \c{wait\_until}\ \v{ctx}\ \v{pred}
+      \c{wait\_ivar}\ \v{ctx}\ \v{ivar}
     }[
       \c{()}
     ]{
-      \context\ t\ \v{ctx}\ \v{scope} \iSep
-      \iProp
+      \context\ t\ \v{ctx}\ \v{scope} \iSep \\
+      \l{ivar.resolved}\ \v{ivar}
     }
 \end{mathpar}
 \caption{\ocamlinline{Pool}: Specification}
