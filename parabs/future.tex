@@ -92,6 +92,6 @@ Unlike \ocamlinline{async} and \ocamlinline{map}, \ocamlinline{iter} does not re
 \subsection{Implementation}
 \label{sec:parabs_future_impl}
 
-Futures are implemented using \emph{ivars} (concurrent write-once variables), as implemented and verified in the \Zoo standard library.
+Futures are implemented using \emph{ivars} (see \cref{sec:parabs_pool_interface}), as implemented and verified in the \Zoo standard library.
 \c{async} creates an ivar and calls \ocamlinline{Pool.async} to resolve it asynchronously.
-\c{wait} calls \ocamlinline{Pool.wait_until} to wait \emph{actively} until the ivar is resolved and returns the resulting value.
+\c{wait} calls \ocamlinline{Pool.wait_ivar} to wait \emph{actively} until the ivar is resolved and returns the resulting value.
