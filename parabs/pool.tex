@@ -72,7 +72,7 @@ directly, as users would prefer the higher-level interface of the
 \begin{description}
 \item[\ocamlinline{val create : unit -> 'a Ivar_4.t] creates a fresh ivar with no value
 
-\item[\ocamlinline{val get : 'a Ivar_4.t -> ('a -> unit) Pool.task -> 'a option}]
+\item[\ocamlinline{val get : 'a Ivar_4.t -> ('a -> unit) Pool.task -> 'a}]
   tries to get value of the variable; if it is not yet set, the ivar accumulates
   the provided callback to be called when the value will be available.
 
