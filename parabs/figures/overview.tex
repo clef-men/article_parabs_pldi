@@ -20,7 +20,7 @@
   \node [parabs] (ws_hub_fifo) at (2*\hsep,3*\vsep) {\c{Ws\_hub\_fifo}} ;
   \node [parabs] (ws_hub_std) at (-2*\hsep,3*\vsep) {\c{Ws\_hub\_std}} ;
   \node [parabs] (waiters) at (0,4*\vsep) {\c{Waiters}} ;
-  \node [std] (mpsc_waiter) at (0,5*\vsep) {\c{Mpsc\_waiter}} ;
+  \node [parabs] (waiter) at (0,5*\vsep) {\c{Waiter}} ;
   \node [saturn] (mpmc_queue) at (3,5*\vsep) {\c{Mpmc\_queue}} ;
   \node [parabs] (ws_deques) at (-4*\hsep,4*\vsep) {\c{Ws\_deques}} ;
   \node [std] (random_round) at (-6.5*\hsep,4*\vsep) {\c{Random\_round}} ;
@@ -41,7 +41,7 @@
     (ws_hub_fifo) -> [densely dashed] (ws_hub) ;
     (waiters) -> (ws_hub_std) ;
     (waiters) -> (ws_hub_fifo) ;
-    (mpsc_waiter) -> (waiters) ;
+    (waiter) -> (waiters) ;
     (mpmc_queue) -> (waiters) ;
     (mpmc_queue) -> (ws_hub_fifo) ;
     (ws_deques) -> (ws_hub_std) ;
