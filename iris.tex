@@ -63,8 +63,8 @@ Contrary to Hoare triples, it can depend on exclusive ownership and therefore is
 \paragraph{Atomic specification}
 
 To specify concurrent operations, we use the notion of \emph{logical atomicity}~\citep{DBLP:conf/ecoop/PintoDG14}.
-An operation is said to be logically atomic if it appears to take effect atomically at some point during its execution; this point is called the \emph{linearization point} of the operation.
-\citeauthor{DBLP:journals/pacmpl/BirkedalDGJST21} showed that this notion implies \emph{linearizability}~\citep{DBLP:journals/toplas/HerlihyW90} in a sequentially consistent memory model.
+An operation is said to be logically atomic if it appears to take effect atomically at some point during its execution, called the \emph{linearization point} of the operation.
+\citeauthor{DBLP:journals/pacmpl/BirkedalDGJST21} showed that it implies \emph{linearizability}~\citep{DBLP:journals/toplas/HerlihyW90} in a sequentially consistent memory model.
 
 In \Iris, logical atomicity takes the form of \emph{atomic specifications}:
 \begin{mathpar}
