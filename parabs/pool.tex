@@ -72,8 +72,8 @@ directly, as users would prefer the higher-level interface of the
 \begin{description}
 \item[\ocamlinline{val create : unit -> ('ctx, 'a) Ivar.t}] creates a fresh ivar with no value.
 
-\item[\ocamlinline{val wait : ('ctx, 'a) Ivar.t -> ('ctx -> 'a -> unit) -> 'a option}]
-  returns the value of the variable if it is set, and accumulates the provided callback
+\item[\ocamlinline{val wait : ('ctx, 'a) Ivar.t -> ('ctx -> 'a -> unit) -> 'a option}] ~\\
+  returns the value if it is set, and accumulates the provided callback
   otherwise. Despite the name, this function always returns immediately.
 
 \item[\ocamlinline{val set : 'ctx -> ('ctx, 'a) Ivar.t -> 'a -> unit}]

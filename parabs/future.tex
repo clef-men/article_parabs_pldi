@@ -31,13 +31,13 @@ The OCaml interface of the \ocamlinline{Future} module is as follows~\refLib{zoo
     Pool.task -> 'b t}] schedules a task to run after the result of
   a future is available and returns a future for its result.
 
-\item[\ocamlinline{val iter : Pool.context -> 'a t -> ('a -> unit)
-    Pool.task -> unit}] is a specialized \ocamlinline{map} that
-  schedules a \ocamlinline{'a -> unit} function to be called on the
-  result of a future, when available. The function returns
-  immediately. This can be more efficient as no future is created, but
-  the user code must come with its own synchronization mechanism to
-  know when the function is done.
+\item[\ocamlinline{val iter : Pool.context -> 'a t -> ('a -> unit) Pool.task -> unit}]~\\
+  is a specialized \ocamlinline{map} that schedules
+  a \ocamlinline{'a -> unit} function to be called on the result of
+  a future, when available. The function returns immediately. This can
+  be more efficient as no future is created, but the user code must
+  come with its own synchronization mechanism to know when the
+  function is done.
 \end{description}
 
 \subsection{Example}
