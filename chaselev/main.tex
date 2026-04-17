@@ -12,8 +12,7 @@ It has been implemented in many libraries, including \Cilk~\citep{DBLP:journals/
 
 \paragraph{Work-stealing deque.}
 
-The idea of work-stealing, illustrated in \cref{fig:chaselev_work_stealing}, is the following.
-Each domain owns a deque-like data structure, called \emph{work-stealing deque}, to store its tasks.
+The idea of work-stealing is illustrated in \cref{fig:chaselev_work_stealing}. Each domain owns a deque-like data structure, called \emph{work-stealing deque}, to store its tasks.
 Locally, each domain treats its deque as a stack, operating at the back end.
 When a domain runs out of tasks, it becomes a thief: it tries to steal a task from the deque of another randomly selected ``victim'' domain, operating at the front end.
 Multiple thieves may concurrently attempt to steal tasks from a single deque.
