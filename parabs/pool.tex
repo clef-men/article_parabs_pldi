@@ -4,10 +4,11 @@
 At the third level, \ocamlinline{Pool}~\refLibTheoriesFile{zoo_parabs/pool} implements a task scheduler on top of a given realization of \ocamlinline{Ws_hub}.
 It offers essentially the same functionalities as \Domainslib with a few notable differences.
 (1) Exceptions raised by tasks are not caught and therefore not re-raised properly by the scheduler since \ZooLang does not currently support them.
-(2) Since \ZooLang does not support algebraic effects~\citep{DBLP:conf/pldi/Sivaramakrishnan21} either, the interface is slightly more involved (see \emph{execution contexts} in \cref{sec:parabs_pool_spec}).
-
-Moreover, this limitation imposes a \emph{child-stealing} strategy, as opposed to a \emph{continuation-stealing} strategy that would require capturing the continuation of a computation.
-
+(2) \ZooLang does not support algebraic effects~\citep{DBLP:conf/pldi/Sivaramakrishnan21} either.
+% the interface is slightly more involved (see \emph{execution contexts} in \cref{sec:parabs_pool_spec}).
+%
+This limitation imposes a \emph{child-stealing} strategy, as opposed to a \emph{continuation-stealing} strategy that would require capturing the continuation of a computation.
+%
 Also, this makes it difficult to implement a \c{yield} operation%
 \footnote{
 \Domainslib does not currently provide a \c{yield} operation but it can be easily implemented.
@@ -34,17 +35,16 @@ The \OCaml interface of the \ocamlinline{Pool} module is as follows~\refLib{zoo_
 \end{description}
 
 \noindent
-The following functions are the high-level part of the module,
-needed to create a scheduler and run a task on it.
+The following functions are used to create a scheduler and run a task on it.
 \begin{description}
 \item[\ocamlinline{val create : int -> t}] creates a scheduler
   with the given number of worker domains.
 
 \item[\ocamlinline{val run_on : t -> 'a task -> 'a}] runs a task on
   a scheduler. The call returns when the task is finished. Some worker
-  domains may still be executing some tasks asynchronously. (We will
-  see below that the API lets a task start another task without
-  waiting for its result to terminate.)
+  domains may still be executing some tasks asynchronously. (As we see below,
+  \c{async} can start another task without waiting for its result to
+  terminate.)
 
 \item[\ocamlinline{val close : t -> unit}] waits for all scheduled
   tasks to be finished, terminates the worker domains and closes the
@@ -94,8 +94,7 @@ Suppose we have a
 \ocamlinline{fibo : Pool.context -> int -> int}
 %
 function that computes fibonacci numbers naively but in parallel. Then
-the following main expression will compute and print the $40$-th
-fibonacci number.
+the following will compute and print the $40$-th fibonacci number.
 \begin{ocamlcode}
 let () =
   let pool = Pool.create (Domain.recommended_domain_count () - 1) in
@@ -118,7 +117,7 @@ let rec fibo ctx n =
     Ivar.get a + b
 \end{ocamlcode}
 
-Note that the \ocamlinline{fibo} function takes a parameter \ocamlinline{ctx : Pool.context}. This is idiomatic, all user functions using \ocamlinline{Parabs} for asynchronous computations should take a context parameter. (The higher-level API \ocamlinline{Future} and \ocamlinline{Algo} also require contexts.) This is common practice of library-based schedulers: \Domainslib requires a \ocamlinline{pool} parameter and \Taskflow requires a \texttt{tf::Runtime\&} or \texttt{tf::Executor\&}.
+Note that the \ocamlinline{fibo} function takes a parameter \ocamlinline{ctx : Pool.context}. This is idiomatic, all user functions using \ocamlinline{Parabs} for asynchronous computations should take a context parameter. (The higher-level API \ocamlinline{Future} and \ocamlinline{Algo} also require contexts.) This is common for library-based schedulers: \Domainslib takes a \ocamlinline{pool} parameter and \Taskflow takes a \texttt{tf::Runtime\&} or \texttt{tf::Executor\&}.
 
 \subsection{Specification}
 \label{sec:parabs_pool_spec}
@@ -127,8 +126,7 @@ Note that the \ocamlinline{fibo} function takes a parameter \ocamlinline{ctx : P
 
 \input{parabs/figures/pool_spec}
 
-The specification is given in \cref{fig:parabs_pool_spec}.
-It features five predicates: \inv, \model, \context, \finished and \obligation.
+The specification, in \cref{fig:parabs_pool_spec}, features five predicates: \inv, \model, \context, \finished and \obligation.
 
 The persistent assertion $\inv\ t\ \v{sz}$ represents the knowledge that $t$ is a valid scheduler; \v{sz} is the number of worker domains.
 It is returned by \c{create} (\refTirName{create-spec}) and required only by \c{size} (\refTirName{size-spec}).

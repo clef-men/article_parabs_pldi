@@ -34,12 +34,12 @@ See also the master thesis of \citet{DBLP:journals/corr/abs-2309-03642}.
 }
 also worked on the verification of the Chase-Lev work-stealing deque.
 However, we argue that the specification they prove, given in \cref{fig:chaselev_ws_deque_spec_weak}, is unsatisfactory.
-Indeed, contrary to our specification, \refTirName{steal-spec-weak} and \refTirName{pop-spec-weak} say nothing about the observed content of the deque when the operation fails.
+Indeed, \refTirName{steal-spec-weak} and \refTirName{pop-spec-weak} say nothing about the observed content of the deque when the operation fails.
 
-In practice, these weaker specifications, especially that of \c{pop}, are not sufficient to reason about the \emph{completion} of a work-stealing scheduler: once the scheduler terminates, we know that all submitted tasks have finished.
+In practice, these weaker specifications, especially that of \c{pop}, are not sufficient to reason about \emph{completion}: once the scheduler terminates, we know that all submitted tasks have finished.
 In \cref{sec:parabs}, we show how our strong specifications are lifted all the way up to the scheduler.
 
-Another point we would like to make is that weakening the specification does make the verification simpler, but one may argue that the most subtle and interesting part of it is lost.
+% Another point we would like to make is that weakening the specification does make the verification simpler, but one may argue that a subtle and interesting part of it is lost.
 
 \end{tirPrefix}
 
