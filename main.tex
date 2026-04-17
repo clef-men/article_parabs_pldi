@@ -2,7 +2,7 @@
 % Gabriel: I need this to avoid 'incompatible options for package xcolor' errors
 % between setup.tex/macros.tex and acmart.cls.
 
-\documentclass[acmsmall,screen,nonacm]{acmart}
+\documentclass[acmsmall]{acmart}
 
 %----------------------------------------
 
@@ -21,21 +21,26 @@
 \title{A Verified Parallel Scheduler for \OCamlFive}
 
 \author{Clément Allain}
-\affiliation{
+\orcid{0009-0005-2972-5181}
+\affiliation{%
   \institution{INRIA}
   \city{Paris}
   \country{France}
 }
-\orcid{0009-0005-2972-5181}
 \email{clement.allain@inria.fr}
 
 \author{Gabriel Scherer}
-\affiliation{
+\orcid{0000-0003-1758-3938}
+\affiliation{%
   \institution{INRIA}
   \city{Paris}
   \country{France}
 }
-\orcid{0000-0003-1758-3938}
+\affiliation{%
+  \institution{Université Paris Cité}
+  \city{Paris}
+  \country{France}
+}
 \email{gabriel.scherer@inria.fr}
 
 \begin{abstract}
@@ -66,16 +71,19 @@
 
 \pagebreak
 
+% According to conference-publishing.com, author instructions:
+%
+% > The sections at the end of the paper should be ordered as follows:
+% > first acknowledgements, then appendices, and last references.
+
 \input{acknowledgments}
-
-\hbadness=10000
-\bibliography{main}
-
-\pagebreak
 
 \Appendices{
   \appendix
   \input{benchmarks/main}
 }{}
+
+\hbadness=10000
+\bibliography{main}
 
 \end{document}
