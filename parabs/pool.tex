@@ -139,7 +139,7 @@ It is returned by \c{create} (\refTirName{create-spec}) and required by external
 For example, $\c{run}\ t\ \v{task}$ submits \v{task} to scheduler $t$; it returns both \model and the output predicate of \v{task}.
 
 The assertion $\context\ t\ \v{ctx}\ \v{scope}$ represents the ownership of \emph{execution context} \v{ctx} attached to scheduler $t$; \v{scope} is a purely logical parameter connecting input and output \context, which is necessary in the proof.
-Any task execution happens under such a context (\refTirName{run-spec}, \refTirName{async-spec}, \refTirName{wait-until-spec}).
+Any task execution happens under such a context (\refTirName{run-spec}, \refTirName{async-spec}, \refTirName{wait-ivar-spec}).
 In particular, all internal operations require and return \context.
 For example, $\c{async}\ \v{ctx}\ \v{task}$ submits \v{task} asynchronously while executing under context \v{ctx}; \v{task} must be shown to execute safely under any context attached to the same scheduler (\refTirName{async-spec}).
 
